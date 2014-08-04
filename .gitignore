@@ -7,6 +7,8 @@
 # Libraries
 *.lib
 *.a
+*.lo
+*.la
 
 # Shared objects (inc. Windows DLLs)
 *.dll
@@ -21,3 +23,32 @@
 *.i*86
 *.x86_64
 *.hex
+
+/.project
+/.cproject
+Makefile
+Makefile.in
+.deps/
+.libs/
+/aclocal.m4
+/autom4te.cache/
+/src/config.h
+/src/config.h.in
+/src/config.h.in~
+/src/stamp-h1
+/config.guess
+/config.sub
+/config.log
+/config.status
+/configure
+/depcomp
+/install-sh
+/ltmain.sh
+/m4/libtool.m4
+/m4/ltoptions.m4
+/m4/ltsugar.m4
+/m4/ltversion.m4
+/m4/lt~obsolete.m4
+/missing
+compile
+libtool
