@@ -32,8 +32,8 @@
  * All rights reserved.
  */
 
-#ifndef __db_mm_h
-#define __db_mm_h
+#ifndef libdbo_db_mm_h
+#define libdbo_db_mm_h
 
 #include <stdlib.h>
 #include <pthread.h>

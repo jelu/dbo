@@ -33,8 +33,8 @@
  * All rights reserved.
  */
 
-#ifndef __db_clause_h
-#define __db_clause_h
+#ifndef libdbo_db_clause_h
+#define libdbo_db_clause_h
 
 #ifdef __cplusplus
 extern "C" {

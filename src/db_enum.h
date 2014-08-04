@@ -33,8 +33,8 @@
  * All rights reserved.
  */
 
-#ifndef __db_enum_h
-#define __db_enum_h
+#ifndef libdbo_db_enum_h
+#define libdbo_db_enum_h
 
 #ifdef __cplusplus
 extern "C" {

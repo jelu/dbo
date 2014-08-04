@@ -33,8 +33,8 @@
  * All rights reserved.
  */
 
-#ifndef __db_error_h
-#define __db_error_h
+#ifndef libdbo_db_error_h
+#define libdbo_db_error_h
 
 /**
  * A successful operation.

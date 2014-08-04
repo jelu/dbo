@@ -33,8 +33,8 @@
  * All rights reserved.
  */
 
-#ifndef __db_type_h
-#define __db_type_h
+#ifndef libdbo_db_type_h
+#define libdbo_db_type_h
 
 #include <stdint.h>
 

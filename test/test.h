@@ -35,8 +35,8 @@
 
 #include "config.h"
 
-#ifndef __test_test_h
-#define __test_test_h
+#ifndef libdbo_test_test_h
+#define libdbo_test_test_h
 
 int init_suite_classes(void);
 int clean_suite_classes(void);

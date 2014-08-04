@@ -33,8 +33,8 @@
  * All rights reserved.
  */
 
-#ifndef __db_result_h
-#define __db_result_h
+#ifndef libdbo_db_result_h
+#define libdbo_db_result_h
 
 #ifdef __cplusplus
 extern "C" {

@@ -33,8 +33,8 @@
  * All rights reserved.
  */
 
-#ifndef __db_join_h
-#define __db_join_h
+#ifndef libdbo_db_join_h
+#define libdbo_db_join_h
 
 #ifdef __cplusplus
 extern "C" {

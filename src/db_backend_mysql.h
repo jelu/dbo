@@ -33,8 +33,8 @@
  * All rights reserved.
  */
 
-#ifndef __db_backend_mysql_h
-#define __db_backend_mysql_h
+#ifndef libdbo_db_backend_mysql_h
+#define libdbo_db_backend_mysql_h
 
 #include "db_backend.h"
 

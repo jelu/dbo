@@ -33,8 +33,8 @@
  * All rights reserved.
  */
 
-#ifndef __db_backend_h
-#define __db_backend_h
+#ifndef libdbo_db_backend_h
+#define libdbo_db_backend_h
 
 #ifdef __cplusplus
 extern "C" {
