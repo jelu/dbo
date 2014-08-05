@@ -34,8 +34,8 @@ check_PROGRAMS = test
 test_SOURCES = \
 	test.c test.h \
 	test_classes.c \
-	test_initialization.c
-#	test_database_operations.c
+	test_initialization.c \
+	test_database_operations.c
 test_LDADD = $(top_builddir)/src/libdbo.la
 test_CFLAGS = @CUNIT_CFLAGS@ \
 	@SQLITE3_CFLAGS@ \
@@ -46,6 +46,7 @@ test_LDFLAGS = -no-install @CUNIT_LDFLAGS@ \
 
 check: test
 if HAVE_SQLITE3
+	rm -f test.db
 	sqlite3 test.db < $(srcdir)/test.sqlite
 endif
 	./test

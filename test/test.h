@@ -65,13 +65,8 @@ void test_initialization_configuration_couchdb(void);
 void test_initialization_configuration_mysql(void);
 void test_initialization_connection(void);
 
-/*
-#if defined(ENFORCER_DATABASE_SQLITE3)
 int init_suite_database_operations_sqlite(void);
-#endif
-#if defined(ENFORCER_DATABASE_COUCHDB)
 int init_suite_database_operations_couchdb(void);
-#endif
 int init_suite_database_operations_mysql(void);
 int clean_suite_database_operations(void);
 void test_database_operations_read_object1(void);
@@ -83,7 +78,6 @@ void test_database_operations_create_object3(void);
 void test_database_operations_delete_object3(void);
 void test_database_operations_read_all(void);
 void test_database_operations_count(void);
-
 void test_database_operations_read_object1_2(void);
 void test_database_operations_create_object2_2(void);
 void test_database_operations_read_object2_2(void);
@@ -92,5 +86,5 @@ void test_database_operations_delete_object2_2(void);
 void test_database_operations_create_object3_2(void);
 void test_database_operations_delete_object3_2(void);
 void test_database_operations_update_objects_revisions(void);
-*/
+
 #endif

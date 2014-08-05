@@ -803,8 +803,8 @@ int test2_delete(test2_t* test2) {
     return ret;
 }
 
-#if defined(ENFORCER_DATABASE_SQLITE3)
 int init_suite_database_operations_sqlite(void) {
+#if defined(HAVE_SQLITE3)
     if (configuration_list) {
         return 1;
     }
@@ -878,11 +878,13 @@ int init_suite_database_operations_sqlite(void) {
     }
 
     return 0;
-}
+#else
+    return 1;
 #endif
+}
 
-#if defined(ENFORCER_DATABASE_COUCHDB)
 int init_suite_database_operations_couchdb(void) {
+#if defined(HAVE_COUCHDB)
     if (configuration_list) {
         return 1;
     }
@@ -956,11 +958,13 @@ int init_suite_database_operations_couchdb(void) {
     }
 
     return 0;
-}
+#else
+    return 1;
 #endif
+}
 
-#if defined(ENFORCER_DATABASE_MYSQL)
 int init_suite_database_operations_mysql(void) {
+#if defined(HAVE_MYSQL)
     if (configuration_list) {
         return 1;
     }
@@ -1000,7 +1004,7 @@ int init_suite_database_operations_mysql(void) {
     configuration = NULL;
     if (!(configuration = db_configuration_new())
         || db_configuration_set_name(configuration, "host")
-        || db_configuration_set_value(configuration, ENFORCER_DB_HOST)
+        || db_configuration_set_value(configuration, "") /* TODO */
         || db_configuration_list_add(configuration_list, configuration))
     {
         db_configuration_free(configuration);
@@ -1012,7 +1016,7 @@ int init_suite_database_operations_mysql(void) {
     configuration = NULL;
     if (!(configuration = db_configuration_new())
         || db_configuration_set_name(configuration, "port")
-        || db_configuration_set_value(configuration, ENFORCER_DB_PORT_TEXT)
+        || db_configuration_set_value(configuration, "") /* TODO */
         || db_configuration_list_add(configuration_list, configuration))
     {
         db_configuration_free(configuration);
@@ -1024,7 +1028,7 @@ int init_suite_database_operations_mysql(void) {
     configuration = NULL;
     if (!(configuration = db_configuration_new())
         || db_configuration_set_name(configuration, "user")
-        || db_configuration_set_value(configuration, ENFORCER_DB_USERNAME)
+        || db_configuration_set_value(configuration, "") /* TODO */
         || db_configuration_list_add(configuration_list, configuration))
     {
         db_configuration_free(configuration);
@@ -1036,7 +1040,7 @@ int init_suite_database_operations_mysql(void) {
     configuration = NULL;
     if (!(configuration = db_configuration_new())
         || db_configuration_set_name(configuration, "pass")
-        || db_configuration_set_value(configuration, ENFORCER_DB_PASSWORD)
+        || db_configuration_set_value(configuration, "") /* TODO */
         || db_configuration_list_add(configuration_list, configuration))
     {
         db_configuration_free(configuration);
@@ -1048,7 +1052,7 @@ int init_suite_database_operations_mysql(void) {
     configuration = NULL;
     if (!(configuration = db_configuration_new())
         || db_configuration_set_name(configuration, "db")
-        || db_configuration_set_value(configuration, ENFORCER_DB_DATABASE)
+        || db_configuration_set_value(configuration, "") /* TODO */
         || db_configuration_list_add(configuration_list, configuration))
     {
         db_configuration_free(configuration);
@@ -1082,8 +1086,10 @@ int init_suite_database_operations_mysql(void) {
     }
 
     return 0;
-}
+#else
+    return 1;
 #endif
+}
 
 int clean_suite_database_operations(void) {
     test_free(test);
