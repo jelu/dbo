@@ -33,6 +33,8 @@
  * All rights reserved.
  */
 
+#include "config.h"
+
 #include "test.h"
 
 #include "CUnit/Basic.h"
@@ -74,20 +76,50 @@ int main(void) {
         return CU_get_error();
     }
 
-    /*
-    pSuite = CU_add_suite("Initialization", init_suite_initialization, clean_suite_initialization);
+#if defined(HAVE_SQLITE3)
+    pSuite = CU_add_suite("Initialization SQLite3", init_suite_initialization, clean_suite_initialization);
     if (!pSuite) {
         CU_cleanup_registry();
         return CU_get_error();
     }
 
-    if (!CU_add_test(pSuite, "test of configuration", test_initialization_configuration)
+    if (!CU_add_test(pSuite, "test of configuration", test_initialization_configuration_sqlite3)
         || !CU_add_test(pSuite, "test of connection", test_initialization_connection))
     {
         CU_cleanup_registry();
         return CU_get_error();
     }
+#endif
+#if defined(HAVE_COUCHDB)
+    pSuite = CU_add_suite("Initialization CouchDB", init_suite_initialization, clean_suite_initialization);
+    if (!pSuite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
 
+    if (!CU_add_test(pSuite, "test of configuration", test_initialization_configuration_couchdb)
+        || !CU_add_test(pSuite, "test of connection", test_initialization_connection))
+    {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+#endif
+#if defined(HAVE_MYSQL)
+    pSuite = CU_add_suite("Initialization MySQL", init_suite_initialization, clean_suite_initialization);
+    if (!pSuite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    if (!CU_add_test(pSuite, "test of configuration", test_initialization_configuration_mysql)
+        || !CU_add_test(pSuite, "test of connection", test_initialization_connection))
+    {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+#endif
+
+    /*
 #if defined(ENFORCER_DATABASE_SQLITE3)
     pSuite = CU_add_suite("SQLite database operations", init_suite_database_operations_sqlite, clean_suite_database_operations);
     if (!pSuite) {

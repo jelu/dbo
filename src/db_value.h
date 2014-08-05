@@ -49,8 +49,6 @@ typedef struct db_value_set db_value_set_t;
 }
 #endif
 
-#include "config.h"
-
 #include "db_type.h"
 #include "db_enum.h"
 

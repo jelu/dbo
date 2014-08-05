@@ -34,10 +34,9 @@
  */
 
 #include "db_backend_sqlite.h"
-#include "db_error.h"
 
+#include "db_error.h"
 #include "db_mm.h"
-#include "shared/log.h"
 
 #include <stdlib.h>
 #include <sqlite3.h>
@@ -105,10 +104,10 @@ static int __db_backend_sqlite_busy_handler(void *data, int retry) {
         return 0;
     }
 
-    ods_log_deeebug("db_backend_sqlite_busy_handler: Database busy, waiting...");
+    /*ods_log_deeebug("db_backend_sqlite_busy_handler: Database busy, waiting...");*/
 
     if (pthread_mutex_lock(&__sqlite_mutex)) {
-        ods_log_error("db_backend_sqlite_busy_handler: Mutex error");
+        /*ods_log_error("db_backend_sqlite_busy_handler: Mutex error");*/
         return 0;
     }
     if (clock_gettime(CLOCK_REALTIME, &busy_ts)) {
@@ -125,7 +124,7 @@ static int __db_backend_sqlite_busy_handler(void *data, int retry) {
     rc = pthread_cond_timedwait(&__sqlite_cond, &__sqlite_mutex, &busy_ts);
     if (rc == ETIMEDOUT) {
         if (time(NULL) < (backend_sqlite->time + backend_sqlite->timeout)) {
-            ods_log_deeebug("db_backend_sqlite_busy_handler: Woke up, checking database...");
+            /*ods_log_deeebug("db_backend_sqlite_busy_handler: Woke up, checking database...");*/
             pthread_mutex_unlock(&__sqlite_mutex);
             return 1;
         }
@@ -133,12 +132,12 @@ static int __db_backend_sqlite_busy_handler(void *data, int retry) {
         return 0;
     }
     else if (rc) {
-        ods_log_error("db_backend_sqlite_busy_handler: pthread_cond_timedwait() error %d", rc);
+        /*ods_log_error("db_backend_sqlite_busy_handler: pthread_cond_timedwait() error %d", rc);*/
         pthread_mutex_unlock(&__sqlite_mutex);
         return 0;
     }
 
-    ods_log_deeebug("db_backend_sqlite_busy_handler: Woke up, checking database...");
+    /*ods_log_deeebug("db_backend_sqlite_busy_handler: Woke up, checking database...");*/
     pthread_mutex_unlock(&__sqlite_mutex);
     return 1;
 }
@@ -165,7 +164,7 @@ static inline int __db_backend_sqlite_prepare(db_backend_sqlite_t* backend_sqlit
         return DB_ERROR_UNKNOWN;
     }
 
-    ods_log_debug("%s", sql);
+    /*ods_log_debug("%s", sql);*/
     backend_sqlite->time = time(NULL);
     ret = sqlite3_prepare_v2(backend_sqlite->db,
         sql,
@@ -173,8 +172,8 @@ static inline int __db_backend_sqlite_prepare(db_backend_sqlite_t* backend_sqlit
         statement,
         NULL);
     if (ret != SQLITE_OK) {
-        ods_log_info("DB prepare SQL %s", sql);
-        ods_log_info("DB prepare Err %d", ret);
+        /*ods_log_info("DB prepare SQL %s", sql);
+        ods_log_info("DB prepare Err %d", ret);*/
         if (*statement) {
             sqlite3_finalize(*statement);
         }
@@ -342,7 +341,7 @@ static int db_backend_sqlite_connect(void* data, const db_configuration_list_t* 
     }
 
     if ((ret = sqlite3_busy_handler(backend_sqlite->db, __db_backend_sqlite_busy_handler, backend_sqlite)) != SQLITE_OK) {
-        ods_log_error("db_backend_sqlite: sqlite3_busy_handler() error %d", ret);
+        /*ods_log_error("db_backend_sqlite: sqlite3_busy_handler() error %d", ret);*/
         sqlite3_close(backend_sqlite->db);
         backend_sqlite->db = NULL;
         return DB_ERROR_UNKNOWN;

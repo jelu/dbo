@@ -36,10 +36,10 @@
 #include "config.h"
 
 #include "db_backend.h"
-#if defined(ENFORCER_DATABASE_SQLITE3)
+#if defined(HAVE_SQLITE3)
 #include "db_backend_sqlite.h"
 #endif
-#if defined(ENFORCER_DATABASE_COUCHDB)
+#if defined(HAVE_COUCHDB)
 #include "db_backend_couchdb.h"
 #endif
 #include "db_backend_mysql.h"
@@ -677,7 +677,7 @@ db_backend_t* db_backend_factory_get_backend(const char* name) {
         return NULL;
     }
 
-#if defined(ENFORCER_DATABASE_SQLITE3)
+#if defined(HAVE_SQLITE3)
     if (!strcmp(name, "sqlite")) {
         if (!(backend = db_backend_new())
             || db_backend_set_name(backend, "sqlite")
@@ -690,7 +690,7 @@ db_backend_t* db_backend_factory_get_backend(const char* name) {
         return backend;
     }
 #endif
-#if defined(ENFORCER_DATABASE_COUCHDB)
+#if defined(HAVE_COUCHDB)
     if (!strcmp(name, "couchdb")) {
         if (!(backend = db_backend_new())
             || db_backend_set_name(backend, "couchdb")
@@ -703,7 +703,7 @@ db_backend_t* db_backend_factory_get_backend(const char* name) {
         return backend;
     }
 #endif
-#if defined(ENFORCER_DATABASE_MYSQL)
+#if defined(HAVE_MYSQL)
     if (!strcmp(name, "mysql")) {
         if (!(backend = db_backend_new())
             || db_backend_set_name(backend, "mysql")

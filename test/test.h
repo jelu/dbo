@@ -33,8 +33,6 @@
  * All rights reserved.
  */
 
-#include "config.h"
-
 #ifndef libdbo_test_test_h
 #define libdbo_test_test_h
 
@@ -60,12 +58,14 @@ void test_class_db_result_list(void);
 void test_class_db_value(void);
 void test_class_end(void);
 
-/*
 int init_suite_initialization(void);
 int clean_suite_initialization(void);
-void test_initialization_configuration(void);
+void test_initialization_configuration_sqlite3(void);
+void test_initialization_configuration_couchdb(void);
+void test_initialization_configuration_mysql(void);
 void test_initialization_connection(void);
 
+/*
 #if defined(ENFORCER_DATABASE_SQLITE3)
 int init_suite_database_operations_sqlite(void);
 #endif

@@ -67,10 +67,10 @@ int clean_suite_initialization(void) {
     return 0;
 }
 
-void test_initialization_configuration(void) {
+void test_initialization_configuration_sqlite3(void) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration_list = db_configuration_list_new()));
 
-#if defined(ENFORCER_DATABASE_SQLITE3)
+#if defined(HAVE_SQLITE3)
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
     CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "backend"));
     CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "sqlite"));
@@ -83,12 +83,20 @@ void test_initialization_configuration(void) {
     CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 #endif
+}
 
-#if defined(ENFORCER_DATABASE_COUCHDB)
+void test_initialization_configuration_couchdb(void) {
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration_list = db_configuration_list_new()));
+
+#if defined(HAVE_COUCHDB)
     CU_ASSERT_FATAL(0);
 #endif
+}
 
-#if defined(ENFORCER_DATABASE_MYSQL)
+void test_initialization_configuration_mysql(void) {
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration_list = db_configuration_list_new()));
+
+#if defined(HAVE_MYSQL)
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
     CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "backend"));
     CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "mysql"));
@@ -97,31 +105,31 @@ void test_initialization_configuration(void) {
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
     CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "host"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, ENFORCER_DB_HOST));
+    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "")); /* TODO */
     CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
     CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "port"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, ENFORCER_DB_PORT_TEXT));
+    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "")); /* TODO */
     CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
     CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "user"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, ENFORCER_DB_USERNAME));
+    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "")); /* TODO */
     CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
     CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "pass"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, ENFORCER_DB_PASSWORD));
+    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "")); /* TODO */
     CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
     CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "db"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, ENFORCER_DB_DATABASE));
+    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "")); /* TODO */
     CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 #endif

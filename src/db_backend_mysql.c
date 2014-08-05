@@ -34,10 +34,9 @@
  */
 
 #include "db_backend_mysql.h"
-#include "db_error.h"
 
+#include "db_error.h"
 #include "db_mm.h"
-#include "shared/log.h"
 
 #include <mysql/mysql.h>
 #include <stdlib.h>
@@ -173,14 +172,14 @@ static inline int __db_backend_mysql_prepare(db_backend_mysql_t* backend_mysql, 
     /*
      * Prepare the statement.
      */
-    ods_log_debug("%s", sql);
+    /*ods_log_debug("%s", sql);*/
     if (!(*statement = db_mm_new0(&__mysql_statement_alloc))
         || !((*statement)->statement = mysql_stmt_init(backend_mysql->db))
         || mysql_stmt_prepare((*statement)->statement, sql, size))
     {
         if ((*statement)->statement) {
-            ods_log_info("DB prepare SQL %s", sql);
-            ods_log_info("DB prepare Err %d: %s", mysql_stmt_errno((*statement)->statement), mysql_stmt_error((*statement)->statement));
+            /*ods_log_info("DB prepare SQL %s", sql);
+            ods_log_info("DB prepare Err %d: %s", mysql_stmt_errno((*statement)->statement), mysql_stmt_error((*statement)->statement));*/
         }
         __db_backend_mysql_finish(*statement);
         *statement = NULL;
@@ -532,7 +531,7 @@ static inline int __db_backend_mysql_fetch(db_backend_mysql_statement_t* stateme
         if (statement->mysql_bind_output
             && mysql_stmt_bind_result(statement->statement, statement->mysql_bind_output))
         {
-            ods_log_info("DB bind result Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));
+            /*ods_log_info("DB bind result Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
             return DB_ERROR_UNKNOWN;
         }
         statement->bound = 1;
@@ -543,7 +542,7 @@ static inline int __db_backend_mysql_fetch(db_backend_mysql_statement_t* stateme
      */
     ret = mysql_stmt_fetch(statement->statement);
     if (ret == 1) {
-        ods_log_info("DB fetch Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));
+        /*ods_log_info("DB fetch Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
         return DB_ERROR_UNKNOWN;
     }
     else if (ret == MYSQL_DATA_TRUNCATED) {
@@ -564,14 +563,14 @@ static inline int __db_backend_mysql_fetch(db_backend_mysql_statement_t* stateme
                 if (statement->mysql_bind_output[i].buffer_type != MYSQL_TYPE_STRING
                     || bind->length <= statement->mysql_bind_output[i].buffer_length)
                 {
-                    ods_log_info("DB fetch Err data truncated");
+                    /*ods_log_info("DB fetch Err data truncated");*/
                     return DB_ERROR_UNKNOWN;
                 }
 
                 free(statement->mysql_bind_output[i].buffer);
                 statement->mysql_bind_output[i].buffer = NULL;
                 if (!(statement->mysql_bind_output[i].buffer = calloc(1, bind->length))) {
-                    ods_log_info("DB fetch Err data truncated");
+                    /*ods_log_info("DB fetch Err data truncated");*/
                     return DB_ERROR_UNKNOWN;
                 }
                 statement->mysql_bind_output[i].buffer_length = bind->length;
@@ -579,7 +578,7 @@ static inline int __db_backend_mysql_fetch(db_backend_mysql_statement_t* stateme
                 if (mysql_stmt_fetch_column(statement->statement, &(statement->mysql_bind_output[i]), i, 0)
                     || bind->error)
                 {
-                    ods_log_info("DB fetch Err data truncated");
+                    /*ods_log_info("DB fetch Err data truncated");*/
                     return DB_ERROR_UNKNOWN;
                 }
             }
@@ -593,7 +592,7 @@ static inline int __db_backend_mysql_fetch(db_backend_mysql_statement_t* stateme
         return DB_ERROR_UNKNOWN;
     }
     else if (ret) {
-        ods_log_info("DB fetch UNKNOWN %d Err %d: %s", ret, mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));
+        /*ods_log_info("DB fetch UNKNOWN %d Err %d: %s", ret, mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
         return DB_ERROR_UNKNOWN;
     }
 
@@ -619,7 +618,7 @@ static inline int __db_backend_mysql_execute(db_backend_mysql_statement_t* state
     if (statement->mysql_bind_input
         && mysql_stmt_bind_param(statement->statement, statement->mysql_bind_input))
     {
-        ods_log_info("DB bind param Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));
+        /*ods_log_info("DB bind param Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
         return DB_ERROR_UNKNOWN;
     }
 
@@ -627,7 +626,7 @@ static inline int __db_backend_mysql_execute(db_backend_mysql_statement_t* state
      * Execute the statement.
      */
     if (mysql_stmt_execute(statement->statement)) {
-        ods_log_info("DB execute Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));
+        /*ods_log_info("DB execute Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
         return DB_ERROR_UNKNOWN;
     }
 
@@ -721,7 +720,7 @@ static int db_backend_mysql_connect(void* data, const db_configuration_list_t* c
         || mysql_autocommit(backend_mysql->db, 1))
     {
         if (backend_mysql->db) {
-            ods_log_error("db_backend_mysql: connect failed %d: %s", mysql_errno(backend_mysql->db), mysql_error(backend_mysql->db));
+            /*ods_log_error("db_backend_mysql: connect failed %d: %s", mysql_errno(backend_mysql->db), mysql_error(backend_mysql->db));*/
             mysql_close(backend_mysql->db);
             backend_mysql->db = NULL;
         }

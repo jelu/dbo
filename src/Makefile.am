@@ -36,4 +36,15 @@ libdbo_la_SOURCES = db_mm.c db_mm.h \
 	db_value.c db_value.h \
 	db_join.c db_join.h \
 	db_error.h
-libdbo_la_LDFLAGS = -version-info @DBO_LIB_VERSION@
+if HAVE_SQLITE3
+libdbo_la_SOURCES += db_backend_sqlite.c db_backend_sqlite.h
+endif
+if HAVE_MYSQL
+libdbo_la_SOURCES += db_backend_mysql.c db_backend_mysql.h
+endif
+libdbo_la_CFLAGS = \
+	@SQLITE3_CFLAGS@ \
+	@MYSQL_CFLAGS@
+libdbo_la_LDFLAGS = -version-info @DBO_LIB_VERSION@ \
+	@SQLITE3_LDFLAGS@ \
+	@MYSQL_LDFLAGS@
