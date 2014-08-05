@@ -42,7 +42,9 @@
 #if defined(HAVE_COUCHDB)
 #include "db_backend_couchdb.h"
 #endif
+#if defined(HAVE_MYSQL)
 #include "db_backend_mysql.h"
+#endif
 #include "db_error.h"
 
 #include "db_mm.h"
