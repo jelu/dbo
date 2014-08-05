@@ -46,6 +46,12 @@
 
 #include "CUnit/Basic.h"
 
+#include "db_backend.h"
+
+void test_db_backend_factory_shutdown(void) {
+    CU_ASSERT_FATAL(!db_backend_factory_shutdown());
+}
+
 int main(void) {
     CU_pSuite pSuite = NULL;
 
@@ -241,6 +247,17 @@ int main(void) {
     test_users_rev_add_suite();
     test_groups_rev_add_suite();
     test_user_group_link_rev_add_suite();
+
+    pSuite = CU_add_suite("Shutdown", init_suite_classes, clean_suite_classes);
+    if (!pSuite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    if (!CU_add_test(pSuite, "test of db_backend_factory_shutdown", test_db_backend_factory_shutdown)) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();

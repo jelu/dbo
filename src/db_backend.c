@@ -723,8 +723,44 @@ db_backend_t* db_backend_factory_get_backend(const char* name) {
 }
 
 int db_backend_factory_shutdown(void) {
-    /* TODO: Implement support for shutting down backends at exit/stop */
-    return 1;
+    db_backend_t* backend;
+    int ret = DB_OK;
+
+#if defined(HAVE_SQLITE3)
+    if (!(backend = db_backend_new())
+        || db_backend_set_name(backend, "sqlite")
+        || db_backend_set_handle(backend, db_backend_sqlite_new_handle())
+        || db_backend_shutdown(backend))
+    {
+        ret = DB_ERROR_UNKNOWN;
+    }
+    db_backend_free(backend);
+    backend = NULL;
+#endif
+#if defined(HAVE_COUCHDB)
+    if (!(backend = db_backend_new())
+        || db_backend_set_name(backend, "couchdb")
+        || db_backend_set_handle(backend, db_backend_couchdb_new_handle())
+        || db_backend_shutdown(backend))
+    {
+        ret = DB_ERROR_UNKNOWN;
+    }
+    db_backend_free(backend);
+    backend = NULL;
+#endif
+#if defined(HAVE_MYSQL)
+    if (!(backend = db_backend_new())
+        || db_backend_set_name(backend, "mysql")
+        || db_backend_set_handle(backend, db_backend_mysql_new_handle())
+        || db_backend_shutdown(backend))
+    {
+        ret = DB_ERROR_UNKNOWN;
+    }
+    db_backend_free(backend);
+    backend = NULL;
+#endif
+
+    return ret;
 }
 
 /* DB BACKEND META DATA */
