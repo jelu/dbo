@@ -26,10 +26,46 @@ MAINTAINERCLEANFILES = $(srcdir)/Makefile.in
 
 AM_CFLAGS = \
 	-I$(top_srcdir)/src \
-	-I$(top_builddir)/src
+	-I$(top_builddir)/src \
+	-I$(srcdir) \
+	-I$(builddir)
 
 if HAVE_CUNIT
 check_PROGRAMS = test
+
+BUILT_SOURCES = group.c group.h \
+	group_ext.c group_ext.h \
+	group_rev.c group_rev.h \
+	group_rev_ext.c group_rev_ext.h \
+	user.c user.h \
+	user_ext.c user_ext.h \
+	user_group_link.c user_group_link.h \
+	user_group_link_ext.c user_group_link_ext.h \
+	user_group_link_rev.c user_group_link_rev.h \
+	user_group_link_rev_ext.c user_group_link_rev_ext.h \
+	user_rev.c user_rev.h \
+	user_rev_ext.c user_rev_ext.h
+
+BUILT_SOURCES += test_group.c test_group.h \
+	test_group_rev.c test_group_rev.h \
+	test_user.c test_user.h \
+	test_user_group_link.c test_user_group_link.h \
+	test_user_group_link_rev.c test_user_group_link_rev.h \
+	test_user_rev.c test_user_rev.h
+
+nodist_test_SOURCES = $(BUILT_SOURCES)
+CLEANFILES = $(BUILT_SOURCES)
+
+if HAVE_SQLITE3
+BUILT_SOURCES += schema.sqlite
+nodist_test_SOURCES += db_schema_sqlite.c db_schema_sqlite.h
+CLEANFILES += db_schema_sqlite.c db_schema_sqlite.h
+endif
+if HAVE_MYSQL
+BUILT_SOURCES += drop.mysql schema.mysql
+nodist_test_SOURCES += db_schema_mysql.c db_schema_mysql.h
+CLEANFILES += db_schema_mysql.c db_schema_mysql.h
+endif
 
 test_SOURCES = \
 	test.c test.h \
@@ -50,4 +86,42 @@ if HAVE_SQLITE3
 	sqlite3 test.db < $(srcdir)/test.sqlite
 endif
 	./test
+
+group.c group.h \
+group_ext.c group_ext.h \
+group_rev.c group_rev.h \
+group_rev_ext.c group_rev_ext.h \
+user.c user.h \
+user_ext.c user_ext.h \
+user_group_link.c user_group_link.h \
+user_group_link_ext.c user_group_link_ext.h \
+user_group_link_rev.c user_group_link_rev.h \
+user_group_link_rev_ext.c user_group_link_rev_ext.h \
+user_rev.c user_rev.h \
+user_rev_ext.c user_rev_ext.h:
+	$(top_srcdir)/tools/dbo-generate-objects ./test.json
+
+if HAVE_SQLITE3
+schema.sqlite:
+	$(top_srcdir)/tools/dbo-generate-objects ./test.json
+endif
+if HAVE_MYSQL
+drop.mysql schema.mysql:
+	$(top_srcdir)/tools/dbo-generate-objects ./test.json
+endif
+
+test_group.c test_group.h \
+test_group_rev.c test_group_rev.h \
+test_user.c test_user.h \
+test_user_group_link.c test_user_group_link.h \
+test_user_group_link_rev.c test_user_group_link_rev.h \
+test_user_rev.c test_user_rev.h:
+	$(top_srcdir)/tools/dbo-generate-tests ./test.json
+
+.PHONY: stamp-generate-objects stamp-generate-tests
+
+stamp-generate-objects:
+
+stamp-generate-tests:
+
 endif
