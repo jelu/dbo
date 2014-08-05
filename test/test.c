@@ -37,6 +37,13 @@
 
 #include "test.h"
 
+#include "test_groups.h"
+#include "test_groups_rev.h"
+#include "test_user_group_link.h"
+#include "test_user_group_link_rev.h"
+#include "test_users.h"
+#include "test_users_rev.h"
+
 #include "CUnit/Basic.h"
 
 int main(void) {
@@ -227,6 +234,13 @@ int main(void) {
         return CU_get_error();
     }
 #endif
+
+    test_users_add_suite();
+    test_groups_add_suite();
+    test_user_group_link_add_suite();
+    test_users_rev_add_suite();
+    test_groups_rev_add_suite();
+    test_user_group_link_rev_add_suite();
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();

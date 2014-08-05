@@ -1,9 +1,9 @@
 [
 {
-  "name": "user",
+  "name": "users",
   "fields": [
     { "name": "id", "type": "DB_TYPE_PRIMARY_KEY" },
-    { "name": "group_id", "type": "DB_TYPE_ANY", "foreign": "group", "foreign_name": "id" },
+    { "name": "group_id", "type": "DB_TYPE_ANY", "foreign": "groups", "foreign_name": "id" },
     { "name": "name", "type": "DB_TYPE_TEXT", "unique": 1 }
   ],
   "association": [
@@ -11,13 +11,13 @@
   ]
 },
 {
-  "name": "group",
+  "name": "groups",
   "fields": [
     { "name": "id", "type": "DB_TYPE_PRIMARY_KEY" },
     { "name": "name", "type": "DB_TYPE_TEXT", "unique": 1 }
   ],
   "association": [
-    { "name": "id", "foreign": "user", "foreign_name": "group_id" },
+    { "name": "id", "foreign": "users", "foreign_name": "group_id" },
     { "name": "id", "foreign": "user_group_link", "foreign_name": "group_id" }
   ]
 },
@@ -25,16 +25,16 @@
   "name": "user_group_link",
   "fields": [
     { "name": "id", "type": "DB_TYPE_PRIMARY_KEY" },
-    { "name": "user_id", "type": "DB_TYPE_ANY", "foreign": "user", "foreign_name": "id" },
-    { "name": "group_id", "type": "DB_TYPE_ANY", "foreign": "group", "foreign_name": "id" }
+    { "name": "user_id", "type": "DB_TYPE_ANY", "foreign": "users", "foreign_name": "id" },
+    { "name": "group_id", "type": "DB_TYPE_ANY", "foreign": "groups", "foreign_name": "id" }
   ]
 },
 {
-  "name": "user_rev",
+  "name": "users_rev",
   "fields": [
     { "name": "id", "type": "DB_TYPE_PRIMARY_KEY" },
     { "name": "rev", "type": "DB_TYPE_REVISION" },
-    { "name": "group_id", "type": "DB_TYPE_ANY", "foreign": "group_rev", "foreign_name": "id" },
+    { "name": "group_id", "type": "DB_TYPE_ANY", "foreign": "groups_rev", "foreign_name": "id" },
     { "name": "name", "type": "DB_TYPE_TEXT", "unique": 1 }
   ],
   "association": [
@@ -42,14 +42,14 @@
   ]
 },
 {
-  "name": "group_rev",
+  "name": "groups_rev",
   "fields": [
     { "name": "id", "type": "DB_TYPE_PRIMARY_KEY" },
     { "name": "rev", "type": "DB_TYPE_REVISION" },
     { "name": "name", "type": "DB_TYPE_TEXT", "unique": 1 }
   ],
   "association": [
-    { "name": "id", "foreign": "user_rev", "foreign_name": "group_id" },
+    { "name": "id", "foreign": "users_rev", "foreign_name": "group_id" },
     { "name": "id", "foreign": "user_group_link_rev", "foreign_name": "group_id" }
   ]
 },
@@ -58,8 +58,8 @@
   "fields": [
     { "name": "id", "type": "DB_TYPE_PRIMARY_KEY" },
     { "name": "rev", "type": "DB_TYPE_REVISION" },
-    { "name": "user_id", "type": "DB_TYPE_ANY", "foreign": "user_rev", "foreign_name": "id" },
-    { "name": "group_id", "type": "DB_TYPE_ANY", "foreign": "group_rev", "foreign_name": "id" }
+    { "name": "user_id", "type": "DB_TYPE_ANY", "foreign": "users_rev", "foreign_name": "id" },
+    { "name": "group_id", "type": "DB_TYPE_ANY", "foreign": "groups_rev", "foreign_name": "id" }
   ]
 }
 ]
