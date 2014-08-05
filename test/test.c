@@ -47,6 +47,7 @@
 #include "CUnit/Basic.h"
 
 #include "db_backend.h"
+#include "db_mm.h"
 
 void test_db_backend_factory_shutdown(void) {
     CU_ASSERT_FATAL(!db_backend_factory_shutdown());
@@ -56,6 +57,19 @@ int main(void) {
     CU_pSuite pSuite = NULL;
 
     if (CUE_SUCCESS != CU_initialize_registry()) {
+        return CU_get_error();
+    }
+
+    pSuite = CU_add_suite("MM", init_suite_classes, clean_suite_classes);
+    if (!pSuite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    if (!CU_add_test(pSuite, "test of db_mm_init", test_db_mm_init)
+        || !CU_add_test(pSuite, "test of db_mm", test_db_mm))
+    {
+        CU_cleanup_registry();
         return CU_get_error();
     }
 
@@ -255,6 +269,17 @@ int main(void) {
     }
 
     if (!CU_add_test(pSuite, "test of db_backend_factory_shutdown", test_db_backend_factory_shutdown)) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    pSuite = CU_add_suite("MM extern", init_suite_classes, clean_suite_classes);
+    if (!pSuite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    if (!CU_add_test(pSuite, "test of db_mm usage with external malloc/free", test_db_mm_extern)) {
         CU_cleanup_registry();
         return CU_get_error();
     }

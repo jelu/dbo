@@ -34,6 +34,8 @@
 
 #include "db_mm.h"
 
+#include "db_error.h"
+
 #include <strings.h>
 #include <unistd.h>
 
@@ -43,6 +45,8 @@
 #define __db_mm_size 65536
 
 static size_t __pagesize = __db_mm_size;
+static db_mm_malloc_t __db_mm_malloc;
+static db_mm_free_t __db_mm_free;
 
 void db_mm_init(void) {
     /* TODO: will long => size_t be a problem somewhere? */
@@ -55,16 +59,49 @@ void db_mm_init(void) {
 */
 }
 
+int db_mm_set_malloc(db_mm_malloc_t malloc_function) {
+    if (!malloc_function) {
+        return DB_ERROR_UNKNOWN;
+    }
+
+    if (__db_mm_malloc) {
+        return DB_ERROR_UNKNOWN;
+    }
+
+    __db_mm_malloc = malloc_function;
+
+    return DB_OK;
+}
+
+int db_mm_set_free(db_mm_free_t free_function) {
+    if (!free_function) {
+        return DB_ERROR_UNKNOWN;
+    }
+
+    if (__db_mm_free) {
+        return DB_ERROR_UNKNOWN;
+    }
+
+    __db_mm_free = free_function;
+
+    return DB_OK;
+}
+
 void* db_mm_new(db_mm_t* alloc) {
     void* ptr;
 
     if (!alloc) {
         return NULL;
     }
-    if (alloc->size < 1) {
+
+    if (__db_mm_malloc && __db_mm_free) {
+        return __db_mm_malloc(alloc->size);
+    }
+
+    if (alloc->size < sizeof(void*)) {
         return NULL;
     }
-    if (__pagesize < alloc->size) {
+    if (__pagesize < (alloc->size + sizeof(void*))) {
         return NULL;
     }
     if (pthread_mutex_lock(&(alloc->lock))) {
@@ -80,7 +117,11 @@ void* db_mm_new(db_mm_t* alloc) {
             return NULL;
         }
 
-        for (i=0; i<(__db_mm_size / alloc->size); i++) {
+        *(void**)block = alloc->block;
+        alloc->block = block;
+        block = block++;
+
+        for (i=0; i<((__pagesize - sizeof(void*)) / alloc->size); i++) {
             *(void**)block = alloc->next;
             alloc->next = block;
             block = ((char*)block + alloc->size);
@@ -112,12 +153,37 @@ void db_mm_delete(db_mm_t* alloc, void* ptr) {
     if (!ptr) {
         return;
     }
+
+    if (__db_mm_malloc && __db_mm_free) {
+        return __db_mm_free(ptr);
+    }
+
     if (pthread_mutex_lock(&(alloc->lock))) {
         return;
     }
 
     *(void**)ptr = alloc->next;
     alloc->next = ptr;
+
+    pthread_mutex_unlock(&(alloc->lock));
+}
+
+void db_mm_release(db_mm_t* alloc) {
+    void* block;
+
+    if (!alloc) {
+        return;
+    }
+
+    if (pthread_mutex_lock(&(alloc->lock))) {
+        return;
+    }
+
+    while (alloc->block) {
+        block = alloc->block;
+        alloc->block = *(void**)block;
+        free(block);
+    }
 
     pthread_mutex_unlock(&(alloc->lock));
 }

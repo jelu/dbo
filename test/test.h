@@ -87,4 +87,10 @@ void test_database_operations_create_object3_2(void);
 void test_database_operations_delete_object3_2(void);
 void test_database_operations_update_objects_revisions(void);
 
+int init_suite_mm(void);
+int clean_suite_mm(void);
+void test_db_mm_init(void);
+void test_db_mm(void);
+void test_db_mm_extern(void);
+
 #endif
