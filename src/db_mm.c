@@ -44,14 +44,6 @@
 
 static size_t __pagesize = __db_mm_size;
 
-static db_mm_t __char_16 = DB_MM_T_STATIC_NEW(16);
-static db_mm_t __char_32 = DB_MM_T_STATIC_NEW(32);
-static db_mm_t __char_64 = DB_MM_T_STATIC_NEW(64);
-static db_mm_t __char_128 = DB_MM_T_STATIC_NEW(128);
-static db_mm_t __char_256 = DB_MM_T_STATIC_NEW(256);
-static db_mm_t __char_512 = DB_MM_T_STATIC_NEW(512);
-static db_mm_t __char_1024 = DB_MM_T_STATIC_NEW(1024);
-
 void db_mm_init(void) {
     /* TODO: will long => size_t be a problem somewhere? */
     /* TODO: This isn't working

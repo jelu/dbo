@@ -52,14 +52,6 @@ struct db_mm
 	pthread_mutex_t lock;
 };
 
-extern db_mm_t mm_char_16;
-extern db_mm_t mm_char_32;
-extern db_mm_t mm_char_64;
-extern db_mm_t mm_char_128;
-extern db_mm_t mm_char_256;
-extern db_mm_t mm_char_512;
-extern db_mm_t mm_char_1024;
-
 void db_mm_init(void);
 void* db_mm_new(db_mm_t*);
 void* db_mm_new0(db_mm_t*);
