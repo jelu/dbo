@@ -161,6 +161,13 @@ print HEADER '#include "', $field->{foreign}, '.h"
         $included{$field->{foreign}} = 1;
     }
 }
+foreach my $associated (@{$object->{association}}) {
+    if (!exists $included{$associated->{foreign}}) {
+print HEADER '#include "', $associated->{foreign}, '.h"
+';
+        $included{$associated->{foreign}} = 1;
+    }
+}
 print HEADER '
 #ifdef __cplusplus
 extern "C" {
