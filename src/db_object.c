@@ -55,7 +55,6 @@ db_object_field_t* db_object_field_new(void) {
     return object_field;
 }
 
-/* TODO: unit test */
 db_object_field_t* db_object_field_new_copy(const db_object_field_t* from_object_field) {
     db_object_field_t* object_field;
 
@@ -79,7 +78,6 @@ void db_object_field_free(db_object_field_t* object_field) {
     }
 }
 
-/* TODO: unit test */
 int db_object_field_copy(db_object_field_t* object_field, const db_object_field_t* from_object_field) {
     if (!object_field) {
         return DB_ERROR_UNKNOWN;
@@ -193,7 +191,6 @@ db_object_field_list_t* db_object_field_list_new(void) {
     return object_field_list;
 }
 
-/* TODO: unit test */
 db_object_field_list_t* db_object_field_list_new_copy(const db_object_field_list_t* from_object_field_list) {
     db_object_field_list_t* object_field_list;
 
@@ -227,7 +224,6 @@ void db_object_field_list_free(db_object_field_list_t* object_field_list) {
     }
 }
 
-/* TODO: unit test */
 int db_object_field_list_copy(db_object_field_list_t* object_field_list, const db_object_field_list_t* from_object_field_list) {
     db_object_field_t* object_field;
     db_object_field_t* object_field_copy;

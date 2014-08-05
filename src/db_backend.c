@@ -774,7 +774,6 @@ db_backend_meta_data_t* db_backend_meta_data_new(void) {
     return backend_meta_data;
 }
 
-/* TODO: unit test */
 db_backend_meta_data_t* db_backend_meta_data_new_copy(const db_backend_meta_data_t* from_backend_meta_data) {
     db_backend_meta_data_t* backend_meta_data;
 
@@ -916,7 +915,6 @@ db_backend_meta_data_list_t* db_backend_meta_data_list_new(void) {
     return backend_meta_data_list;
 }
 
-/* TODO: unit test */
 db_backend_meta_data_list_t* db_backend_meta_data_list_new_copy(const db_backend_meta_data_list_t* from_backend_meta_data_list) {
     db_backend_meta_data_list_t* backend_meta_data_list;
 

@@ -49,7 +49,6 @@ db_result_t* db_result_new(void) {
     return result;
 }
 
-/* TODO: unit test */
 db_result_t* db_result_new_copy(const db_result_t* from_result) {
     db_result_t* result;
 
@@ -79,7 +78,6 @@ void db_result_free(db_result_t* result) {
     }
 }
 
-/* TODO: unit test */
 int db_result_copy(db_result_t* result, const db_result_t* from_result) {
     db_value_set_t* value_set = NULL;
     db_backend_meta_data_list_t* backend_meta_data_list = NULL;
@@ -183,7 +181,6 @@ db_result_list_t* db_result_list_new(void) {
     return result_list;
 }
 
-/* TODO: unit test */
 db_result_list_t* db_result_list_new_copy(const db_result_list_t* from_result_list) {
     db_result_list_t* result_list;
 
@@ -224,7 +221,6 @@ void db_result_list_free(db_result_list_t* result_list) {
     }
 }
 
-/* TODO: unit test */
 int db_result_list_copy(db_result_list_t* result_list, const db_result_list_t* from_result_list) {
     db_result_t* result;
     db_result_t* result_copy;

@@ -131,7 +131,6 @@ db_type_t db_value_type(const db_value_t* value);
  * \param[in] value a db_value_t pointer.
  * \return a db_type_int32_t pointer or NULL on error, if empty or not a 32bit
  * integer value.
- * TODO: unit test
  */
 const db_type_int32_t* db_value_int32(const db_value_t* value);
 
@@ -140,7 +139,6 @@ const db_type_int32_t* db_value_int32(const db_value_t* value);
  * \param[in] value a db_value_t pointer.
  * \return a db_type_uint32_t pointer or NULL on error, if empty or not an
  * unsigned 32bit integer value.
- * TODO: unit test
  */
 const db_type_uint32_t* db_value_uint32(const db_value_t* value);
 
@@ -149,7 +147,6 @@ const db_type_uint32_t* db_value_uint32(const db_value_t* value);
  * \param[in] value a db_value_t pointer.
  * \return a db_type_int64_t pointer or NULL on error, if empty or not a 64bit
  * integer value.
- * TODO: unit test
  */
 const db_type_int64_t* db_value_int64(const db_value_t* value);
 
@@ -158,7 +155,6 @@ const db_type_int64_t* db_value_int64(const db_value_t* value);
  * \param[in] value a db_value_t pointer.
  * \return a db_type_uint64_t pointer or NULL on error, if empty or not an
  * unsigned 64bit integer value.
- * TODO: unit test
  */
 const db_type_uint64_t* db_value_uint64(const db_value_t* value);
 

@@ -401,6 +401,16 @@ void test_class_db_backend_meta_data(void) {
     backend_meta_data2 = NULL;
     CU_PASS("db_backend_meta_data_free");
 
+    CU_ASSERT_PTR_NOT_NULL_FATAL((backend_meta_data2 = db_backend_meta_data_new_copy(backend_meta_data)));
+    CU_ASSERT(!db_backend_meta_data_not_empty(backend_meta_data2));
+    CU_ASSERT_PTR_NOT_NULL_FATAL(db_backend_meta_data_name(backend_meta_data2));
+    CU_ASSERT(!strcmp(db_backend_meta_data_name(backend_meta_data2), "name1"));
+    CU_ASSERT_PTR_NOT_NULL_FATAL(db_backend_meta_data_value(backend_meta_data2));
+    CU_ASSERT(!strcmp(db_value_text(db_backend_meta_data_value(backend_meta_data2)), "value1"));
+    db_backend_meta_data_free(backend_meta_data2);
+    backend_meta_data2 = NULL;
+    CU_PASS("db_backend_meta_data_free");
+
     CU_ASSERT_PTR_NOT_NULL_FATAL((backend_meta_data2 = db_backend_meta_data_new()));
     CU_ASSERT(!db_backend_meta_data_set_name(backend_meta_data2, "name2"));
     CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = db_value_new()));
@@ -451,6 +461,13 @@ void test_class_db_backend_meta_data_list(void) {
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((backend_meta_data_list2 = db_backend_meta_data_list_new()));
     CU_ASSERT_FATAL(!db_backend_meta_data_list_copy(backend_meta_data_list2, backend_meta_data_list));
+    CU_ASSERT_PTR_NOT_NULL(db_backend_meta_data_list_find(backend_meta_data_list2, "name1"));
+    CU_ASSERT_PTR_NOT_NULL(db_backend_meta_data_list_find(backend_meta_data_list2, "name2"));
+    db_backend_meta_data_list_free(backend_meta_data_list2);
+    backend_meta_data_list2 = NULL;
+    CU_PASS("db_backend_meta_data_list_free");
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((backend_meta_data_list2 = db_backend_meta_data_list_new_copy(backend_meta_data_list)));
     CU_ASSERT_PTR_NOT_NULL(db_backend_meta_data_list_find(backend_meta_data_list2, "name1"));
     CU_ASSERT_PTR_NOT_NULL(db_backend_meta_data_list_find(backend_meta_data_list2, "name2"));
     db_backend_meta_data_list_free(backend_meta_data_list2);
@@ -635,6 +652,8 @@ void test_class_db_join_list(void) {
 }
 
 void test_class_db_object_field(void) {
+    db_object_field_t* local_object_field;
+
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field = db_object_field_new()));
     CU_ASSERT(!db_object_field_set_name(object_field, "field1"));
     CU_ASSERT(!db_object_field_set_type(object_field, DB_TYPE_INT32));
@@ -642,6 +661,23 @@ void test_class_db_object_field(void) {
     CU_ASSERT_PTR_NOT_NULL_FATAL(db_object_field_name(object_field));
     CU_ASSERT(!strcmp(db_object_field_name(object_field), "field1"));
     CU_ASSERT(db_object_field_type(object_field) == DB_TYPE_INT32);
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_object_field = db_object_field_new()));
+    CU_ASSERT(!db_object_field_copy(local_object_field, object_field));
+    CU_ASSERT_PTR_NOT_NULL_FATAL(db_object_field_name(local_object_field));
+    CU_ASSERT(!strcmp(db_object_field_name(local_object_field), "field1"));
+    CU_ASSERT(db_object_field_type(local_object_field) == DB_TYPE_INT32);
+    db_object_field_free(local_object_field);
+    local_object_field = NULL;
+    CU_PASS("db_object_field_free");
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_object_field = db_object_field_new_copy(object_field)));
+    CU_ASSERT_PTR_NOT_NULL_FATAL(db_object_field_name(local_object_field));
+    CU_ASSERT(!strcmp(db_object_field_name(local_object_field), "field1"));
+    CU_ASSERT(db_object_field_type(local_object_field) == DB_TYPE_INT32);
+    db_object_field_free(local_object_field);
+    local_object_field = NULL;
+    CU_PASS("db_object_field_free");
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field2 = db_object_field_new()));
     CU_ASSERT(!db_object_field_set_name(object_field2, "field2"));
@@ -658,11 +694,32 @@ void test_class_db_object_field_list(void) {
     db_object_field_t* local_object_field = object_field;
     db_object_field_t* local_object_field2 = object_field2;
     const db_object_field_t* object_field_walk;
+    db_object_field_list_t* local_object_field_list;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field_list = db_object_field_list_new()));
 
     CU_ASSERT_FATAL(!db_object_field_list_add(object_field_list, object_field));
     object_field = NULL;
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_object_field_list = db_object_field_list_new()));
+    CU_ASSERT(!db_object_field_list_copy(local_object_field_list, object_field_list));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((object_field_walk = db_object_field_list_begin(object_field_list)));
+    CU_ASSERT_PTR_NOT_NULL_FATAL(db_object_field_name(object_field_walk));
+    CU_ASSERT(!strcmp(db_object_field_name(object_field_walk), "field1"));
+    CU_ASSERT(db_object_field_type(object_field_walk) == DB_TYPE_INT32);
+    db_object_field_list_free(local_object_field_list);
+    local_object_field_list = NULL;
+    CU_PASS("db_object_field_list_free");
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_object_field_list = db_object_field_list_new_copy(object_field_list)));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((object_field_walk = db_object_field_list_begin(object_field_list)));
+    CU_ASSERT_PTR_NOT_NULL_FATAL(db_object_field_name(object_field_walk));
+    CU_ASSERT(!strcmp(db_object_field_name(object_field_walk), "field1"));
+    CU_ASSERT(db_object_field_type(object_field_walk) == DB_TYPE_INT32);
+    db_object_field_list_free(local_object_field_list);
+    local_object_field_list = NULL;
+    CU_PASS("db_object_field_list_free");
+
     CU_ASSERT_FATAL(!db_object_field_list_add(object_field_list, object_field2));
     object_field2 = NULL;
 
@@ -704,6 +761,8 @@ void test_class_db_object(void) {
 }
 
 void test_class_db_value_set(void) {
+    db_value_set_t* local_value_set;
+
     CU_ASSERT_PTR_NOT_NULL_FATAL((value_set = db_value_set_new(2)));
     CU_ASSERT(db_value_set_size(value_set) == 2);
     CU_ASSERT_PTR_NOT_NULL(db_value_set_at(value_set, 0));
@@ -729,12 +788,32 @@ void test_class_db_value_set(void) {
     CU_ASSERT_PTR_NOT_NULL(db_value_set_get(value_set2, 4));
     CU_ASSERT_PTR_NOT_NULL(db_value_set_get(value_set2, 5));
     CU_ASSERT_PTR_NULL(db_value_set_get(value_set2, 6));
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_value_set = db_value_set_new_copy(value_set2)));
+    CU_ASSERT(db_value_set_size(local_value_set) == 6);
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(local_value_set, 0));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(local_value_set, 1));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(local_value_set, 2));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(local_value_set, 3));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(local_value_set, 4));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(local_value_set, 5));
+    CU_ASSERT_PTR_NULL(db_value_set_at(local_value_set, 6));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_get(local_value_set, 0));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_get(local_value_set, 1));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_get(local_value_set, 2));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_get(local_value_set, 3));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_get(local_value_set, 4));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_get(local_value_set, 5));
+    CU_ASSERT_PTR_NULL(db_value_set_get(local_value_set, 6));
+    db_value_set_free(local_value_set);
+    CU_PASS("db_value_set_free");
 }
 
 void test_class_db_result(void) {
     db_value_set_t* local_value_set = value_set;
     db_value_set_t* local_value_set2 = value_set2;
     db_backend_meta_data_list_t* local_backend_meta_data_list2 = backend_meta_data_list2;
+    db_result_t* local_result;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((result = db_result_new()));
     CU_ASSERT(!db_result_set_value_set(result, value_set));
@@ -750,6 +829,31 @@ void test_class_db_result(void) {
     value_set2 = NULL;
     CU_ASSERT(db_result_value_set(result2) == local_value_set2);
     CU_ASSERT(!db_result_not_empty(result2));
+
+    /*
+     * TODO: test deep value copy success.
+     */
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_result = db_result_new()));
+    CU_ASSERT_FATAL(!db_result_copy(local_result, result));
+    CU_ASSERT(db_value_set_size(db_result_value_set(local_result)) == 2);
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(db_result_value_set(local_result), 0));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(db_result_value_set(local_result), 1));
+    CU_ASSERT_PTR_NULL(db_value_set_at(db_result_value_set(local_result), 2));
+    db_result_free(local_result);
+    CU_PASS("db_result_free");
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_result = db_result_new_copy(result2)));
+    CU_ASSERT(db_value_set_size(db_result_value_set(local_result)) == 6);
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(db_result_value_set(local_result), 0));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(db_result_value_set(local_result), 1));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(db_result_value_set(local_result), 2));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(db_result_value_set(local_result), 3));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(db_result_value_set(local_result), 4));
+    CU_ASSERT_PTR_NOT_NULL(db_value_set_at(db_result_value_set(local_result), 5));
+    CU_ASSERT_PTR_NULL(db_value_set_at(db_result_value_set(local_result), 6));
+    db_result_free(local_result);
+    CU_PASS("db_result_free");
 }
 
 static int __db_result_list_next_count = 0;
@@ -788,6 +892,7 @@ db_result_t* __db_result_list_next(void* data, int finish) {
 void test_class_db_result_list(void) {
     db_result_t* local_result = result;
     db_result_t* local_result2 = result2;
+    db_result_list_t* local_result_list;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((result_list = db_result_list_new()));
 
@@ -799,6 +904,29 @@ void test_class_db_result_list(void) {
     CU_ASSERT(db_result_list_size(result_list) == 2);
     CU_ASSERT(db_result_list_begin(result_list) == local_result);
     CU_ASSERT(db_result_list_next(result_list) == local_result2);
+
+    /*
+     * TODO: test deep result copy success.
+     */
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_result_list = db_result_list_new()));
+    CU_ASSERT(!db_result_list_copy(local_result_list, result_list));
+    CU_ASSERT(db_result_list_size(local_result_list) == 2);
+    CU_ASSERT_PTR_NOT_NULL(db_result_list_begin(local_result_list));
+    CU_ASSERT_PTR_NOT_NULL(db_result_list_next(local_result_list));
+    CU_ASSERT_PTR_NULL(db_result_list_next(local_result_list));
+    db_result_list_free(local_result_list);
+    local_result_list = NULL;
+    CU_PASS("db_result_list_free");
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_result_list = db_result_list_new_copy(result_list)));
+    CU_ASSERT(db_result_list_size(local_result_list) == 2);
+    CU_ASSERT_PTR_NOT_NULL(db_result_list_begin(local_result_list));
+    CU_ASSERT_PTR_NOT_NULL(db_result_list_next(local_result_list));
+    CU_ASSERT_PTR_NULL(db_result_list_next(local_result_list));
+    db_result_list_free(local_result_list);
+    local_result_list = NULL;
+    CU_PASS("db_result_list_free");
 
     db_result_list_free(result_list);
     result_list = NULL;
@@ -827,12 +955,18 @@ void test_class_db_value(void) {
     db_type_uint32_t uint32;
     db_type_int64_t int64;
     db_type_uint64_t uint64;
+    db_value_t* local_value;
+
     CU_ASSERT_PTR_NOT_NULL_FATAL((value2 = db_value_new()));
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((value = db_value_new()));
     CU_ASSERT(!db_value_from_text(value, "test"));
     CU_ASSERT(db_value_type(value) == DB_TYPE_TEXT);
     CU_ASSERT_PTR_NOT_NULL_FATAL(db_value_text(value));
+    CU_ASSERT_PTR_NULL(db_value_int32(value));
+    CU_ASSERT_PTR_NULL(db_value_uint32(value));
+    CU_ASSERT_PTR_NULL(db_value_int64(value));
+    CU_ASSERT_PTR_NULL(db_value_uint64(value));
     CU_ASSERT(!strcmp(db_value_text(value), "test"));
     CU_ASSERT(!db_value_to_text(value, &text));
     CU_ASSERT_PTR_NOT_NULL(text);
@@ -845,6 +979,15 @@ void test_class_db_value(void) {
     CU_ASSERT(!strcmp(db_value_text(value2), "test"));
     CU_ASSERT(!db_value_cmp(value, value2, &ret));
     CU_ASSERT(!ret);
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = db_value_new_copy(value)));
+    CU_ASSERT(db_value_type(local_value) == DB_TYPE_TEXT);
+    CU_ASSERT_PTR_NOT_NULL_FATAL(db_value_text(local_value));
+    CU_ASSERT(!strcmp(db_value_text(local_value), "test"));
+    CU_ASSERT(!db_value_cmp(value, local_value, &ret));
+    CU_ASSERT(!ret);
+    db_value_reset(local_value);
+    local_value = NULL;
+    CU_PASS("db_value_reset");
     CU_ASSERT(!db_value_set_primary_key(value));
     CU_ASSERT(db_value_primary_key(value));
 
@@ -852,6 +995,10 @@ void test_class_db_value(void) {
     CU_PASS("db_value_reset");
 
     CU_ASSERT(!db_value_from_int32(value, -12345));
+    CU_ASSERT_PTR_NOT_NULL(db_value_int32(value));
+    CU_ASSERT_PTR_NULL(db_value_uint32(value));
+    CU_ASSERT_PTR_NULL(db_value_int64(value));
+    CU_ASSERT_PTR_NULL(db_value_uint64(value));
     CU_ASSERT(db_value_type(value) == DB_TYPE_INT32);
     CU_ASSERT(!db_value_to_int32(value, &int32));
     CU_ASSERT(int32 == -12345);
@@ -864,6 +1011,15 @@ void test_class_db_value(void) {
     CU_ASSERT(int32 == -12345);
     CU_ASSERT(!db_value_cmp(value, value2, &ret));
     CU_ASSERT(!ret);
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = db_value_new_copy(value)));
+    CU_ASSERT(db_value_type(local_value) == DB_TYPE_INT32);
+    CU_ASSERT(!db_value_to_int32(local_value, &int32));
+    CU_ASSERT(int32 == -12345);
+    CU_ASSERT(!db_value_cmp(value, local_value, &ret));
+    CU_ASSERT(!ret);
+    db_value_reset(local_value);
+    local_value = NULL;
+    CU_PASS("db_value_reset");
     CU_ASSERT(!db_value_set_primary_key(value));
     CU_ASSERT(db_value_primary_key(value));
 
@@ -871,6 +1027,10 @@ void test_class_db_value(void) {
     CU_PASS("db_value_reset");
 
     CU_ASSERT(!db_value_from_uint32(value, 12345));
+    CU_ASSERT_PTR_NULL(db_value_int32(value));
+    CU_ASSERT_PTR_NOT_NULL(db_value_uint32(value));
+    CU_ASSERT_PTR_NULL(db_value_int64(value));
+    CU_ASSERT_PTR_NULL(db_value_uint64(value));
     CU_ASSERT(db_value_type(value) == DB_TYPE_UINT32);
     CU_ASSERT(!db_value_to_uint32(value, &uint32));
     CU_ASSERT(uint32 == 12345);
@@ -883,6 +1043,15 @@ void test_class_db_value(void) {
     CU_ASSERT(uint32 == 12345);
     CU_ASSERT(!db_value_cmp(value, value2, &ret));
     CU_ASSERT(!ret);
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = db_value_new_copy(value)));
+    CU_ASSERT(db_value_type(local_value) == DB_TYPE_UINT32);
+    CU_ASSERT(!db_value_to_uint32(local_value, &uint32));
+    CU_ASSERT(uint32 == 12345);
+    CU_ASSERT(!db_value_cmp(value, local_value, &ret));
+    CU_ASSERT(!ret);
+    db_value_reset(local_value);
+    local_value = NULL;
+    CU_PASS("db_value_reset");
     CU_ASSERT(!db_value_set_primary_key(value));
     CU_ASSERT(db_value_primary_key(value));
 
@@ -890,6 +1059,10 @@ void test_class_db_value(void) {
     CU_PASS("db_value_reset");
 
     CU_ASSERT(!db_value_from_int64(value, -9223372036854775800));
+    CU_ASSERT_PTR_NULL(db_value_int32(value));
+    CU_ASSERT_PTR_NULL(db_value_uint32(value));
+    CU_ASSERT_PTR_NOT_NULL(db_value_int64(value));
+    CU_ASSERT_PTR_NULL(db_value_uint64(value));
     CU_ASSERT(db_value_type(value) == DB_TYPE_INT64);
     CU_ASSERT(!db_value_to_int64(value, &int64));
     CU_ASSERT(int64 == -9223372036854775800);
@@ -902,14 +1075,26 @@ void test_class_db_value(void) {
     CU_ASSERT(int64 == -9223372036854775800);
     CU_ASSERT(!db_value_cmp(value, value2, &ret));
     CU_ASSERT(!ret);
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = db_value_new_copy(value)));
+    CU_ASSERT(db_value_type(local_value) == DB_TYPE_INT64);
+    CU_ASSERT(!db_value_to_int64(local_value, &int64));
+    CU_ASSERT(int64 == -9223372036854775800);
+    CU_ASSERT(!db_value_cmp(value, local_value, &ret));
+    CU_ASSERT(!ret);
+    db_value_reset(local_value);
+    local_value = NULL;
+    CU_PASS("db_value_reset");
     CU_ASSERT(!db_value_set_primary_key(value));
     CU_ASSERT(db_value_primary_key(value));
 
     db_value_reset(value);
     CU_PASS("db_value_reset");
 
-
     CU_ASSERT(!db_value_from_uint64(value, 17446744073709551615UL));
+    CU_ASSERT_PTR_NULL(db_value_int32(value));
+    CU_ASSERT_PTR_NULL(db_value_uint32(value));
+    CU_ASSERT_PTR_NULL(db_value_int64(value));
+    CU_ASSERT_PTR_NOT_NULL(db_value_uint64(value));
     CU_ASSERT(db_value_type(value) == DB_TYPE_UINT64);
     CU_ASSERT(!db_value_to_uint64(value, &uint64));
     CU_ASSERT(uint64 == 17446744073709551615UL);
@@ -922,6 +1107,15 @@ void test_class_db_value(void) {
     CU_ASSERT(uint64 == 17446744073709551615UL);
     CU_ASSERT(!db_value_cmp(value, value2, &ret));
     CU_ASSERT(!ret);
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = db_value_new_copy(value)));
+    CU_ASSERT(db_value_type(local_value) == DB_TYPE_UINT64);
+    CU_ASSERT(!db_value_to_uint64(local_value, &uint64));
+    CU_ASSERT(uint64 == 17446744073709551615UL);
+    CU_ASSERT(!db_value_cmp(value, local_value, &ret));
+    CU_ASSERT(!ret);
+    db_value_reset(local_value);
+    local_value = NULL;
+    CU_PASS("db_value_reset");
     CU_ASSERT(!db_value_set_primary_key(value));
     CU_ASSERT(db_value_primary_key(value));
 
@@ -957,6 +1151,23 @@ void test_class_db_value(void) {
     enum_text = NULL;
     CU_ASSERT(!db_value_cmp(value, value2, &ret));
     CU_ASSERT(!ret);
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = db_value_new_copy(value)));
+    CU_ASSERT(db_value_type(local_value) == DB_TYPE_ENUM);
+    CU_ASSERT(!db_value_enum_value(local_value, &ret));
+    CU_ASSERT(ret == 2);
+    CU_ASSERT_PTR_NOT_NULL_FATAL(db_value_enum_text(local_value));
+    CU_ASSERT(!strcmp(db_value_enum_text(local_value), "enum2"));
+    CU_ASSERT(!db_value_to_enum_value(local_value, &ret, enum_set));
+    CU_ASSERT(ret == 2);
+    CU_ASSERT(!db_value_to_enum_text(local_value, &enum_text, enum_set));
+    CU_ASSERT_PTR_NOT_NULL_FATAL(enum_text);
+    CU_ASSERT(!strcmp(enum_text, "enum2"));
+    enum_text = NULL;
+    CU_ASSERT(!db_value_cmp(value, local_value, &ret));
+    CU_ASSERT(!ret);
+    db_value_reset(local_value);
+    local_value = NULL;
+    CU_PASS("db_value_reset");
     CU_ASSERT(db_value_set_primary_key(value));
     CU_ASSERT(!db_value_primary_key(value));
 

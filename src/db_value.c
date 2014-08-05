@@ -55,7 +55,6 @@ db_value_t* db_value_new() {
     return value;
 }
 
-/* TODO: unit test */
 db_value_t* db_value_new_copy(const db_value_t* from_value) {
     db_value_t* value;
 
@@ -780,7 +779,6 @@ db_value_set_t* db_value_set_new(size_t size) {
     return value_set;
 }
 
-/* TODO: unit test */
 db_value_set_t* db_value_set_new_copy(const db_value_set_t* from_value_set) {
     db_value_set_t* value_set;
     size_t i;
