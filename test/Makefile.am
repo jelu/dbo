@@ -79,7 +79,7 @@ test_LDFLAGS = -no-install @CUNIT_LDFLAGS@ \
 	@SQLITE3_LDFLAGS@ \
 	@MYSQL_LDFLAGS@
 
-check: test
+check-local: test
 if HAVE_SQLITE3
 	rm -f test.db
 	sqlite3 test.db < $(srcdir)/test.sqlite
