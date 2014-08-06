@@ -41,6 +41,22 @@ LT_INIT
 AC_SUBST(DBO_LIB_VERSION)
 
 #
+# Handle doxygen
+#
+
+DX_HTML_FEATURE(ON)
+DX_MAN_FEATURE(ON)
+
+DX_CHM_FEATURE(OFF)
+DX_CHI_FEATURE(OFF)
+DX_RTF_FEATURE(OFF)
+DX_XML_FEATURE(OFF)
+DX_PDF_FEATURE(OFF)
+DX_PS_FEATURE(OFF)
+
+DX_INIT_DOXYGEN([dbo], [doxygen.conf])
+
+#
 # Check for required/optional libraries
 #
 
@@ -166,9 +182,10 @@ AX_LIB_POSTGRESQL
 AC_CONFIG_HEADER([src/config.h])
 AC_CONFIG_FILES([
 	Makefile
+    doc/Makefile
 	src/Makefile
-    tools/Makefile
     test/Makefile
+    tools/Makefile
 ])
 
 AC_OUTPUT

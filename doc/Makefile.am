@@ -22,21 +22,17 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-include $(top_srcdir)/aminclude.am
+EXTRA_DIST = doxygen.conf
 
-ACLOCAL_AMFLAGS = -I m4
+CLEANFILES = \
+	dbo.tag \
+	-r \
+	html \
+	man
 
-MAINTAINERCLEANFILES = \
-	config.log config.status \
-	$(srcdir)/Makefile.in \
-	$(srcdir)/src/config.h.in $(srcdir)/src/config.h.in~ \
-	$(srcdir)/configure \
-	$(srcdir)/install-sh $(srcdir)/ltmain.sh $(srcdir)/missing \
-	$(srcdir)/depcomp $(srcdir)/aclocal.m4 $(srcdir)/compile \
-	$(srcdir)/config.guess $(srcdir)/config.sub
+if DX_COND_doc
+dbo.tag: doxygen.conf
+	doxygen doxygen.conf
 
-SUBDIRS = doc src tools test
-
-EXTRA_DIST = $(srcdir)/LICENSE \
-		$(srcdir)/KNOWN_ISSUES \
-		$(srcdir)/README.md
+doc_DATA = dbo.tag
+endif

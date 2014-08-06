@@ -1,0 +1,29 @@
+if DX_COND_doc
+
+if DX_COND_html
+DX_CLEAN_HTML = @DX_DOCDIR@/html
+endif
+
+if DX_COND_man
+DX_CLEAN_MAN = @DX_DOCDIR@/man
+endif
+
+.PHONY: doxygen-run doxygen-doc
+
+.INTERMEDIATE: doxygen-run
+
+doxygen-run: @DX_DOCDIR@/@PACKAGE@.tag
+
+doxygen-doc: doxygen-run
+
+@DX_DOCDIR@/@PACKAGE@.tag: $(DX_CONFIG) $(pkginclude_HEADERS)
+	rm -rf @DX_DOCDIR@
+	$(DX_ENV) $(DX_DOXYGEN) $(srcdir)/$(DX_CONFIG)
+
+DX_CLEANFILES = \
+	@DX_DOCDIR@/@PACKAGE@.tag \
+	-r \
+	$(DX_CLEAN_HTML) \
+	$(DX_CLEAN_MAN)
+
+endif
