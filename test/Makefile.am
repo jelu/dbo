@@ -60,7 +60,7 @@ if HAVE_SQLITE3
 BUILT_SOURCES += schema.sqlite
 CLEANFILES += db_schema_sqlite.c db_schema_sqlite.h
 endif
-if HAVE_MYSQL
+if TEST_MYSQL
 BUILT_SOURCES += drop.mysql schema.mysql
 CLEANFILES += db_schema_mysql.c db_schema_mysql.h
 endif
@@ -85,6 +85,11 @@ if HAVE_SQLITE3
 	sqlite3 test.db < $(srcdir)/test.sqlite
 	sqlite3 test.db < $(builddir)/schema.sqlite
 endif
+if TEST_MYSQL
+	mysql -u "@TEST_MYSQL_USER@" "-p@TEST_MYSQL_PASS@" "@TEST_MYSQL_DB@" < $(srcdir)/test.mysql
+	mysql -u "@TEST_MYSQL_USER@" "-p@TEST_MYSQL_PASS@" "@TEST_MYSQL_DB@" < $(srcdir)/drop.mysql
+	mysql -u "@TEST_MYSQL_USER@" "-p@TEST_MYSQL_PASS@" "@TEST_MYSQL_DB@" < $(srcdir)/schema.mysql
+endif
 	./test
 
 groups.c groups.h \
@@ -105,7 +110,7 @@ if HAVE_SQLITE3
 schema.sqlite:
 	$(top_srcdir)/tools/dbo-generate-schema --backend sqlite ./test.json
 endif
-if HAVE_MYSQL
+if TEST_MYSQL
 drop.mysql schema.mysql:
 	$(top_srcdir)/tools/dbo-generate-schema --backend mysql ./test.json
 endif

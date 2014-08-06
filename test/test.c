@@ -131,7 +131,7 @@ int main(void) {
         return CU_get_error();
     }
 #endif
-#if defined(HAVE_MYSQL)
+#if defined(TEST_MYSQL)
     pSuite = CU_add_suite("Initialization MySQL", init_suite_initialization, clean_suite_initialization);
     if (!pSuite) {
         CU_cleanup_registry();
@@ -219,7 +219,7 @@ int main(void) {
     }
 #endif
 
-#if defined(HAVE_MYSQL)
+#if defined(TEST_MYSQL)
     pSuite = CU_add_suite("MySQL database operations", init_suite_database_operations_mysql, clean_suite_database_operations);
     if (!pSuite) {
         CU_cleanup_registry();

@@ -1004,7 +1004,7 @@ int init_suite_database_operations_mysql(void) {
     configuration = NULL;
     if (!(configuration = db_configuration_new())
         || db_configuration_set_name(configuration, "host")
-        || db_configuration_set_value(configuration, "") /* TODO */
+        || db_configuration_set_value(configuration, TEST_MYSQL_HOST)
         || db_configuration_list_add(configuration_list, configuration))
     {
         db_configuration_free(configuration);
@@ -1016,7 +1016,7 @@ int init_suite_database_operations_mysql(void) {
     configuration = NULL;
     if (!(configuration = db_configuration_new())
         || db_configuration_set_name(configuration, "port")
-        || db_configuration_set_value(configuration, "") /* TODO */
+        || db_configuration_set_value(configuration, TEST_MYSQL_PORT_TXT)
         || db_configuration_list_add(configuration_list, configuration))
     {
         db_configuration_free(configuration);
@@ -1028,7 +1028,7 @@ int init_suite_database_operations_mysql(void) {
     configuration = NULL;
     if (!(configuration = db_configuration_new())
         || db_configuration_set_name(configuration, "user")
-        || db_configuration_set_value(configuration, "") /* TODO */
+        || db_configuration_set_value(configuration, TEST_MYSQL_USER)
         || db_configuration_list_add(configuration_list, configuration))
     {
         db_configuration_free(configuration);
@@ -1040,7 +1040,7 @@ int init_suite_database_operations_mysql(void) {
     configuration = NULL;
     if (!(configuration = db_configuration_new())
         || db_configuration_set_name(configuration, "pass")
-        || db_configuration_set_value(configuration, "") /* TODO */
+        || db_configuration_set_value(configuration, TEST_MYSQL_PASS)
         || db_configuration_list_add(configuration_list, configuration))
     {
         db_configuration_free(configuration);
@@ -1052,7 +1052,7 @@ int init_suite_database_operations_mysql(void) {
     configuration = NULL;
     if (!(configuration = db_configuration_new())
         || db_configuration_set_name(configuration, "db")
-        || db_configuration_set_value(configuration, "") /* TODO */
+        || db_configuration_set_value(configuration, TEST_MYSQL_DB)
         || db_configuration_list_add(configuration_list, configuration))
     {
         db_configuration_free(configuration);

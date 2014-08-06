@@ -105,31 +105,31 @@ void test_initialization_configuration_mysql(void) {
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
     CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "host"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "")); /* TODO */
+    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, TEST_MYSQL_HOST));
     CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
     CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "port"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "")); /* TODO */
+    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, TEST_MYSQL_PORT_TXT));
     CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
     CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "user"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "")); /* TODO */
+    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, TEST_MYSQL_USER));
     CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
     CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "pass"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "")); /* TODO */
+    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, TEST_MYSQL_PASS));
     CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
     CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "db"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "")); /* TODO */
+    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, TEST_MYSQL_DB));
     CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 #endif

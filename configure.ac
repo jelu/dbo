@@ -40,25 +40,128 @@ LT_INIT
 
 AC_SUBST(DBO_LIB_VERSION)
 
-AX_CUNIT
-AX_LIB_SQLITE3
-if test "$SQLITE3_VERSION" != ""; then
-    AM_CONDITIONAL(HAVE_SQLITE3, true)
-else
-    AM_CONDITIONAL(HAVE_SQLITE3, false)
-fi
-AX_LIB_MYSQL([5.0.0])
-if test "$MYSQL_VERSION" != ""; then
-    AM_CONDITIONAL(HAVE_MYSQL, true)
-else
-    AM_CONDITIONAL(HAVE_MYSQL, false)
-fi
-AX_LIB_POSTGRESQL
+#
+# Check for required/optional libraries
+#
+
 AX_PTHREAD([
     LIBS="$PTHREAD_LIBS $LIBS"
     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
     CC="$PTHREAD_CC"
 ])
+AX_CUNIT
+
+#
+# Check for SQLite3
+#
+
+AX_LIB_SQLITE3
+
+if test "$SQLITE3_VERSION" != ""; then
+    AM_CONDITIONAL(HAVE_SQLITE3, true)
+else
+    AM_CONDITIONAL(HAVE_SQLITE3, false)
+fi
+
+#
+# Check for MySQL
+#
+
+AX_LIB_MYSQL([5.0.0])
+
+if test "$MYSQL_VERSION" != ""; then
+    AM_CONDITIONAL(HAVE_MYSQL, true)
+else
+    AM_CONDITIONAL(HAVE_MYSQL, false)
+fi
+
+TEST_MYSQL=""
+TEST_MYSQL_USER=""
+TEST_MYSQL_PASS=""
+TEST_MYSQL_HOST=""
+TEST_MYSQL_PORT="0"
+TEST_MYSQL_DB=""
+
+AC_ARG_WITH([mysql-user],
+    AS_HELP_STRING([--with-mysql-user=@<:@ARG@:>@],
+        [optionally specify the database user to run tests as]
+    ),
+    [
+        if test "$withval" != ""; then
+            TEST_MYSQL="1"
+            TEST_MYSQL_USER="$withval"
+        fi
+    ], [])
+AC_ARG_WITH([mysql-pass],
+    AS_HELP_STRING([--with-mysql-pass=@<:@ARG@:>@],
+        [optionally specify the database password to run tests with]
+    ),
+    [
+        if test "$withval" != ""; then
+            TEST_MYSQL="1"
+            TEST_MYSQL_PASS="$withval"
+        fi
+    ], [])
+AC_ARG_WITH([mysql-host],
+    AS_HELP_STRING([--with-mysql-host=@<:@ARG@:>@],
+        [optionally specify the database host to run tests on]
+    ),
+    [
+        if test "$withval" != ""; then
+            TEST_MYSQL="1"
+            TEST_MYSQL_HOST="$withval"
+        fi
+    ], [])
+AC_ARG_WITH([mysql-port],
+    AS_HELP_STRING([--with-mysql-port=@<:@ARG@:>@],
+        [optionally specify the database port to run tests on]
+    ),
+    [
+        if test "$withval" != ""; then
+            TEST_MYSQL="1"
+            TEST_MYSQL_PORT="$withval"
+        fi
+    ], [])
+AC_ARG_WITH([mysql-db],
+    AS_HELP_STRING([--with-mysql-db=@<:@ARG@:>@],
+        [optionally specify the database to run tests on]
+    ),
+    [
+        if test "$withval" != ""; then
+            TEST_MYSQL="1"
+            TEST_MYSQL_DB="$withval"
+        fi
+    ], [])
+
+if test "$TEST_MYSQL" != ""; then
+    AC_DEFINE_UNQUOTED(TEST_MYSQL, [1], [Specify if MySQL tests should be run])
+    AM_CONDITIONAL(TEST_MYSQL, true)
+else
+    AM_CONDITIONAL(TEST_MYSQL, false)
+fi
+
+AC_SUBST(TEST_MYSQL_USER)
+AC_SUBST(TEST_MYSQL_PASS)
+AC_SUBST(TEST_MYSQL_HOST)
+AC_SUBST(TEST_MYSQL_PORT)
+AC_SUBST(TEST_MYSQL_DB)
+
+AC_DEFINE_UNQUOTED(TEST_MYSQL_USER, ["$TEST_MYSQL_USER"], [For tests])
+AC_DEFINE_UNQUOTED(TEST_MYSQL_PASS, ["$TEST_MYSQL_PASS"], [For tests])
+AC_DEFINE_UNQUOTED(TEST_MYSQL_HOST, ["$TEST_MYSQL_HOST"], [For tests])
+AC_DEFINE_UNQUOTED(TEST_MYSQL_PORT, [$TEST_MYSQL_PORT], [For tests])
+AC_DEFINE_UNQUOTED(TEST_MYSQL_PORT_TXT, ["$TEST_MYSQL_PORT"], [For tests])
+AC_DEFINE_UNQUOTED(TEST_MYSQL_DB, ["$TEST_MYSQL_DB"], [For tests])
+
+#
+# Check for PostgreSQL
+#
+
+AX_LIB_POSTGRESQL
+
+#
+# Output makefiles
+#
 
 AC_CONFIG_HEADER([src/config.h])
 AC_CONFIG_FILES([
