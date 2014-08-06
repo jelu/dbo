@@ -28,7 +28,7 @@ CLEANFILES = \
 	dbo.tag \
 	-r \
 	html \
-	man
+	xml
 
 if DX_COND_doc
 dbo.tag: doxygen.conf
