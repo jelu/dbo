@@ -41,20 +41,10 @@ LT_INIT
 AC_SUBST(DBO_LIB_VERSION)
 
 #
-# Handle doxygen
+# Check for doxygen
 #
 
-DX_HTML_FEATURE(ON)
-DX_MAN_FEATURE(ON)
-
-DX_CHM_FEATURE(OFF)
-DX_CHI_FEATURE(OFF)
-DX_RTF_FEATURE(OFF)
-DX_XML_FEATURE(OFF)
-DX_PDF_FEATURE(OFF)
-DX_PS_FEATURE(OFF)
-
-DX_INIT_DOXYGEN([dbo], [doxygen.conf])
+DX_INIT_DOXYGEN([dbo])
 
 #
 # Check for required/optional libraries

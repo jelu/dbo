@@ -33,6 +33,14 @@
  * All rights reserved.
  */
 
+/** \file db_type.h */
+/** \defgroup db_type db_type
+ * Database Types.
+ * These are the supported database values that can be used to retrieve or store
+ * values in the backends. We also define our own 32/64bits types to use with
+ * the database layer. \see db_value
+ */
+
 #ifndef libdbo_db_type_h
 #define libdbo_db_type_h
 
@@ -41,6 +49,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \addtogroup db_type */
+/** \{ */
 
 /**
  * A signed 32bit integer.
@@ -106,6 +117,8 @@ typedef enum {
      */
     DB_TYPE_REVISION
 } db_type_t;
+
+/** \} */
 
 #ifdef __cplusplus
 }

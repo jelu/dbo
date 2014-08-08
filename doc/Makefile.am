@@ -28,11 +28,17 @@ CLEANFILES = \
 	dbo.tag \
 	-r \
 	html \
-	xml
+	xml \
+	man
 
 if DX_COND_doc
 dbo.tag: doxygen.conf
+	PROJECT_NAME="$(PACKAGE)" \
+	PROJECT_NUMBER="$(PACKAGE_VERSION)" \
+	top_srcdir="$(top_srcdir)" \
 	doxygen doxygen.conf
+	mkdir -p man/man3
+	./gen-man-pages.pl xml/*.xml
 
 doc_DATA = dbo.tag
 endif

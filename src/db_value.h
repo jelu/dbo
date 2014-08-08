@@ -33,6 +33,16 @@
  * All rights reserved.
  */
 
+/** \file db_value.h */
+/** \defgroup db_value db_value
+ * Database Value.
+ * These are the functions and container to handle database values.
+ */
+/** \defgroup db_value_set db_value_set
+ * Database Value Set.
+ * A fixed size database value set.
+ */
+
 #ifndef libdbo_db_value_h
 #define libdbo_db_value_h
 
@@ -40,10 +50,26 @@
 extern "C" {
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_value;
 struct db_value_set;
+#endif
+
+/** \addtogroup db_value */
+/** \{ */
+/**
+ * A container for a database value.
+ */
 typedef struct db_value db_value_t;
+/** \} */
+
+/** \addtogroup db_value_set */
+/** \{ */
+/**
+ * A container for a fixed set of database values.
+ */
 typedef struct db_value_set db_value_set_t;
+/** \} */
 
 #ifdef __cplusplus
 }
@@ -58,9 +84,7 @@ typedef struct db_value_set db_value_set_t;
 extern "C" {
 #endif
 
-/**
- * A container for a database value.
- */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_value {
     db_type_t type;
     int primary_key;
@@ -72,7 +96,14 @@ struct db_value {
     int enum_value;
     const char* enum_text;
 };
+#endif
 
+/** \addtogroup db_value */
+/** \{ */
+
+/**
+ * Static database value initializer.
+ */
 #define DB_VALUE_EMPTY { DB_TYPE_EMPTY, 0, NULL, 0, 0, 0, 0, 0, NULL }
 
 /**
@@ -327,13 +358,17 @@ int db_value_primary_key(const db_value_t* value);
  */
 int db_value_set_primary_key(db_value_t* value);
 
-/**
- * A container for a fixed set of database values.
- */
+/** \} */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_value_set {
     db_value_t* values;
     size_t size;
 };
+#endif
+
+/** \addtogroup db_value_set */
+/** \{ */
 
 /**
  * Create a new set of database value.
@@ -377,6 +412,8 @@ const db_value_t* db_value_set_at(const db_value_set_t* value_set, size_t at);
  * \return a db_value_t pointer or NULL on error.
  */
 db_value_t* db_value_set_get(db_value_set_t* value_set, size_t at);
+
+/** \} */
 
 #ifdef __cplusplus
 }
