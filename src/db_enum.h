@@ -64,7 +64,7 @@ typedef struct db_enum db_enum_t;
 struct db_enum {
     const char* text;
     int value;
-} db_enum_t;
+};
 #endif
 
 /** \} */
