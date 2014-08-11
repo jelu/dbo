@@ -45,7 +45,7 @@ sub trim {
 sub only_detail_text {
     my ($detail) = @_;
     my $detail_text = '';
-    
+
     foreach my $para ($detail->findnodes('para')) {
         my $text = '';
         foreach my $child ($para->childNodes) {
@@ -56,7 +56,7 @@ sub only_detail_text {
                 $text .= $child->textContent;
             }
         }
-        
+
         $text = trim($text);
         if ($text) {
             if ($detail_text) {
@@ -67,13 +67,13 @@ sub only_detail_text {
 ';
         }
     }
-    
+
     return $detail_text;
 }
 
 sub header {
     my ($name, $title) = @_;
-    
+
     print OUTPUT '.\\" Copyright (c) 2014 Jerry Lundström <lundstrom.jerry@gmail.com>
 .\\" All rights reserved.
 .\\"
@@ -119,20 +119,20 @@ sub synoptsis {
     print OUTPUT '.SH SYNOPSIS
 .nf
 ';
-    
+
     my %include;
     foreach my $section (@$sections) {
         foreach my $member (@{$section->{members}}) {
             my ($location) = $member->findnodes('location');
             next unless ($location);
-            
+
             my ($file) = $location->attributes->getNamedItem('file');
             next unless ($file);
-            
+
             my $filename = $file->value;
             $filename =~ s/.*\///o;
             next unless ($filename);
-            
+
             $include{$filename} = 1;
         }
     }
@@ -145,7 +145,31 @@ sub synoptsis {
 ';
     }
 
+    my @defines;
+    foreach my $section (@$sections) {
+        foreach my $member (@{$section->{members}}) {
+            my ($kind) = $member->attributes->getNamedItem('kind');
+            next unless ($kind);
+            next unless ($kind->value eq 'define');
+            my ($name) = $member->findnodes('name');
+
+            push(@defines, {
+                name => $name->textContent
+            });
+        }
+    }
+
+    foreach my $define (@defines) {
+        print OUTPUT '.BI "#define " ', $define->{name},' " ...
+';
+    }
+    if (scalar @defines) {
+        print OUTPUT '
+';
+    }
+
     my @typedefs;
+    my @func_t;
     foreach my $section (@$sections) {
         foreach my $member (@{$section->{members}}) {
             my ($kind) = $member->attributes->getNamedItem('kind');
@@ -153,7 +177,12 @@ sub synoptsis {
             next unless ($kind->value eq 'typedef');
             my ($type) = $member->findnodes('type');
             my ($name) = $member->findnodes('name');
-            
+            my ($paramlist) = $member->findnodes('detaileddescription/para/parameterlist');
+
+            if ($paramlist) {
+                push(@func_t, $member);
+                next;
+            }
             push(@typedefs, {
                 type => $type->textContent,
                 name => $name->textContent
@@ -170,6 +199,21 @@ sub synoptsis {
 ';
     }
 
+    foreach my $func_t (@func_t) {
+        my ($type) = $func_t->findnodes('type');
+        my ($name) = $func_t->findnodes('name');
+        my ($args) = $func_t->findnodes('argsstring');
+        $args = $args->textContent;
+        $args =~ s/\s*(\w+)([,\)])/ " $1 "$2/go;
+
+        print OUTPUT '.BI "typedef ', $type->textContent, ' " ', $name->textContent,' " ', $args, ';
+';
+    }
+    if (scalar @func_t) {
+        print OUTPUT '
+';
+    }
+
     my @enums;
     foreach my $section (@$sections) {
         foreach my $member (@{$section->{members}}) {
@@ -177,11 +221,11 @@ sub synoptsis {
             next unless ($kind);
             next unless ($kind->value eq 'enum');
             my ($name) = $member->findnodes('name');
-            
+
             my @values = ();
             foreach my $enum ($member->findnodes('enumvalue')) {
                 my ($ename) = $enum->findnodes('name');
-                
+
                 push(@values, $ename->textContent);
             }
             push (@enums, {name => $name->textContent, values => \@values });
@@ -222,11 +266,11 @@ sub synoptsis {
             foreach my $param ($member->findnodes('param')) {
                 my ($decl) = $param->findnodes('type');
                 my ($declname) = $param->findnodes('declname');
-                
+
                 push(@params, { decl => $decl->textContent, ( defined $declname ? ( name => $declname->textContent ) : () ) });
             }
             next unless ($type->textContent and $name->textContent and scalar @params);
-            
+
             push (@functions, {
                 name => $name->textContent,
                 type => $type->textContent,
@@ -241,7 +285,7 @@ sub synoptsis {
 #';
 #        }
 #        $first = 0;
-        
+
         print OUTPUT '.BI "', $function->{type}, ' ', $function->{name}, '(';
         my $first_param = 1;
         foreach my $param (@{$function->{params}}) {
@@ -249,7 +293,7 @@ sub synoptsis {
                 print OUTPUT ' ", ';
             }
             $first_param = 0;
-            
+
             print OUTPUT $param->{decl}, ($param->{name} ? ' " '.$param->{name}.' ' : '');
         }
         print OUTPUT ');
@@ -275,12 +319,13 @@ sub description {
             my ($name) = $member->findnodes('name');
             my ($brief) = $member->findnodes('briefdescription');
             my ($detail) = $member->findnodes('detaileddescription');
-            
+            my ($paramlist) = $member->findnodes('detaileddescription/para/parameterlist');
+
             push(@typedefs, {
                 type => $type->textContent,
                 name => $name->textContent,
                 brief => trim($brief->textContent),
-                detail => only_detail_text($detail)
+                detail => ( $paramlist ? '' : only_detail_text($detail) )
             });
         }
     }
@@ -300,7 +345,7 @@ sub description {
                 my ($ename) = $enum->findnodes('name');
                 my ($ebrief) = $enum->findnodes('briefdescription');
                 my ($edetail) = $enum->findnodes('detaileddescription');
-                
+
                 push(@values, {
                     name => $ename->textContent,
                     brief => trim($ebrief->textContent),
@@ -325,8 +370,26 @@ sub description {
             my ($name) = $member->findnodes('name');
             my ($brief) = $member->findnodes('briefdescription');
             my ($detail) = $member->findnodes('detaileddescription');
-            
+
             push(@defines, {
+                name => $name->textContent,
+                brief => trim($brief->textContent),
+                detail => only_detail_text($detail)
+            });
+        }
+    }
+
+    my @functions;
+    foreach my $section (@$sections) {
+        foreach my $member (@{$section->{members}}) {
+            my ($kind) = $member->attributes->getNamedItem('kind');
+            next unless ($kind);
+            next unless ($kind->value eq 'function');
+            my ($name) = $member->findnodes('name');
+            my ($brief) = $member->findnodes('briefdescription');
+            my ($detail) = $member->findnodes('detaileddescription');
+
+            push (@functions, {
                 name => $name->textContent,
                 brief => trim($brief->textContent),
                 detail => only_detail_text($detail)
@@ -368,6 +431,13 @@ sub description {
 ', ($define->{detail} ? $define->{detail} : $define->{brief}), '
 ';
     }
+
+    foreach my $function (@functions) {
+        print OUTPUT '.TP
+.B ', $function->{name}, '
+', ($function->{brief} ? $function->{brief} : $function->{detail}), '
+';
+    }
 }
 
 sub see_also {
@@ -383,15 +453,30 @@ sub see_also {
             push(@functions, $name->textContent);
         }
     }
-    
+
     foreach my $para ($cdetail->findnodes('para')) {
         foreach my $child ($para->childNodes) {
             if ($child->nodeName eq 'simplesect') {
                 my ($sectkind) = $child->attributes->getNamedItem('kind');
-                
+
                 if ($sectkind->value eq 'see') {
                     push(@functions, $child->textContent);
                 }
+            }
+        }
+    }
+
+    my @typedefs;
+    foreach my $section (@$sections) {
+        foreach my $member (@{$section->{members}}) {
+            my ($kind) = $member->attributes->getNamedItem('kind');
+            next unless ($kind);
+            next unless ($kind->value eq 'typedef');
+            my ($name) = $member->findnodes('name');
+            my ($paramlist) = $member->findnodes('detaileddescription/para/parameterlist');
+
+            if ($paramlist) {
+                push(@functions, $name->textContent);
             }
         }
     }
@@ -409,7 +494,6 @@ sub see_also {
 sub functions {
     my ($sections) = @_;
 
-    my @functions;
     foreach my $section (@$sections) {
         foreach my $member (@{$section->{members}}) {
             my ($kind) = $member->attributes->getNamedItem('kind');
@@ -417,9 +501,9 @@ sub functions {
             next unless ($kind->value eq 'function');
             my ($name) = $member->findnodes('name');
             next unless ($name);
-            
+
             print 'FUNC: ', $name->textContent, "\n";
-            
+
             my ($mbrief) = $member->findnodes('briefdescription');
             my ($detail) = $member->findnodes('detaileddescription');
             my $brief = $mbrief->textContent;
@@ -427,20 +511,20 @@ sub functions {
             $brief =~ s/^ +//go;
             $brief =~ s/[\. ]+$//go;
             $brief =~ s/  +/ /go;
-    
+
             my @sections = ( { sdef => $section->{sdef}, members => [ $member ] } );
             my @see_also;
-            
+
             open(OUTPUT, '>:encoding(UTF-8)', 'man/man3/'.$name->textContent.'.3') || die;
             header($name->textContent, $brief);
             synoptsis(\@sections);
-            
+
             print OUTPUT '.SH DESCRIPTION
 ';
             my $no_detail = 1;
             foreach my $para ($detail->findnodes('para')) {
                 my $detail_text = '';
-                
+
                 foreach my $child ($para->childNodes) {
                     if ($child->nodeName eq '#text') {
                         $detail_text .= $child->textContent;
@@ -468,7 +552,7 @@ sub functions {
                 foreach my $child ($para->childNodes) {
                     if ($child->nodeName eq 'simplesect') {
                         my ($sectkind) = $child->attributes->getNamedItem('kind');
-                        
+
                         if ($sectkind->value eq 'return') {
                             $return_text .= $child->textContent;
                         }
@@ -486,7 +570,105 @@ sub functions {
                 foreach my $child ($para->childNodes) {
                     if ($child->nodeName eq 'simplesect') {
                         my ($sectkind) = $child->attributes->getNamedItem('kind');
-                        
+
+                        if ($sectkind->value eq 'see') {
+                            push(@see, $child->textContent);
+                        }
+                    }
+                }
+            }
+            if (scalar @see) {
+                print OUTPUT '.SH SEE ALSO
+';
+                foreach my $see (@see) {
+                    print OUTPUT '.BR ', $see, ' (3)
+';
+                }
+            }
+
+            footer;
+            close(OUTPUT);
+        }
+    }
+
+    foreach my $section (@$sections) {
+        foreach my $member (@{$section->{members}}) {
+            my ($kind) = $member->attributes->getNamedItem('kind');
+            next unless ($kind);
+            next unless ($kind->value eq 'typedef');
+            my ($name) = $member->findnodes('name');
+            my ($paramlist) = $member->findnodes('detaileddescription/para/parameterlist');
+            next unless ($name and $paramlist);
+
+            print 'FUNC_T: ', $name->textContent, "\n";
+
+            my ($mbrief) = $member->findnodes('briefdescription');
+            my ($detail) = $member->findnodes('detaileddescription');
+            my $brief = $mbrief->textContent;
+            $brief =~ s/[\r\n]+/ /mgo;
+            $brief =~ s/^ +//go;
+            $brief =~ s/[\. ]+$//go;
+            $brief =~ s/  +/ /go;
+
+            my @sections = ( { sdef => $section->{sdef}, members => [ $member ] } );
+            my @see_also;
+
+            open(OUTPUT, '>:encoding(UTF-8)', 'man/man3/'.$name->textContent.'.3') || die;
+            header($name->textContent, $brief);
+            synoptsis(\@sections);
+
+            print OUTPUT '.SH DESCRIPTION
+';
+            my $no_detail = 1;
+            foreach my $para ($detail->findnodes('para')) {
+                my $detail_text = '';
+
+                foreach my $child ($para->childNodes) {
+                    if ($child->nodeName eq '#text') {
+                        $detail_text .= $child->textContent;
+                    }
+                    elsif ($child->nodeName eq 'ref') {
+                        $detail_text .= $child->textContent;
+                    }
+                }
+                $detail_text = trim($detail_text);
+                if ($detail_text) {
+                    print OUTPUT $detail_text, '
+
+';
+                    $no_detail = 0;
+                }
+            }
+            if ($no_detail) {
+                print OUTPUT trim($mbrief->textContent), '
+
+';
+            }
+
+            my $return_text = '';
+            foreach my $para ($detail->findnodes('para')) {
+                foreach my $child ($para->childNodes) {
+                    if ($child->nodeName eq 'simplesect') {
+                        my ($sectkind) = $child->attributes->getNamedItem('kind');
+
+                        if ($sectkind->value eq 'return') {
+                            $return_text .= $child->textContent;
+                        }
+                    }
+                }
+            }
+            if ($return_text) {
+                print OUTPUT '.SH RETURN VALUE
+', trim($return_text), '
+';
+            }
+
+            my @see;
+            foreach my $para ($detail->findnodes('para')) {
+                foreach my $child ($para->childNodes) {
+                    if ($child->nodeName eq 'simplesect') {
+                        my ($sectkind) = $child->attributes->getNamedItem('kind');
+
                         if ($sectkind->value eq 'see') {
                             push(@see, $child->textContent);
                         }
@@ -510,7 +692,7 @@ sub functions {
 
 sub process_dom {
     my $dom = shift || die;
-    
+
     foreach my $cdef ($dom->findnodes('/doxygen/compounddef')) {
         my ($ckind) = $cdef->attributes->getNamedItem('kind');
         if ($ckind->value ne 'group') {
@@ -526,26 +708,26 @@ sub process_dom {
         $brief =~ s/^ +//go;
         $brief =~ s/[\. ]+$//go;
         $brief =~ s/  +/ /go;
-        
+
         print 'COMPOUND: ', $cname->textContent, "\n",
             'TITLE: ', $ctitle->textContent, "\n";
-        
+
         my @sections = ();
         foreach my $sdef ($cdef->findnodes('sectiondef')) {
             my ($skind) = $sdef->attributes->getNamedItem('kind');
-            
+
             print 'SECTION: ', $skind->value, "\n";
-            
+
             my @members = ();
             foreach my $mdef ($sdef->findnodes('memberdef')) {
                 my ($mkind) = $mdef->attributes->getNamedItem('kind');
                 my ($mname) = $mdef->findnodes('name');
-                
+
                 print '    MEMBER: ', $mname->textContent, ' (', $mkind->value, ")\n";
-                
+
                 push(@members, $mdef);
             }
-            
+
             push(@sections, { sdef => $sdef, members => \@members });
         }
 
@@ -553,7 +735,7 @@ sub process_dom {
         if (!$detail) {
             $detail = trim($cbrief->textContent);
         }
-        
+
         open(OUTPUT, '>:encoding(UTF-8)', 'man/man3/'.$cname->textContent.'.3') || die;
         header($ctitle->textContent, $brief);
         synoptsis(\@sections);
@@ -561,9 +743,9 @@ sub process_dom {
         see_also($cdetail, \@sections);
         footer;
         close(OUTPUT);
-        
+
         functions(\@sections);
     }
-    
+
     return 1;
 }
