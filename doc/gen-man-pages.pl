@@ -223,7 +223,7 @@ sub synoptsis {
                 my ($decl) = $param->findnodes('type');
                 my ($declname) = $param->findnodes('declname');
                 
-                push(@params, { decl => $decl->textContent, name => $declname->textContent });
+                push(@params, { decl => $decl->textContent, ( defined $declname ? ( name => $declname->textContent ) : () ) });
             }
             next unless ($type->textContent and $name->textContent and scalar @params);
             
@@ -250,9 +250,9 @@ sub synoptsis {
             }
             $first_param = 0;
             
-            print OUTPUT $param->{decl}, ' " ', $param->{name};
+            print OUTPUT $param->{decl}, ($param->{name} ? ' " '.$param->{name}.' ' : '');
         }
-        print OUTPUT ' );
+        print OUTPUT ');
 ';
     }
 
