@@ -33,6 +33,16 @@
  * All rights reserved.
  */
 
+/** \file db_join.h */
+/** \defgroup db_join db_join
+ * Database Join.
+ * These are the functions and container for handling a database join.
+ */
+/** \defgroup db_join_list db_join_list
+ * Database Join List.
+ * These are the functions and container for handling database joins.
+ */
+
 #ifndef libdbo_db_join_h
 #define libdbo_db_join_h
 
@@ -40,10 +50,26 @@
 extern "C" {
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_join;
 struct db_join_list;
+#endif
+
+/** \addtogroup db_join */
+/** \{ */
+/**
+ * A database join description.
+ */
 typedef struct db_join db_join_t;
+/** \} */
+
+/** \addtogroup db_join_list */
+/** \{ */
+/**
+ * A list of database joins.
+ */
 typedef struct db_join_list db_join_list_t;
+/** \} */
 
 #ifdef __cplusplus
 }
@@ -55,9 +81,7 @@ typedef struct db_join_list db_join_list_t;
 extern "C" {
 #endif
 
-/**
- * A database join description.
- */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_join {
     db_join_t* next;
     char* from_table;
@@ -65,6 +89,10 @@ struct db_join {
     char* to_table;
     char* to_field;
 };
+#endif
+
+/** \addtogroup db_join */
+/** \{ */
 
 /**
  * Create a new database join.
@@ -157,13 +185,17 @@ int db_join_not_empty(const db_join_t* join);
  */
 const db_join_t* db_join_next(const db_join_t* join);
 
-/**
- * A list of database joins.
- */
+/** \} */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_join_list {
     db_join_t* begin;
     db_join_t* end;
 };
+#endif
+
+/** \addtogroup db_join_list */
+/** \{ */
 
 /**
  * Create a new database join list.
@@ -192,6 +224,8 @@ int db_join_list_add(db_join_list_t* join_list, db_join_t* join);
  * \return a db_join_t pointer or NULL on error or if the list is empty.
  */
 const db_join_t* db_join_list_begin(const db_join_list_t* join_list);
+
+/** \} */
 
 #ifdef __cplusplus
 }

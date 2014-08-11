@@ -33,6 +33,16 @@
  * All rights reserved.
  */
 
+/** \file db_result.h */
+/** \defgroup db_result db_result
+ * Database Result.
+ * These are the functions and container for handling a database result.
+ */
+/** \defgroup db_result_list db_result_list
+ * Database Result List.
+ * These are the functions and container for handling database results.
+ */
+
 #ifndef libdbo_db_result_h
 #define libdbo_db_result_h
 
@@ -40,12 +50,32 @@
 extern "C" {
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_result;
 struct db_result_list;
-typedef struct db_result db_result_t;
-typedef struct db_result_list db_result_list_t;
+#endif
 
+/** \addtogroup db_result */
+/** \{ */
 /**
+ * A container for a database result, the data in the result is represented by
+ * a fixed size db_value_set_t.
+ */
+typedef struct db_result db_result_t;
+/** \} */
+
+/** \addtogroup db_result_list */
+/** \{ */
+/**
+ * A list of database results.
+ */
+typedef struct db_result_list db_result_list_t;
+/** \} */
+
+/** \addtogroup db_result */
+/** \{ */
+/**
+ * Function pointer for walking a db_result_list.
  * Function pointer for walking a db_result_list. The backend handle specific
  * data is supplied in `data` and setting `finish` to non-zero tells the backend
  * that we are finished with the db_result_list.
@@ -55,6 +85,7 @@ typedef struct db_result_list db_result_list_t;
  * \return A pointer to the next db_result_t or NULL on error.
  */
 typedef db_result_t* (*db_result_list_next_t)(void* data, int finish);
+/** \} */
 
 #ifdef __cplusplus
 }
@@ -67,15 +98,16 @@ typedef db_result_t* (*db_result_list_next_t)(void* data, int finish);
 extern "C" {
 #endif
 
-/**
- * A container for a database result, the data in the result is represented by
- * a fixed size db_value_set_t.
- */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_result {
     db_result_t* next;
     db_value_set_t* value_set;
     db_backend_meta_data_list_t* backend_meta_data_list;
 };
+#endif
+
+/** \addtogroup db_result */
+/** \{ */
 
 /**
  * Create a new database result.
@@ -144,9 +176,9 @@ int db_result_set_backend_meta_data_list(db_result_t* result, db_backend_meta_da
  */
 int db_result_not_empty(const db_result_t* result);
 
-/**
- * A list of database results.
- */
+/** \} */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_result_list {
     db_result_t* begin;
     db_result_t* end;
@@ -156,6 +188,10 @@ struct db_result_list {
     size_t size;
     int begun;
 };
+#endif
+
+/** \addtogroup db_result_list */
+/** \{ */
 
 /**
  * Create a new database result list.
@@ -238,6 +274,8 @@ size_t db_result_list_size(const db_result_list_t* result_list);
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
 int db_result_list_fetch_all(db_result_list_t* result_list);
+
+/** \} */
 
 #ifdef __cplusplus
 }

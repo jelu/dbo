@@ -32,6 +32,14 @@
  * All rights reserved.
  */
 
+/** \file db_mm.h */
+/** \defgroup db_mm db_mm
+ * Database Memory Management.
+ * These functions handles the internal memory of the database layer. It can be
+ * replaced with external memory management via the functions db_mm_set_malloc()
+ * and db_mm_set_free().
+ */
+
 #ifndef libdbo_db_mm_h
 #define libdbo_db_mm_h
 
@@ -42,12 +50,20 @@
 extern "C" {
 #endif
 
-#define DB_MM_T_STATIC_NEW(x) { NULL, NULL, x, PTHREAD_MUTEX_INITIALIZER }
+/** \addtogroup db_mm */
+/** \{ */
 
-typedef struct db_mm db_mm_t;
+/**
+ * A db_mm_t static allocation for a memory pool.
+ */
+#define DB_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, PTHREAD_MUTEX_INITIALIZER }
+
 /**
  * A memory pool handle.
  */
+typedef struct db_mm db_mm_t;
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_mm
 {
     void *block;
@@ -55,6 +71,7 @@ struct db_mm
 	size_t size;
 	pthread_mutex_t lock;
 };
+#endif
 
 /**
  * Function pointer for allocating memory, used with db_mm_set_malloc() and
@@ -125,6 +142,8 @@ void db_mm_delete(db_mm_t* alloc, void* ptr);
  * \param[in] alloc a db_mm_t pointer.
  */
 void db_mm_release(db_mm_t* alloc);
+
+/** \} */
 
 #ifdef __cplusplus
 }

@@ -33,6 +33,20 @@
  * All rights reserved.
  */
 
+/** \file db_object.h */
+/** \defgroup db_object db_object
+ * Database Object.
+ * These are the functions and container for handling a database object.
+ */
+/** \defgroup db_object_field db_object_field
+ * Database Object Field.
+ * These are the functions and container for handling a database object field.
+ */
+/** \defgroup db_object_field_list db_object_field_list
+ * Database Object Field List.
+ * These are the functions and container for handling database object fields.
+ */
+
 #ifndef libdbo_db_object_h
 #define libdbo_db_object_h
 
@@ -40,12 +54,35 @@
 extern "C" {
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_object;
 struct db_object_field;
 struct db_object_field_list;
+#endif
+
+/** \addtogroup db_object */
+/** \{ */
+/**
+ * A database object.
+ */
 typedef struct db_object db_object_t;
+/** \} */
+
+/** \addtogroup db_object_field */
+/** \{ */
+/**
+ * A representation of an field/value for a database object.
+ */
 typedef struct db_object_field db_object_field_t;
+/** \} */
+
+/** \addtogroup db_object_field_list */
+/** \{ */
+/**
+ * A list of object fields.
+ */
 typedef struct db_object_field_list db_object_field_list_t;
+/** \} */
 
 #ifdef __cplusplus
 }
@@ -64,15 +101,17 @@ typedef struct db_object_field_list db_object_field_list_t;
 extern "C" {
 #endif
 
-/**
- * A representation of an field/value for a database object.
- */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_object_field {
     db_object_field_t* next;
     const char* name;
     db_type_t type;
     const db_enum_t* enum_set;
 };
+#endif
+
+/** \addtogroup db_object_field */
+/** \{ */
 
 /**
  * Create a database object field.
@@ -162,14 +201,18 @@ int db_object_field_not_empty(const db_object_field_t* object_field);
  */
 const db_object_field_t* db_object_field_next(const db_object_field_t* object_field);
 
-/**
- * A list of object fields.
- */
+/** \} */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_object_field_list {
     db_object_field_t* begin;
     db_object_field_t* end;
     size_t size;
 };
+#endif
+
+/** \addtogroup db_object_field_list */
+/** \{ */
 
 /**
  * Create a new object field list.
@@ -221,9 +264,9 @@ const db_object_field_t* db_object_field_list_begin(const db_object_field_list_t
  */
 size_t db_object_field_list_size(const db_object_field_list_t* object_field_list);
 
-/**
- * A database object.
- */
+/** \} */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_object {
     const db_connection_t* connection;
     const char* table;
@@ -231,6 +274,10 @@ struct db_object {
     db_object_field_list_t* object_field_list;
     db_backend_meta_data_list_t* backend_meta_data_list;
 };
+#endif
+
+/** \addtogroup db_object */
+/** \{ */
 
 /**
  * Create a new database object.
@@ -375,6 +422,8 @@ int db_object_delete(const db_object_t* object, const db_clause_list_t* clause_l
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
 int db_object_count(const db_object_t* object, const db_join_list_t* join_list, const db_clause_list_t* clause_list, size_t* count);
+
+/** \} */
 
 #ifdef __cplusplus
 }

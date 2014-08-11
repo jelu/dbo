@@ -33,8 +33,17 @@
  * All rights reserved.
  */
 
+/** \file db_error.h */
+/** \defgroup db_error db_error
+ * Database Error.
+ * These are the various errors that the database layer can return.
+ */
+
 #ifndef libdbo_db_error_h
 #define libdbo_db_error_h
+
+/** \addtogroup db_object */
+/** \{ */
 
 /**
  * A successful operation.
@@ -44,5 +53,7 @@
  * A failed operation with an unknown error.
  */
 #define DB_ERROR_UNKNOWN 1
+
+/** \} */
 
 #endif

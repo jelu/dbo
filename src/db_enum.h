@@ -33,6 +33,12 @@
  * All rights reserved.
  */
 
+/** \file db_enum.h */
+/** \defgroup db_enum db_enum
+ * Database Enum Type.
+ * Container for database enums.
+ */
+
 #ifndef libdbo_db_enum_h
 #define libdbo_db_enum_h
 
@@ -40,15 +46,28 @@
 extern "C" {
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+struct db_enum;
+#endif
+
+/** \addtogroup db_enum */
+/** \{ */
+
 /**
  * A enumerate value, represented by a character string and integer.
  * Used for converting database enumerate values from/to text and integer and is
  * often given as a NULL terminated list.
  */
-typedef struct db_enum {
+typedef struct db_enum db_enum_t;
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+struct db_enum {
     const char* text;
     int value;
 } db_enum_t;
+#endif
+
+/** \} */
 
 #ifdef __cplusplus
 }
