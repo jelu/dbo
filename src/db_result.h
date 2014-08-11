@@ -179,6 +179,7 @@ void db_result_list_free(db_result_list_t* result_list);
 /**
  * Copy the content of another database result list.
  * \param[in] result_list a db_result_list_t pointer.
+ * \param[in] from_result_list a db_result_list_t pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
 int db_result_list_copy(db_result_list_t* result_list, const db_result_list_t* from_result_list);
