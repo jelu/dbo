@@ -36,7 +36,7 @@
 /** \file db_value.h */
 /** \defgroup db_value db_value
  * Database Value.
- * These are the functions and container to handle database values.
+ * These are the functions and container for handling a database value.
  */
 /** \defgroup db_value_set db_value_set
  * Database Value Set.
