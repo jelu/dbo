@@ -54,7 +54,7 @@ BUILT_SOURCES += test_groups.c test_groups.h \
 	test_users_rev.c test_users_rev.h
 
 nodist_test_SOURCES = $(BUILT_SOURCES)
-CLEANFILES = $(BUILT_SOURCES)
+CLEANFILES = $(BUILT_SOURCES) stamp-objects stamp-tests
 
 if HAVE_SQLITE3
 BUILT_SOURCES += schema.sqlite
@@ -103,16 +103,21 @@ user_group_link_ext.c user_group_link_ext.h \
 user_group_link_rev.c user_group_link_rev.h \
 user_group_link_rev_ext.c user_group_link_rev_ext.h \
 users_rev.c users_rev.h \
-users_rev_ext.c users_rev_ext.h:
-	$(top_srcdir)/tools/dbo-generate-objects ./test.json
+users_rev_ext.c users_rev_ext.h: stamp-objects
+
+stamp-objects: test.json
+	$(top_srcdir)/tools/dbo-generate-objects test.json
+	touch stamp-objects
 
 if HAVE_SQLITE3
-schema.sqlite:
-	$(top_srcdir)/tools/dbo-generate-schema --backend sqlite ./test.json
+schema.sqlite: test.json
+	$(top_srcdir)/tools/dbo-generate-schema --backend sqlite test.json
 endif
 if TEST_MYSQL
-drop.mysql schema.mysql:
-	$(top_srcdir)/tools/dbo-generate-schema --backend mysql ./test.json
+drop.mysql: schema.mysql
+
+schema.mysql: test.json
+	$(top_srcdir)/tools/dbo-generate-schema --backend mysql test.json
 endif
 
 test_groups.c test_groups.h \
@@ -120,7 +125,10 @@ test_groups_rev.c test_groups_rev.h \
 test_users.c test_users.h \
 test_user_group_link.c test_user_group_link.h \
 test_user_group_link_rev.c test_user_group_link_rev.h \
-test_users_rev.c test_users_rev.h:
-	$(top_srcdir)/tools/dbo-generate-tests ./test.json
+test_users_rev.c test_users_rev.h: stamp-tests
+
+stamp-tests: test.json
+	$(top_srcdir)/tools/dbo-generate-tests test.json
+	touch stamp-tests
 
 endif
