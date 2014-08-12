@@ -43,3 +43,5 @@ users_rev.c
 users_rev.h
 users_rev_ext.c
 users_rev_ext.h
+stamp-objects
+stamp-tests

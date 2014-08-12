@@ -25,22 +25,35 @@
 MAINTAINERCLEANFILES = $(srcdir)/Makefile.in
 
 lib_LTLIBRARIES = libdbo.la
-libdbo_la_SOURCES = libdbo_mm.c libdbo_mm.h \
-	libdbo_backend.c libdbo_backend.h \
-	libdbo_clause.c libdbo_clause.h \
-	libdbo_configuration.c libdbo_configuration.h \
-	libdbo_connection.c libdbo_connection.h \
-	libdbo_object.c libdbo_object.h \
-	libdbo_result.c libdbo_result.h \
-	libdbo_type.h \
-	libdbo_value.c libdbo_value.h \
-	libdbo_join.c libdbo_join.h \
-	libdbo_error.h
+libdbo_la_SOURCES = libdbo_mm.c libdbo/mm.h \
+	libdbo_backend.c libdbo/backend.h \
+	libdbo_clause.c libdbo/clause.h \
+	libdbo_configuration.c libdbo/configuration.h \
+	libdbo_connection.c libdbo/connection.h \
+	libdbo_object.c libdbo/object.h \
+	libdbo_result.c libdbo/result.h \
+	libdbo/type.h \
+	libdbo_value.c libdbo/value.h \
+	libdbo_join.c libdbo/join.h \
+	libdbo/error.h
+nobase_include_HEADERS = libdbo/mm.h \
+	libdbo/backend.h \
+	libdbo/clause.h \
+	libdbo/configuration.h \
+	libdbo/connection.h \
+	libdbo/object.h \
+	libdbo/result.h \
+	libdbo/type.h \
+	libdbo/value.h \
+	libdbo/join.h \
+	libdbo/error.h
 if HAVE_SQLITE3
-libdbo_la_SOURCES += libdbo_backend_sqlite.c libdbo_backend_sqlite.h
+libdbo_la_SOURCES += libdbo_backend_sqlite.c libdbo/backend/sqlite.h
+nobase_include_HEADERS += libdbo/backend/sqlite.h
 endif
 if HAVE_MYSQL
-libdbo_la_SOURCES += libdbo_backend_mysql.c libdbo_backend_mysql.h
+libdbo_la_SOURCES += libdbo_backend_mysql.c libdbo/backend/mysql.h
+nobase_include_HEADERS += libdbo/backend/mysql.h
 endif
 libdbo_la_CFLAGS = \
 	@SQLITE3_CFLAGS@ \

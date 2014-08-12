@@ -33,10 +33,10 @@
  * All rights reserved.
  */
 
-#include "libdbo_backend_couchdb.h"
-#include "libdbo_error.h"
+#include "libdbo/backend/couchdb.h"
+#include "libdbo/error.h"
 
-#include "libdbo_mm.h"
+#include "libdbo/mm.h"
 
 #include <curl/curl.h>
 #include <stdlib.h>

@@ -25,7 +25,7 @@
  *
  */
 
-#include "libdbo_mm.h"
+#include <libdbo/mm.h>
 
 #include "CUnit/Basic.h"
 

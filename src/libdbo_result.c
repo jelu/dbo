@@ -33,10 +33,10 @@
  * All rights reserved.
  */
 
-#include "libdbo_result.h"
-#include "libdbo_error.h"
+#include "libdbo/result.h"
+#include "libdbo/error.h"
 
-#include "libdbo_mm.h"
+#include "libdbo/mm.h"
 
 /* DB RESULT */
 

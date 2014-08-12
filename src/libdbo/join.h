@@ -33,7 +33,7 @@
  * All rights reserved.
  */
 
-/** \file libdbo_join.h */
+/** \file libdbo/join.h */
 /** \defgroup libdbo_join libdbo_join
  * Database Join.
  * These are the functions and container for handling a database join.
@@ -75,7 +75,7 @@ typedef struct libdbo_join_list libdbo_join_list_t;
 }
 #endif
 
-#include "libdbo_type.h"
+#include <libdbo/type.h>
 
 #ifdef __cplusplus
 extern "C" {

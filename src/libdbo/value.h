@@ -33,7 +33,7 @@
  * All rights reserved.
  */
 
-/** \file libdbo_value.h */
+/** \file libdbo/value.h */
 /** \defgroup libdbo_value libdbo_value
  * Database Value.
  * These are the functions and container for handling a database value.
@@ -75,8 +75,8 @@ typedef struct libdbo_value_set libdbo_value_set_t;
 }
 #endif
 
-#include "libdbo_type.h"
-#include "libdbo_enum.h"
+#include <libdbo/type.h>
+#include <libdbo/enum.h>
 
 #include <stdlib.h>
 

@@ -130,7 +130,12 @@ sub synoptsis {
             next unless ($file);
 
             my $filename = $file->value;
-            $filename =~ s/.*\///o;
+            if ($ENV{srcdir}) {
+                $filename =~ s/.*$ENV{srcdir}\///o;
+            }
+            else {
+                $filename =~ s/.*\///o;
+            }
             next unless ($filename);
 
             $include{$filename} = 1;

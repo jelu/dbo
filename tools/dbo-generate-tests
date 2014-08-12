@@ -87,8 +87,8 @@ open(SOURCE, '>:encoding(UTF-8)', 'test_'.$name.'.c') or die;
 
 #include "CUnit/Basic.h"
 
-#include "libdbo_configuration.h"
-#include "libdbo_connection.h"
+#include <libdbo/configuration.h>
+#include <libdbo/connection.h>
 #include "', $name, '.h"
 
 #include <string.h>

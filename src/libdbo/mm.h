@@ -32,7 +32,7 @@
  * All rights reserved.
  */
 
-/** \file libdbo_mm.h */
+/** \file libdbo/mm.h */
 /** \defgroup libdbo_mm libdbo_mm
  * Database Memory Management.
  * These functions handles the internal memory of the database layer. It can be

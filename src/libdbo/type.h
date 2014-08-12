@@ -33,7 +33,7 @@
  * All rights reserved.
  */
 
-/** \file libdbo_type.h */
+/** \file libdbo/type.h */
 /** \defgroup libdbo_type libdbo_type
  * Database Types.
  * These are the supported database values that can be used to retrieve or store

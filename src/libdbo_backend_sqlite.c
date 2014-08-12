@@ -33,10 +33,10 @@
  * All rights reserved.
  */
 
-#include "libdbo_backend_sqlite.h"
+#include "libdbo/backend/sqlite.h"
 
-#include "libdbo_error.h"
-#include "libdbo_mm.h"
+#include "libdbo/error.h"
+#include "libdbo/mm.h"
 
 #include <stdlib.h>
 #include <sqlite3.h>

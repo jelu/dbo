@@ -33,7 +33,7 @@
  * All rights reserved.
  */
 
-/** \file libdbo_object.h */
+/** \file libdbo/object.h */
 /** \defgroup libdbo_object libdbo_object
  * Database Object.
  * These are the functions and container for handling a database object.
@@ -88,14 +88,14 @@ typedef struct libdbo_object_field_list libdbo_object_field_list_t;
 }
 #endif
 
-#include "libdbo_connection.h"
-#include "libdbo_result.h"
-#include "libdbo_join.h"
-#include "libdbo_clause.h"
-#include "libdbo_type.h"
-#include "libdbo_value.h"
-#include "libdbo_enum.h"
-#include "libdbo_backend.h"
+#include <libdbo/connection.h>
+#include <libdbo/result.h>
+#include <libdbo/join.h>
+#include <libdbo/clause.h>
+#include <libdbo/type.h>
+#include <libdbo/value.h>
+#include <libdbo/enum.h>
+#include <libdbo/backend.h>
 
 #ifdef __cplusplus
 extern "C" {

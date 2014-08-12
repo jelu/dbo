@@ -33,7 +33,7 @@
  * All rights reserved.
  */
 
-/** \file libdbo_configuration.h */
+/** \file libdbo/configuration.h */
 /** \defgroup libdbo_configuration libdbo_configuration
  * Database Configuration.
  * These are the functions and container for handling a database configuration

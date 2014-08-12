@@ -25,47 +25,47 @@
  *
  */
 /*
- * Based on enforcer-ng/src/db/db_enum.h header file from the OpenDNSSEC
- * project.
+ * Based on enforcer-ng/src/db/db_backend_sqlite.h header file from the
+ * OpenDNSSEC project.
  *
  * Copyright (c) 2014 .SE (The Internet Infrastructure Foundation).
  * Copyright (c) 2014 OpenDNSSEC AB (svb)
  * All rights reserved.
  */
 
-/** \file libdbo_enum.h */
-/** \defgroup libdbo_enum libdbo_enum
- * Database Enum Type.
- * Container for database enums.
+/** \file libdbo/backend/sqlite.h */
+/** \defgroup libdbo_backend_sqlite libdbo_backend_sqlite
+ * Database Backend SQLite.
+ * These are the functions for creating a SQLite backend handle.
  */
 
-#ifndef libdbo_enum_h
-#define libdbo_enum_h
+#ifndef libdbo_backend_sqlite_h
+#define libdbo_backend_sqlite_h
+
+#include <libdbo/backend.h>
+
+/** \addtogroup libdbo_backend_sqlite */
+/** \{ */
+
+/**
+ * Default timeout in seconds waiting for the internal SQLite lock to be
+ * released.
+ */
+#define DB_BACKEND_SQLITE_DEFAULT_TIMEOUT 30
+/**
+ * Default usleep() timeout between checks of the internal SQLite lock.
+ */
+#define DB_BACKEND_SQLITE_DEFAULT_USLEEP 200000
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct libdbo_enum;
-#endif
-
-/** \addtogroup libdbo_enum */
-/** \{ */
-
 /**
- * A enumerate value, represented by a character string and integer.
- * Used for converting database enumerate values from/to text and integer and is
- * often given as a NULL terminated list.
+ * Create a new database backend handle for SQLite.
+ * \return a libdbo_backend_handle_t pointer or NULL on error.
  */
-typedef struct libdbo_enum libdbo_enum_t;
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct libdbo_enum {
-    const char* text;
-    int value;
-};
-#endif
+libdbo_backend_handle_t* libdbo_backend_sqlite_new_handle(void);
 
 /** \} */
 

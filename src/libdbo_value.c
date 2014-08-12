@@ -33,10 +33,10 @@
  * All rights reserved.
  */
 
-#include "libdbo_value.h"
-#include "libdbo_error.h"
+#include "libdbo/value.h"
+#include "libdbo/error.h"
 
-#include "libdbo_mm.h"
+#include "libdbo/mm.h"
 
 #include <string.h>
 

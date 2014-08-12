@@ -35,8 +35,8 @@
 
 #include "config.h"
 
-#include "libdbo_configuration.h"
-#include "libdbo_connection.h"
+#include <libdbo/configuration.h>
+#include <libdbo/connection.h>
 
 #include "CUnit/Basic.h"
 

@@ -25,51 +25,47 @@
  *
  */
 /*
- * Based on enforcer-ng/src/db/db_backend_mysql.h header file from the
- * OpenDNSSEC project.
+ * Based on enforcer-ng/src/db/db_enum.h header file from the OpenDNSSEC
+ * project.
  *
  * Copyright (c) 2014 .SE (The Internet Infrastructure Foundation).
  * Copyright (c) 2014 OpenDNSSEC AB (svb)
  * All rights reserved.
  */
 
-/** \file libdbo_backend_mysql.h */
-/** \defgroup libdbo_backend_mysql libdbo_backend_mysql
- * Database Backend MySQL.
- * These are the functions for creating a MySQL backend handle.
+/** \file libdbo/enum.h */
+/** \defgroup libdbo_enum libdbo_enum
+ * Database Enum Type.
+ * Container for database enums.
  */
 
-#ifndef libdbo_backend_mysql_h
-#define libdbo_backend_mysql_h
-
-#include "libdbo_backend.h"
-
-/** \addtogroup libdbo_backend_mysql */
-/** \{ */
-
-/**
- * Default connection timeout for MySQL.
- */
-#define DB_BACKEND_MYSQL_DEFAULT_TIMEOUT 30
-/**
- * Minimal allocation size when fetching varchar, text or blobs.
- */
-#define DB_BACKEND_MYSQL_STRING_MIN_SIZE 64
-/**
- * Maximum allocation size when fetching varchar, text or blobs. If the value in
- * the database is larger then this then the fetch will fail.
- */
-#define DB_BACKEND_MYSQL_STRING_MAX_SIZE 4096
+#ifndef libdbo_enum_h
+#define libdbo_enum_h
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+struct libdbo_enum;
+#endif
+
+/** \addtogroup libdbo_enum */
+/** \{ */
+
 /**
- * Create a new database backend handle for MySQL.
- * \return a libdbo_backend_handle_t pointer or NULL on error.
+ * A enumerate value, represented by a character string and integer.
+ * Used for converting database enumerate values from/to text and integer and is
+ * often given as a NULL terminated list.
  */
-libdbo_backend_handle_t* libdbo_backend_mysql_new_handle(void);
+typedef struct libdbo_enum libdbo_enum_t;
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+struct libdbo_enum {
+    const char* text;
+    int value;
+};
+#endif
 
 /** \} */
 

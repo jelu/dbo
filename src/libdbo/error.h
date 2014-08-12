@@ -25,42 +25,35 @@
  *
  */
 /*
- * Based on enforcer-ng/src/db/db_backend_couchdb.h header file from the
- * OpenDNSSEC project.
+ * Based on enforcer-ng/src/db/db_error.h header file from the OpenDNSSEC
+ * project.
  *
  * Copyright (c) 2014 .SE (The Internet Infrastructure Foundation).
  * Copyright (c) 2014 OpenDNSSEC AB (svb)
  * All rights reserved.
  */
 
-/** \file libdbo_backend_couchdb.h */
-/** \defgroup libdbo_backend_couchdb libdbo_backend_couchdb
- * Database Backend CouchDB.
- * These are the functions for creating a CouchDB backend handle.
+/** \file libdbo/error.h */
+/** \defgroup libdbo_error libdbo_error
+ * Database Error.
+ * These are the various errors that the database layer can return.
  */
 
-#ifndef libdbo_backend_couchdb_h
-#define libdbo_backend_couchdb_h
+#ifndef libdbo_error_h
+#define libdbo_error_h
 
-#include "libdbo_backend.h"
-
-/** \addtogroup libdbo_backend_couchdb */
+/** \addtogroup libdbo_object */
 /** \{ */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
- * Create a new database backend handle for CouchDB.
- * \return a libdbo_backend_handle_t pointer or NULL on error.
+ * A successful operation.
  */
-libdbo_backend_handle_t* libdbo_backend_couchdb_new_handle(void);
+#define DB_OK 0
+/**
+ * A failed operation with an unknown error.
+ */
+#define DB_ERROR_UNKNOWN 1
 
 /** \} */
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

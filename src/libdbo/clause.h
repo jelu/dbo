@@ -33,7 +33,7 @@
  * All rights reserved.
  */
 
-/** \file libdbo_clause.h */
+/** \file libdbo/clause.h */
 /** \defgroup libdbo_clause libdbo_clause
  * Database Clause.
  * These are the functions and container for handling a database clause.
@@ -175,7 +175,7 @@ typedef struct libdbo_clause_list libdbo_clause_list_t;
 }
 #endif
 
-#include "libdbo_value.h"
+#include <libdbo/value.h>
 
 #ifdef __cplusplus
 extern "C" {

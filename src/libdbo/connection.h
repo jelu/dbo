@@ -33,7 +33,7 @@
  * All rights reserved.
  */
 
-/** \file libdbo_connection.h */
+/** \file libdbo/connection.h */
 /** \defgroup libdbo_connection libdbo_connection
  * Database Connection.
  * These are the functions and container for handling a database connection.
@@ -62,12 +62,12 @@ typedef struct libdbo_connection libdbo_connection_t;
 }
 #endif
 
-#include "libdbo_configuration.h"
-#include "libdbo_backend.h"
-#include "libdbo_result.h"
-#include "libdbo_object.h"
-#include "libdbo_join.h"
-#include "libdbo_clause.h"
+#include <libdbo/configuration.h>
+#include <libdbo/backend.h>
+#include <libdbo/result.h>
+#include <libdbo/object.h>
+#include <libdbo/join.h>
+#include <libdbo/clause.h>
 
 #ifdef __cplusplus
 extern "C" {

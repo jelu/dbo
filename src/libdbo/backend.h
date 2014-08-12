@@ -33,7 +33,7 @@
  * All rights reserved.
  */
 
-/** \file libdbo_backend.h */
+/** \file libdbo/backend.h */
 /** \defgroup libdbo_backend_handle libdbo_backend_handle
  * Database Backend Handle.
  * These are the functions and container for defining a database backend handle.
@@ -107,12 +107,12 @@ typedef struct libdbo_backend_meta_data_list libdbo_backend_meta_data_list_t;
 }
 #endif
 
-#include "libdbo_configuration.h"
-#include "libdbo_result.h"
-#include "libdbo_object.h"
-#include "libdbo_join.h"
-#include "libdbo_clause.h"
-#include "libdbo_value.h"
+#include <libdbo/configuration.h>
+#include <libdbo/result.h>
+#include <libdbo/object.h>
+#include <libdbo/join.h>
+#include <libdbo/clause.h>
+#include <libdbo/value.h>
 
 #ifdef __cplusplus
 extern "C" {

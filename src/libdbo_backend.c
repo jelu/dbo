@@ -35,19 +35,19 @@
 
 #include "config.h"
 
-#include "libdbo_backend.h"
+#include "libdbo/backend.h"
 #if defined(HAVE_SQLITE3)
-#include "libdbo_backend_sqlite.h"
+#include "libdbo/backend/sqlite.h"
 #endif
 #if defined(HAVE_COUCHDB)
-#include "libdbo_backend_couchdb.h"
+#include "libdbo/backend/couchdb.h"
 #endif
 #if defined(HAVE_MYSQL)
-#include "libdbo_backend_mysql.h"
+#include "libdbo/backend/mysql.h"
 #endif
-#include "libdbo_error.h"
+#include "libdbo/error.h"
 
-#include "libdbo_mm.h"
+#include "libdbo/mm.h"
 
 #include <stdlib.h>
 #include <string.h>

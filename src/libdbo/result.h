@@ -33,7 +33,7 @@
  * All rights reserved.
  */
 
-/** \file libdbo_result.h */
+/** \file libdbo/result.h */
 /** \defgroup libdbo_result libdbo_result
  * Database Result.
  * These are the functions and container for handling a database result.
@@ -91,8 +91,8 @@ typedef libdbo_result_t* (*libdbo_result_list_next_t)(void* data, int finish);
 }
 #endif
 
-#include "libdbo_value.h"
-#include "libdbo_backend.h"
+#include <libdbo/value.h>
+#include <libdbo/backend.h>
 
 #ifdef __cplusplus
 extern "C" {

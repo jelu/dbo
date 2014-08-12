@@ -38,7 +38,7 @@ dbo.tag: doxygen.conf
 	top_srcdir="$(top_srcdir)" \
 	doxygen doxygen.conf
 	mkdir -p man/man3
-	./gen-man-pages.pl xml/*.xml
+	srcdir="$(top_srcdir)/src" ./gen-man-pages.pl xml/*.xml
 
 doc_DATA = dbo.tag
 endif

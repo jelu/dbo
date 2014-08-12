@@ -46,8 +46,8 @@
 
 #include "CUnit/Basic.h"
 
-#include "libdbo_backend.h"
-#include "libdbo_mm.h"
+#include <libdbo/backend.h>
+#include <libdbo/mm.h>
 
 void test_libdbo_backend_factory_shutdown(void) {
     CU_ASSERT_FATAL(!libdbo_backend_factory_shutdown());
