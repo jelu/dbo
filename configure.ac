@@ -34,6 +34,7 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
+AC_PROG_MKDIR_P
 AC_LANG([C])
 
 LT_INIT
@@ -174,8 +175,6 @@ AC_CONFIG_FILES([
 	Makefile
     doc/Makefile
 	src/Makefile
-    src/libdbo/Makefile
-    src/libdbo/backend/Makefile
     test/Makefile
     tools/Makefile
 ])
