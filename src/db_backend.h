@@ -33,6 +33,30 @@
  * All rights reserved.
  */
 
+/** \file db_backend.h */
+/** \defgroup db_backend_handle db_backend_handle
+ * Database Backend Handle.
+ * These are the functions and container for defining a database backend handle.
+ */
+/** \defgroup db_backend db_backend
+ * Database Backend.
+ * These are the functions and container for handling a database backend.
+ */
+/** \defgroup db_backend_meta_data db_backend_meta_data
+ * Database Backend Meta Data.
+ * These are the functions and container for handling a database backend meta
+ * data value.
+ */
+/** \defgroup db_backend_meta_data_list db_backend_meta_data_list
+ * Database Backend Meta Data List.
+ * These are the functions and container for handling lists of database backend
+ * meta data.
+ */
+/** \defgroup db_backend_factory db_backend_factory
+ * Database Backend Factory.
+ * These are the functions for accessing the available database backends.
+ */
+
 #ifndef libdbo_db_backend_h
 #define libdbo_db_backend_h
 
@@ -40,14 +64,44 @@
 extern "C" {
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_backend_handle;
 struct db_backend;
 struct db_backend_meta_data;
 struct db_backend_meta_data_list;
+#endif
+
+/** \addtogroup db_backend_handle */
+/** \{ */
+/**
+ * A database backend handle that contains all function pointers for a backend
+ * and the backend specific data.
+ */
 typedef struct db_backend_handle db_backend_handle_t;
+/** \} */
+/** \addtogroup db_backend */
+/** \{ */
+/**
+ * A database backend.
+ */
 typedef struct db_backend db_backend_t;
+/** \} */
+/** \addtogroup db_backend_meta_data */
+/** \{ */
+/**
+ * A database backend meta data that may be used by backends to store backend
+ * specific data about objects and results.
+ */
 typedef struct db_backend_meta_data db_backend_meta_data_t;
+/** \} */
+/** \addtogroup db_backend_meta_data_list */
+/** \{ */
+/**
+ * A list of database backend meta data that may be used by backends to store
+ * backend specific data about objects and results.
+ */
 typedef struct db_backend_meta_data_list db_backend_meta_data_list_t;
+/** \} */
 
 #ifdef __cplusplus
 }
@@ -63,6 +117,9 @@ typedef struct db_backend_meta_data_list db_backend_meta_data_list_t;
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \addtogroup db_backend_handle */
+/** \{ */
 
 /**
  * Function pointer for initializing a database backend. The backend handle
@@ -184,10 +241,7 @@ typedef int (*db_backend_handle_transaction_commit_t)(void* data);
  */
 typedef int (*db_backend_handle_transaction_rollback_t)(void* data);
 
-/**
- * A database backend handle that contains all function pointers for a backend
- * and the backend specific data.
- */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_backend_handle {
     void* data;
     db_backend_handle_initialize_t initialize_function;
@@ -204,6 +258,7 @@ struct db_backend_handle {
     db_backend_handle_transaction_commit_t transaction_commit_function;
     db_backend_handle_transaction_rollback_t transaction_rollback_function;
 };
+#endif
 
 /**
  * Create a new database backend handle.
@@ -449,14 +504,18 @@ int db_backend_handle_set_data(db_backend_handle_t* backend_handle, void* data);
  */
 int db_backend_handle_not_empty(const db_backend_handle_t* backend_handle);
 
-/**
- * A database backend.
- */
+/** \} */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_backend {
     db_backend_t* next;
     char* name;
     db_backend_handle_t* handle;
 };
+#endif
+
+/** \addtogroup db_backend */
+/** \{ */
 
 /**
  * Create a new database backend.
@@ -614,6 +673,11 @@ int db_backend_transaction_commit(const db_backend_t* backend);
  */
 int db_backend_transaction_rollback(const db_backend_t* backend);
 
+/** \} */
+
+/** \addtogroup db_backend_factory */
+/** \{ */
+
 /**
  * Get a new database backend by the name supplied in `name`.
  * \param[in] name a character pointer.
@@ -628,15 +692,18 @@ db_backend_t* db_backend_factory_get_backend(const char* name);
  */
 int db_backend_factory_shutdown(void);
 
-/**
- * A database backend meta data that may be used by backends to store backend
- * specific data about objects and results.
- */
+/** \} */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_backend_meta_data {
     db_backend_meta_data_t* next;
     char* name;
     db_value_t* value;
 };
+#endif
+
+/** \addtogroup db_backend_meta_data */
+/** \{ */
 
 /**
  * Create a new database backend meta data.
@@ -704,14 +771,17 @@ int db_backend_meta_data_set_value(db_backend_meta_data_t* backend_meta_data, db
  */
 int db_backend_meta_data_not_empty(const db_backend_meta_data_t* backend_meta_data);
 
-/**
- * A list of database backend meta data that may be used by backends to store
- * backend specific data about objects and results.
- */
+/** \} */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_backend_meta_data_list {
     db_backend_meta_data_t* begin;
     db_backend_meta_data_t* end;
 };
+#endif
+
+/** \addtogroup db_backend_meta_data_list */
+/** \{ */
 
 /**
  * Create a new database backend meta data list.
@@ -759,6 +829,8 @@ int db_backend_meta_data_list_add(db_backend_meta_data_list_t* backend_meta_data
  * backend meta data does not exist.
  */
 const db_backend_meta_data_t* db_backend_meta_data_list_find(const db_backend_meta_data_list_t* backend_meta_data_list, const char* name);
+
+/** \} */
 
 #ifdef __cplusplus
 }

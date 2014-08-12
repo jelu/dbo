@@ -33,6 +33,12 @@
  * All rights reserved.
  */
 
+/** \file db_connection.h */
+/** \defgroup db_connection db_connection
+ * Database Connection.
+ * These are the functions and container for handling a database connection.
+ */
+
 #ifndef libdbo_db_connection_h
 #define libdbo_db_connection_h
 
@@ -40,8 +46,17 @@
 extern "C" {
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_connection;
+#endif
+
+/** \addtogroup db_connection */
+/** \{ */
+/**
+ * A database connection.
+ */
 typedef struct db_connection db_connection_t;
+/** \} */
 
 #ifdef __cplusplus
 }
@@ -58,13 +73,15 @@ typedef struct db_connection db_connection_t;
 extern "C" {
 #endif
 
-/**
- * A database connection.
- */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_connection {
     const db_configuration_list_t* configuration_list;
     db_backend_t* backend;
 };
+#endif
+
+/** \addtogroup db_connection */
+/** \{ */
 
 /**
  * Create a new database connection.
@@ -182,6 +199,8 @@ int db_connection_transaction_commit(const db_connection_t* connection);
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
 int db_connection_transaction_rollback(const db_connection_t* connection);
+
+/** \} */
 
 #ifdef __cplusplus
 }

@@ -33,12 +33,28 @@
  * All rights reserved.
  */
 
+/** \file db_backend_sqlite.h */
+/** \defgroup db_backend_sqlite db_backend_sqlite
+ * Database Backend SQLite.
+ * These are the functions for creating a SQLite backend handle.
+ */
+
 #ifndef libdbo_db_backend_sqlite_h
 #define libdbo_db_backend_sqlite_h
 
 #include "db_backend.h"
 
+/** \addtogroup db_backend_sqlite */
+/** \{ */
+
+/**
+ * Default timeout in seconds waiting for the internal SQLite lock to be
+ * released.
+ */
 #define DB_BACKEND_SQLITE_DEFAULT_TIMEOUT 30
+/**
+ * Default usleep() timeout between checks of the internal SQLite lock.
+ */
 #define DB_BACKEND_SQLITE_DEFAULT_USLEEP 200000
 
 #ifdef __cplusplus
@@ -50,6 +66,8 @@ extern "C" {
  * \return a db_backend_handle_t pointer or NULL on error.
  */
 db_backend_handle_t* db_backend_sqlite_new_handle(void);
+
+/** \} */
 
 #ifdef __cplusplus
 }

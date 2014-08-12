@@ -33,6 +33,17 @@
  * All rights reserved.
  */
 
+/** \file db_configuration.h */
+/** \defgroup db_configuration db_configuration
+ * Database Configuration.
+ * These are the functions and container for handling a database configuration
+ * value.
+ */
+/** \defgroup db_configuration_list db_configuration_list
+ * Database Configuration List.
+ * These are the functions and container for handling database configurations.
+ */
+
 #ifndef libdbo_db_configuration_h
 #define libdbo_db_configuration_h
 
@@ -40,19 +51,36 @@
 extern "C" {
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_configuration;
 struct db_configuration_list;
-typedef struct db_configuration db_configuration_t;
-typedef struct db_configuration_list db_configuration_list_t;
+#endif
 
+/** \addtogroup db_configuration */
+/** \{ */
 /**
  * A database configuration represented by a key and value.
  */
+typedef struct db_configuration db_configuration_t;
+/** \} */
+/** \addtogroup db_configuration_list */
+/** \{ */
+/**
+ * A list of database configurations.
+ */
+typedef struct db_configuration_list db_configuration_list_t;
+/** \} */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_configuration {
     db_configuration_t* next;
     char* name;
     char* value;
 };
+#endif
+
+/** \addtogroup db_configuration */
+/** \{ */
 
 /**
  * Create a new database configuration.
@@ -105,13 +133,17 @@ int db_configuration_set_value(db_configuration_t* configuration, const char* va
  */
 int db_configuration_not_empty(const db_configuration_t* configuration);
 
-/**
- * A list of database configurations.
- */
+/** \} */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_configuration_list {
     db_configuration_t* begin;
     db_configuration_t* end;
 };
+#endif
+
+/** \addtogroup db_configuration_list */
+/** \{ */
 
 /**
  * Create a new database configuration list.
@@ -143,6 +175,8 @@ int db_configuration_list_add(db_configuration_list_t* configuration_list, db_co
  * configuration does not exist.
  */
 const db_configuration_t* db_configuration_list_find(const db_configuration_list_t* configuration_list, const char* name);
+
+/** \} */
 
 #ifdef __cplusplus
 }

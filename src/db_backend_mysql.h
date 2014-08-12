@@ -33,13 +33,32 @@
  * All rights reserved.
  */
 
+/** \file db_backend_mysql.h */
+/** \defgroup db_backend_mysql db_backend_mysql
+ * Database Backend MySQL.
+ * These are the functions for creating a MySQL backend handle.
+ */
+
 #ifndef libdbo_db_backend_mysql_h
 #define libdbo_db_backend_mysql_h
 
 #include "db_backend.h"
 
+/** \addtogroup db_backend_mysql */
+/** \{ */
+
+/**
+ * Default connection timeout for MySQL.
+ */
 #define DB_BACKEND_MYSQL_DEFAULT_TIMEOUT 30
+/**
+ * Minimal allocation size when fetching varchar, text or blobs.
+ */
 #define DB_BACKEND_MYSQL_STRING_MIN_SIZE 64
+/**
+ * Maximum allocation size when fetching varchar, text or blobs. If the value in
+ * the database is larger then this then the fetch will fail.
+ */
 #define DB_BACKEND_MYSQL_STRING_MAX_SIZE 4096
 
 #ifdef __cplusplus
@@ -47,10 +66,12 @@ extern "C" {
 #endif
 
 /**
- * Create a new database backend handle for SQLite.
+ * Create a new database backend handle for MySQL.
  * \return a db_backend_handle_t pointer or NULL on error.
  */
 db_backend_handle_t* db_backend_mysql_new_handle(void);
+
+/** \} */
 
 #ifdef __cplusplus
 }

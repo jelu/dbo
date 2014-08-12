@@ -33,12 +33,25 @@
  * All rights reserved.
  */
 
+/** \file db_clause.h */
+/** \defgroup db_clause db_clause
+ * Database Clause.
+ * These are the functions and container for handling a database clause.
+ */
+/** \defgroup db_clause_list db_clause_list
+ * Database Clause List.
+ * These are the functions and container for handling database clauses.
+ */
+
 #ifndef libdbo_db_clause_h
 #define libdbo_db_clause_h
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \addtogroup db_clause */
+/** \{ */
 
 /**
  * The clause operation to make on the value.
@@ -86,11 +99,29 @@ typedef enum {
     DB_CLAUSE_NESTED
 } db_clause_type_t;
 
+/**
+ * Short for DB_CLAUSE_EQUAL.
+ */
 #define DB_CLAUSE_EQ DB_CLAUSE_EQUAL
+/**
+ * Short for DB_CLAUSE_NOT_EQUAL.
+ */
 #define DB_CLAUSE_NE DB_CLAUSE_NOT_EQUAL
+/**
+ * Short for DB_CLAUSE_LESS_THEN.
+ */
 #define DB_CLAUSE_LT DB_CLAUSE_LESS_THEN
+/**
+ * Short for DB_CLAUSE_LESS_OR_EQUAL.
+ */
 #define DB_CLAUSE_LE DB_CLAUSE_LESS_OR_EQUAL
+/**
+ * Short for DB_CLAUSE_GREATER_OR_EQUAL.
+ */
 #define DB_CLAUSE_GE DB_CLAUSE_GREATER_OR_EQUAL
+/**
+ * Short for DB_CLAUSE_GREATER_THEN.
+ */
 #define DB_CLAUSE_GT DB_CLAUSE_GREATER_THEN
 
 /**
@@ -111,13 +142,34 @@ typedef enum {
     DB_CLAUSE_OPERATOR_OR
 } db_clause_operator_t;
 
+/**
+ * Short for DB_CLAUSE_OPERATOR_AND.
+ */
 #define DB_CLAUSE_OP_AND DB_CLAUSE_OPERATOR_AND
+/**
+ * Short for DB_CLAUSE_OPERATOR_OR.
+ */
 #define DB_CLAUSE_OP_OR  DB_CLAUSE_OPERATOR_OR
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_clause;
 struct db_clause_list;
+#endif
+
+/**
+ * A database clause, describes the comparison of a database object field and a
+ * value.
+ */
 typedef struct db_clause db_clause_t;
+/** \} */
+
+/** \addtogroup db_clause_list */
+/** \{ */
+/**
+ * A list of database clauses.
+ */
 typedef struct db_clause_list db_clause_list_t;
+/** \} */
 
 #ifdef __cplusplus
 }
@@ -129,10 +181,7 @@ typedef struct db_clause_list db_clause_list_t;
 extern "C" {
 #endif
 
-/**
- * A database clause, describes the comparison of a database object field and a
- * value.
- */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_clause {
     db_clause_t* next;
     char* table;
@@ -142,6 +191,10 @@ struct db_clause {
     db_clause_operator_t clause_operator;
     db_clause_list_t* clause_list;
 };
+#endif
+
+/** \addtogroup db_clause */
+/** \{ */
 
 /**
  * Create a new database clause.
@@ -262,13 +315,17 @@ const db_clause_t* db_clause_next(const db_clause_t* clause);
  */
 db_value_t* db_clause_get_value(db_clause_t* clause);
 
-/**
- * A list of database clauses.
- */
+/** \} */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct db_clause_list {
     db_clause_t* begin;
     db_clause_t* end;
 };
+#endif
+
+/** \addtogroup db_clause_list */
+/** \{ */
 
 /**
  * Create a new database clause list.
@@ -297,6 +354,8 @@ int db_clause_list_add(db_clause_list_t* clause_list, db_clause_t* clause);
  * \return a db_clause_t pointer or NULL on error or if the list is empty.
  */
 const db_clause_t* db_clause_list_begin(const db_clause_list_t* clause_list);
+
+/** \} */
 
 #ifdef __cplusplus
 }
