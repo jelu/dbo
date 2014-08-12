@@ -44,7 +44,7 @@ void test_libdbo_mm_init(void) {
 }
 
 void test_libdbo_mm(void) {
-    libdbo_mm_t mm = DB_MM_T_STATIC_NEW(128);
+    libdbo_mm_t mm = LIBDBO_MM_T_STATIC_NEW(128);
     void* ptr;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((ptr = libdbo_mm_new0(&mm)));
@@ -56,7 +56,7 @@ void test_libdbo_mm(void) {
 }
 
 void test_libdbo_mm_extern(void) {
-    libdbo_mm_t mm = DB_MM_T_STATIC_NEW(128);
+    libdbo_mm_t mm = LIBDBO_MM_T_STATIC_NEW(128);
     void* ptr;
 
     CU_ASSERT_FATAL(!libdbo_mm_set_malloc(&malloc));

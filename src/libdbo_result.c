@@ -40,7 +40,7 @@
 
 /* DB RESULT */
 
-static libdbo_mm_t __result_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_result_t));
+static libdbo_mm_t __result_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_result_t));
 
 libdbo_result_t* libdbo_result_new(void) {
     libdbo_result_t* result =
@@ -83,23 +83,23 @@ int libdbo_result_copy(libdbo_result_t* result, const libdbo_result_t* from_resu
     libdbo_backend_meta_data_list_t* backend_meta_data_list = NULL;
 
     if (!result) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!from_result) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (from_result->value_set
         && !(value_set = libdbo_value_set_new_copy(from_result->value_set)))
     {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (from_result->backend_meta_data_list
         && !(backend_meta_data_list = libdbo_backend_meta_data_list_new_copy(from_result->backend_meta_data_list)))
     {
         libdbo_value_set_free(value_set);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (result->value_set) {
@@ -111,7 +111,7 @@ int libdbo_result_copy(libdbo_result_t* result, const libdbo_result_t* from_resu
     }
     result->backend_meta_data_list = backend_meta_data_list;
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 const libdbo_value_set_t* libdbo_result_value_set(const libdbo_result_t* result) {
@@ -132,47 +132,47 @@ const libdbo_backend_meta_data_list_t* libdbo_result_backend_meta_data_list(cons
 
 int libdbo_result_set_value_set(libdbo_result_t* result, libdbo_value_set_t* value_set) {
     if (!result) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!value_set) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (result->value_set) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     result->value_set = value_set;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_result_set_backend_meta_data_list(libdbo_result_t* result, libdbo_backend_meta_data_list_t* backend_meta_data_list) {
     if (!result) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_meta_data_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (result->backend_meta_data_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     result->backend_meta_data_list = backend_meta_data_list;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_result_not_empty(const libdbo_result_t* result) {
     if (!result) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!result->value_set) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 /* DB RESULT LIST */
 
-static libdbo_mm_t __result_list_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_result_list_t));
+static libdbo_mm_t __result_list_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_result_list_t));
 
 libdbo_result_list_t* libdbo_result_list_new(void) {
     libdbo_result_list_t* result_list =
@@ -226,32 +226,32 @@ int libdbo_result_list_copy(libdbo_result_list_t* result_list, const libdbo_resu
     libdbo_result_t* result_copy;
 
     if (!result_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     /*
      * TODO: Should we be able to copy into a result list that already contains
      * data?
      */
     if (result_list->begin) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (result_list->end) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (result_list->current) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (result_list->size) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (result_list->next_function) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!from_result_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (from_result_list->next_function) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     result = from_result_list->begin;
@@ -259,7 +259,7 @@ int libdbo_result_list_copy(libdbo_result_list_t* result_list, const libdbo_resu
         if (!(result_copy = libdbo_result_new_copy(result))
             || libdbo_result_list_add(result_list, result_copy))
         {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         if (result == from_result_list->current) {
@@ -269,24 +269,24 @@ int libdbo_result_list_copy(libdbo_result_list_t* result_list, const libdbo_resu
         result = result->next;
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_result_list_set_next(libdbo_result_list_t* result_list, libdbo_result_list_next_t next_function, void* next_data, size_t size) {
     if (!result_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (result_list->begin) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (result_list->next_function) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!next_data) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (result_list->next_data) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     result_list->next_function = next_function;
@@ -297,24 +297,24 @@ int libdbo_result_list_set_next(libdbo_result_list_t* result_list, libdbo_result
 
 int libdbo_result_list_add(libdbo_result_list_t* result_list, libdbo_result_t* result) {
     if (!result_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!result) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (libdbo_result_not_empty(result)) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (result->next) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (result_list->next_function) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (result_list->begin) {
         if (!result_list->end) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         result_list->end->next = result;
         result_list->end = result;
@@ -325,7 +325,7 @@ int libdbo_result_list_add(libdbo_result_list_t* result_list, libdbo_result_t* r
     }
     result_list->size++;
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 const libdbo_result_t* libdbo_result_list_begin(libdbo_result_list_t* result_list) {
@@ -384,12 +384,12 @@ int libdbo_result_list_fetch_all(libdbo_result_list_t* result_list) {
     libdbo_result_list_next_t next_function;
 
     if (!result_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (result_list->next_function) {
         if (result_list->current) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         next_function = result_list->next_function;
@@ -401,12 +401,12 @@ int libdbo_result_list_fetch_all(libdbo_result_list_t* result_list) {
                 next_function(result_list->next_data, 1);
                 result_list->next_data = NULL;
                 libdbo_result_free(result);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
         }
         next_function(result_list->next_data, 1);
         result_list->next_data = NULL;
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }

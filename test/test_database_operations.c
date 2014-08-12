@@ -76,12 +76,12 @@ libdbo_object_t* __test_new_object(const libdbo_connection_t* connection) {
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field = libdbo_object_field_new()));
     CU_ASSERT_FATAL(!libdbo_object_field_set_name(object_field, "id"));
-    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, DB_TYPE_PRIMARY_KEY));
+    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, LIBDBO_TYPE_PRIMARY_KEY));
     CU_ASSERT_FATAL(!libdbo_object_field_list_add(object_field_list, object_field));
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field = libdbo_object_field_new()));
     CU_ASSERT_FATAL(!libdbo_object_field_set_name(object_field, "name"));
-    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, DB_TYPE_TEXT));
+    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, LIBDBO_TYPE_TEXT));
     CU_ASSERT_FATAL(!libdbo_object_field_list_add(object_field_list, object_field));
 
     CU_ASSERT_FATAL(!libdbo_object_set_object_field_list(object, object_field_list));
@@ -182,7 +182,7 @@ int test_get_by_name(test_t* test, const char* name) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = libdbo_clause_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
     CU_ASSERT_FATAL(!libdbo_clause_set_field(clause, "name"));
-    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL));
+    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL));
     CU_ASSERT_FATAL(!libdbo_value_from_text(libdbo_clause_get_value(clause), name));
     CU_ASSERT_FATAL(!libdbo_clause_list_add(clause_list, clause));
     clause = NULL;
@@ -222,7 +222,7 @@ int test_get_by_id(test_t* test, const libdbo_value_t* id) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = libdbo_clause_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
     CU_ASSERT_FATAL(!libdbo_clause_set_field(clause, "id"));
-    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL));
+    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL));
     CU_ASSERT_FATAL(!libdbo_value_copy(libdbo_clause_get_value(clause), id));
     CU_ASSERT_FATAL(!libdbo_clause_list_add(clause_list, clause));
     clause = NULL;
@@ -263,7 +263,7 @@ int test_create(test_t* test) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field_list = libdbo_object_field_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field = libdbo_object_field_new()));
     CU_ASSERT_FATAL(!libdbo_object_field_set_name(object_field, "name"));
-    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, DB_TYPE_TEXT));
+    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, LIBDBO_TYPE_TEXT));
     CU_ASSERT_FATAL(!libdbo_object_field_list_add(object_field_list, object_field));
     object_field = NULL;
 
@@ -298,7 +298,7 @@ int test_update(test_t* test) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = libdbo_clause_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
     CU_ASSERT_FATAL(!libdbo_clause_set_field(clause, "id"));
-    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL));
+    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL));
     CU_ASSERT_FATAL(!libdbo_value_copy(libdbo_clause_get_value(clause), test->id));
     CU_ASSERT_FATAL(!libdbo_clause_list_add(clause_list, clause));
     clause = NULL;
@@ -306,7 +306,7 @@ int test_update(test_t* test) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field_list = libdbo_object_field_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field = libdbo_object_field_new()));
     CU_ASSERT_FATAL(!libdbo_object_field_set_name(object_field, "name"));
-    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, DB_TYPE_TEXT));
+    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, LIBDBO_TYPE_TEXT));
     CU_ASSERT_FATAL(!libdbo_object_field_list_add(object_field_list, object_field));
     object_field = NULL;
 
@@ -338,7 +338,7 @@ int test_delete(test_t* test) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = libdbo_clause_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
     CU_ASSERT_FATAL(!libdbo_clause_set_field(clause, "id"));
-    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL));
+    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL));
     CU_ASSERT_FATAL(!libdbo_value_copy(libdbo_clause_get_value(clause), test->id));
     CU_ASSERT_FATAL(!libdbo_clause_list_add(clause_list, clause));
     clause = NULL;
@@ -364,7 +364,7 @@ size_t test_count_by_name(test_t* test, const char* name) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = libdbo_clause_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
     CU_ASSERT_FATAL(!libdbo_clause_set_field(clause, "name"));
-    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL));
+    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL));
     CU_ASSERT_FATAL(!libdbo_value_from_text(libdbo_clause_get_value(clause), name));
     CU_ASSERT_FATAL(!libdbo_clause_list_add(clause_list, clause));
     clause = NULL;
@@ -387,7 +387,7 @@ size_t test_count_by_id(test_t* test, const libdbo_value_t* id) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = libdbo_clause_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
     CU_ASSERT_FATAL(!libdbo_clause_set_field(clause, "id"));
-    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL));
+    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL));
     CU_ASSERT_FATAL(!libdbo_value_copy(libdbo_clause_get_value(clause), id));
     CU_ASSERT_FATAL(!libdbo_clause_list_add(clause_list, clause));
     clause = NULL;
@@ -501,17 +501,17 @@ libdbo_object_t* __test2_new_object(const libdbo_connection_t* connection) {
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field = libdbo_object_field_new()));
     CU_ASSERT_FATAL(!libdbo_object_field_set_name(object_field, "id"));
-    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, DB_TYPE_PRIMARY_KEY));
+    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, LIBDBO_TYPE_PRIMARY_KEY));
     CU_ASSERT_FATAL(!libdbo_object_field_list_add(object_field_list, object_field));
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field = libdbo_object_field_new()));
     CU_ASSERT_FATAL(!libdbo_object_field_set_name(object_field, "rev"));
-    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, DB_TYPE_REVISION));
+    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, LIBDBO_TYPE_REVISION));
     CU_ASSERT_FATAL(!libdbo_object_field_list_add(object_field_list, object_field));
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field = libdbo_object_field_new()));
     CU_ASSERT_FATAL(!libdbo_object_field_set_name(object_field, "name"));
-    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, DB_TYPE_TEXT));
+    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, LIBDBO_TYPE_TEXT));
     CU_ASSERT_FATAL(!libdbo_object_field_list_add(object_field_list, object_field));
 
     CU_ASSERT_FATAL(!libdbo_object_set_object_field_list(object, object_field_list));
@@ -618,7 +618,7 @@ int test2_get_by_name(test2_t* test2, const char* name) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = libdbo_clause_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
     CU_ASSERT_FATAL(!libdbo_clause_set_field(clause, "name"));
-    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL));
+    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL));
     CU_ASSERT_FATAL(!libdbo_value_from_text(libdbo_clause_get_value(clause), name));
     CU_ASSERT_FATAL(!libdbo_clause_list_add(clause_list, clause));
     clause = NULL;
@@ -658,7 +658,7 @@ int test2_get_by_id(test2_t* test2, const libdbo_value_t* id) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = libdbo_clause_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
     CU_ASSERT_FATAL(!libdbo_clause_set_field(clause, "id"));
-    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL));
+    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL));
     CU_ASSERT_FATAL(!libdbo_value_copy(libdbo_clause_get_value(clause), id));
     CU_ASSERT_FATAL(!libdbo_clause_list_add(clause_list, clause));
     clause = NULL;
@@ -700,7 +700,7 @@ int test2_create(test2_t* test2) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field_list = libdbo_object_field_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field = libdbo_object_field_new()));
     CU_ASSERT_FATAL(!libdbo_object_field_set_name(object_field, "name"));
-    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, DB_TYPE_TEXT));
+    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, LIBDBO_TYPE_TEXT));
     CU_ASSERT_FATAL(!libdbo_object_field_list_add(object_field_list, object_field));
     object_field = NULL;
 
@@ -736,13 +736,13 @@ int test2_update(test2_t* test2) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = libdbo_clause_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
     CU_ASSERT_FATAL(!libdbo_clause_set_field(clause, "id"));
-    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL));
+    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL));
     CU_ASSERT_FATAL(!libdbo_value_copy(libdbo_clause_get_value(clause), test2->id));
     CU_ASSERT_FATAL(!libdbo_clause_list_add(clause_list, clause));
     clause = NULL;
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
     CU_ASSERT_FATAL(!libdbo_clause_set_field(clause, "rev"));
-    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL));
+    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL));
     CU_ASSERT_FATAL(!libdbo_value_copy(libdbo_clause_get_value(clause), test2->rev));
     CU_ASSERT_FATAL(!libdbo_clause_list_add(clause_list, clause));
     clause = NULL;
@@ -750,7 +750,7 @@ int test2_update(test2_t* test2) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field_list = libdbo_object_field_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field = libdbo_object_field_new()));
     CU_ASSERT_FATAL(!libdbo_object_field_set_name(object_field, "name"));
-    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, DB_TYPE_TEXT));
+    CU_ASSERT_FATAL(!libdbo_object_field_set_type(object_field, LIBDBO_TYPE_TEXT));
     CU_ASSERT_FATAL(!libdbo_object_field_list_add(object_field_list, object_field));
     object_field = NULL;
 
@@ -782,13 +782,13 @@ int test2_delete(test2_t* test2) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = libdbo_clause_list_new()));
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
     CU_ASSERT_FATAL(!libdbo_clause_set_field(clause, "id"));
-    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL));
+    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL));
     CU_ASSERT_FATAL(!libdbo_value_copy(libdbo_clause_get_value(clause), test2->id));
     CU_ASSERT_FATAL(!libdbo_clause_list_add(clause_list, clause));
     clause = NULL;
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
     CU_ASSERT_FATAL(!libdbo_clause_set_field(clause, "rev"));
-    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL));
+    CU_ASSERT_FATAL(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL));
     CU_ASSERT_FATAL(!libdbo_value_copy(libdbo_clause_get_value(clause), test2->rev));
     CU_ASSERT_FATAL(!libdbo_clause_list_add(clause_list, clause));
     clause = NULL;
@@ -1120,27 +1120,27 @@ void __check_id(const libdbo_value_t* id, int id_int, const char* id_text) {
 
     CU_ASSERT_PTR_NOT_NULL(id);
     switch (libdbo_value_type(id)) {
-    case DB_TYPE_INT32:
+    case LIBDBO_TYPE_INT32:
         CU_ASSERT(!libdbo_value_to_int32(id, &int32));
         CU_ASSERT(int32 == (libdbo_type_int32_t)id_int);
         break;
 
-    case DB_TYPE_UINT32:
+    case LIBDBO_TYPE_UINT32:
         CU_ASSERT(!libdbo_value_to_uint32(id, &uint32));
         CU_ASSERT(uint32 == (libdbo_type_uint32_t)id_int);
         break;
 
-    case DB_TYPE_INT64:
+    case LIBDBO_TYPE_INT64:
         CU_ASSERT(!libdbo_value_to_int64(id, &int64));
         CU_ASSERT(int64 == (libdbo_type_int64_t)id_int);
         break;
 
-    case DB_TYPE_UINT64:
+    case LIBDBO_TYPE_UINT64:
         CU_ASSERT(!libdbo_value_to_uint64(id, &uint64));
         CU_ASSERT(uint64 == (libdbo_type_uint64_t)id_int);
         break;
 
-    case DB_TYPE_TEXT:
+    case LIBDBO_TYPE_TEXT:
         CU_ASSERT_PTR_NOT_NULL_FATAL((text = libdbo_value_text(id)));
         CU_ASSERT(!strcmp(text, id_text));
         break;

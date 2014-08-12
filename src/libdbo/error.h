@@ -48,11 +48,11 @@
 /**
  * A successful operation.
  */
-#define DB_OK 0
+#define LIBDBO_OK 0
 /**
  * A failed operation with an unknown error.
  */
-#define DB_ERROR_UNKNOWN 1
+#define LIBDBO_ERROR_UNKNOWN 1
 
 /** \} */
 

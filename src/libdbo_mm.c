@@ -61,30 +61,30 @@ void libdbo_mm_init(void) {
 
 int libdbo_mm_set_malloc(libdbo_mm_malloc_t malloc_function) {
     if (!malloc_function) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_mm_malloc) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     __db_mm_malloc = malloc_function;
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_mm_set_free(libdbo_mm_free_t free_function) {
     if (!free_function) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_mm_free) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     __db_mm_free = free_function;
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 void* libdbo_mm_new(libdbo_mm_t* alloc) {

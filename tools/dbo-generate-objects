@@ -38,53 +38,53 @@ while (<FILE>) {
 }
 close(FILE);
 
-my %DB_TYPE_TO_C_TYPE = (
-    DB_TYPE_PRIMARY_KEY => 'should_not_be_used',
-    DB_TYPE_INT32 => 'int',
-    DB_TYPE_UINT32 => 'unsigned int',
-    DB_TYPE_INT64 => 'long long',
-    DB_TYPE_UINT64 => 'unsigned long long',
-    DB_TYPE_TEXT => 'char*'
+my %LIBDBO_TYPE_TO_C_TYPE = (
+    LIBDBO_TYPE_PRIMARY_KEY => 'should_not_be_used',
+    LIBDBO_TYPE_INT32 => 'int',
+    LIBDBO_TYPE_UINT32 => 'unsigned int',
+    LIBDBO_TYPE_INT64 => 'long long',
+    LIBDBO_TYPE_UINT64 => 'unsigned long long',
+    LIBDBO_TYPE_TEXT => 'char*'
 );
 
-my %DB_TYPE_TO_SQLITE = (
-    DB_TYPE_PRIMARY_KEY => 'INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL',
-    DB_TYPE_INT32 => 'INT NOT NULL',
-    DB_TYPE_UINT32 => 'UNSIGNED INT NOT NULL',
-    DB_TYPE_INT64 => 'BIGINT NOT NULL',
-    DB_TYPE_UINT64 => 'UNSIGNED BIGINT NOT NULL',
-    DB_TYPE_TEXT => 'TEXT NOT NULL',
-    DB_TYPE_ENUM => 'INT NOT NULL',
-    DB_TYPE_REVISION => 'INTEGER NOT NULL DEFAULT 1'
+my %LIBDBO_TYPE_TO_SQLITE = (
+    LIBDBO_TYPE_PRIMARY_KEY => 'INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL',
+    LIBDBO_TYPE_INT32 => 'INT NOT NULL',
+    LIBDBO_TYPE_UINT32 => 'UNSIGNED INT NOT NULL',
+    LIBDBO_TYPE_INT64 => 'BIGINT NOT NULL',
+    LIBDBO_TYPE_UINT64 => 'UNSIGNED BIGINT NOT NULL',
+    LIBDBO_TYPE_TEXT => 'TEXT NOT NULL',
+    LIBDBO_TYPE_ENUM => 'INT NOT NULL',
+    LIBDBO_TYPE_REVISION => 'INTEGER NOT NULL DEFAULT 1'
 );
 
-my %DB_TYPE_TO_MYSQL = (
-    DB_TYPE_PRIMARY_KEY => 'BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL',
-    DB_TYPE_INT32 => 'INT NOT NULL',
-    DB_TYPE_UINT32 => 'INT UNSIGNED NOT NULL',
-    DB_TYPE_INT64 => 'BIGINT NOT NULL',
-    DB_TYPE_UINT64 => 'BIGINT UNSIGNED NOT NULL',
-    DB_TYPE_TEXT => 'TEXT NOT NULL',
-    DB_TYPE_ENUM => 'INT NOT NULL',
-    DB_TYPE_REVISION => 'INT UNSIGNED NOT NULL DEFAULT 1'
+my %LIBDBO_TYPE_TO_MYSQL = (
+    LIBDBO_TYPE_PRIMARY_KEY => 'BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL',
+    LIBDBO_TYPE_INT32 => 'INT NOT NULL',
+    LIBDBO_TYPE_UINT32 => 'INT UNSIGNED NOT NULL',
+    LIBDBO_TYPE_INT64 => 'BIGINT NOT NULL',
+    LIBDBO_TYPE_UINT64 => 'BIGINT UNSIGNED NOT NULL',
+    LIBDBO_TYPE_TEXT => 'TEXT NOT NULL',
+    LIBDBO_TYPE_ENUM => 'INT NOT NULL',
+    LIBDBO_TYPE_REVISION => 'INT UNSIGNED NOT NULL DEFAULT 1'
 );
 
-my %DB_TYPE_TO_FUNC = (
-    DB_TYPE_PRIMARY_KEY => 'should_not_be_used',
-    DB_TYPE_INT32 => 'int32',
-    DB_TYPE_UINT32 => 'uint32',
-    DB_TYPE_INT64 => 'int64',
-    DB_TYPE_UINT64 => 'uint64',
-    DB_TYPE_TEXT => 'text'
+my %LIBDBO_TYPE_TO_FUNC = (
+    LIBDBO_TYPE_PRIMARY_KEY => 'should_not_be_used',
+    LIBDBO_TYPE_INT32 => 'int32',
+    LIBDBO_TYPE_UINT32 => 'uint32',
+    LIBDBO_TYPE_INT64 => 'int64',
+    LIBDBO_TYPE_UINT64 => 'uint64',
+    LIBDBO_TYPE_TEXT => 'text'
 );
 
-my %DB_TYPE_TO_TEXT = (
-    DB_TYPE_PRIMARY_KEY => 'a primary key database value',
-    DB_TYPE_INT32 => 'an integer',
-    DB_TYPE_UINT32 => 'an unsigned integer',
-    DB_TYPE_INT64 => 'a long long',
-    DB_TYPE_UINT64 => 'an unsigned long long',
-    DB_TYPE_TEXT => 'a character pointer'
+my %LIBDBO_TYPE_TO_TEXT = (
+    LIBDBO_TYPE_PRIMARY_KEY => 'a primary key database value',
+    LIBDBO_TYPE_INT32 => 'an integer',
+    LIBDBO_TYPE_UINT32 => 'an unsigned integer',
+    LIBDBO_TYPE_INT64 => 'a long long',
+    LIBDBO_TYPE_UINT64 => 'an unsigned long long',
+    LIBDBO_TYPE_TEXT => 'a character pointer'
 );
 
 sub camelize {
@@ -129,7 +129,7 @@ typedef struct ', $name, '_list ', $name, '_list_t;
 ';
 
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} ne 'DB_TYPE_ENUM') {
+    if ($field->{type} ne 'LIBDBO_TYPE_ENUM') {
         next;
     }
 
@@ -181,11 +181,11 @@ struct ', $name, ' {
 ';
 
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
     print HEADER '    libdbo_value_t ', $field->{name}, ";\n";
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         print HEADER '    ', $name, '_', $field->{name}, '_t ', $field->{name}, ";\n";
         next;
     }
@@ -195,7 +195,7 @@ foreach my $field (@{$object->{fields}}) {
         print HEADER '    ', $field->{foreign},'_t* private_', $field->{name}, ";\n";
         next;
     }
-    print HEADER '    ', $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ";\n";
+    print HEADER '    ', $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ";\n";
 }
 
 foreach my $associated (@{$object->{association}}) {
@@ -234,7 +234,7 @@ void ', $name, '_reset(', $name, '_t* ', $name, ');
  * Copy the content of a ', $tname, ' object.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
  * \param[in] ', $name, '_copy a ', $name, '_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_copy(', $name, '_t* ', $name, ', const ', $name, '_t* ', $name, '_copy);
 
@@ -253,17 +253,17 @@ int ', $name, '_cmp(const ', $name, '_t* ', $name, '_a, const ', $name, '_t* ', 
  * Set the content of a ', $tname, ' object based on a database result.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
  * \param[in] result a libdbo_result_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_from_result(', $name, '_t* ', $name, ', const libdbo_result_t* result);
 
 ';
 
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{foreign}) {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{foreign}) {
         print HEADER '/**
  * Get the ', $field->{name}, ' of a ', $tname, ' object.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
@@ -278,7 +278,7 @@ const libdbo_value_t* ', $name, '_', $field->{name}, '(const ', $name, '_t* ', $
         print HEADER '/**
  * Cache the ', $field->{name}, ' object related to a ', $tname, ' object.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_cache_', $func_name, '(', $name, '_t* ', $name, ');
 
@@ -303,7 +303,7 @@ const ', $field->{foreign}, '_t* ', $name, '_', $func_name, '(const ', $name, '_
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         print HEADER '/**
  * Get the ', $field->{name}, ' of a ', $tname, ' object.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
@@ -321,7 +321,7 @@ const char* ', $name, '_', $field->{name}, '_text(const ', $name, '_t* ', $name,
 ';        
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
         print HEADER '/**
  * Get the ', $field->{name}, ' of a ', $tname, ' object.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
@@ -336,9 +336,9 @@ const char* ', $name, '_', $field->{name}, '(const ', $name, '_t* ', $name, ');
     print HEADER '/**
  * Get the ', $field->{name}, ' of a ', $tname, ' object. Undefined behavior if `', $name, '` is NULL.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
- * \return ', $DB_TYPE_TO_TEXT{$field->{type}}, '.
+ * \return ', $LIBDBO_TYPE_TO_TEXT{$field->{type}}, '.
  */
-', $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $name, '_', $field->{name}, '(const ', $name, '_t* ', $name, ');
+', $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $name, '_', $field->{name}, '(const ', $name, '_t* ', $name, ');
 
 ';
 }
@@ -357,7 +357,7 @@ foreach my $associated (@{$object->{association}}) {
  * Use ', $name, '_', $associated->{foreign}, '_list() to get the list afterwards.
  * This will refetch objects if already retrieved.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_retrieve_', $associated->{foreign}, '_list(', $name, '_t* ', $name, ');
 
@@ -365,10 +365,10 @@ int ', $name, '_retrieve_', $associated->{foreign}, '_list(', $name, '_t* ', $na
 }
 
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY') {
         next;
     }
     if ($field->{foreign}) {
@@ -376,19 +376,19 @@ foreach my $field (@{$object->{fields}}) {
  * Set the ', $field->{name}, ' of a ', $tname, ' object. If this fails the original value may have been lost.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
  * \param[in] ', $field->{name}, ' a libdbo_value_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, ', const libdbo_value_t* ', $field->{name}, ');
 
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         print HEADER '/**
  * Set the ', $field->{name}, ' of a ', $tname, ' object.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
  * \param[in] ', $field->{name}, ' a ', $name, '_', $field->{name}, '_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, ', ', $name, '_', $field->{name}, '_t ', $field->{name}, ');
 
@@ -396,19 +396,19 @@ int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, ', ', $name, '
  * Set the ', $field->{name}, ' of a ', $tname, ' object from text.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
  * \param[in] ', $field->{name}, ' a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_set_', $field->{name}, '_text(', $name, '_t* ', $name, ', const char* ', $field->{name}, ');
 
 ';        
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
         print HEADER '/**
  * Set the ', $field->{name}, ' of a ', $tname, ' object.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
  * \param[in] ', $field->{name}, '_text a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, ', const char* ', $field->{name}, '_text);
 
@@ -419,7 +419,7 @@ int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, ', const char*
     print HEADER '/**
  * Set the ', $field->{name}, ' of a ', $tname, ' object.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
- * \param[in] ', $field->{name}, ' ', $DB_TYPE_TO_TEXT{$field->{type}};
+ * \param[in] ', $field->{name}, ' ', $LIBDBO_TYPE_TO_TEXT{$field->{type}};
 if ($field->{min}) {
     print HEADER ' with a minimum value of ', $field->{min};
 }
@@ -432,25 +432,25 @@ if ($field->{max}) {
     }
 }
 print HEADER '.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
-int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, ', ', $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ');
+int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, ', ', $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ');
 
 ';
 }
 
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY') {
         next;
     }
     if ($field->{foreign}) {
     print HEADER '/**
  * Create a clause for ', $field->{name}, ' of a ', $tname, ' object and add it to a database clause list.
- * The clause operator is set to DB_CLAUSE_OPERATOR_AND and the clause type is
- * set to DB_CLAUSE_EQUAL, if you want to change these you can do it with the
+ * The clause operator is set to LIBDBO_CLAUSE_OPERATOR_AND and the clause type is
+ * set to LIBDBO_CLAUSE_EQUAL, if you want to change these you can do it with the
  * returned libdbo_clause_t pointer.
  * \param[in] clause_list libdbo_clause_list_t pointer.
  * \param[in] ', $field->{name}, ' a libdbo_value_t pointer.
@@ -461,11 +461,11 @@ libdbo_clause_t* ', $name, '_', $field->{name}, '_clause(libdbo_clause_list_t* c
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         print HEADER '/**
  * Create a clause for ', $field->{name}, ' of a ', $tname, ' object and add it to a database clause list.
- * The clause operator is set to DB_CLAUSE_OPERATOR_AND and the clause type is
- * set to DB_CLAUSE_EQUAL, if you want to change these you can do it with the
+ * The clause operator is set to LIBDBO_CLAUSE_OPERATOR_AND and the clause type is
+ * set to LIBDBO_CLAUSE_EQUAL, if you want to change these you can do it with the
  * returned libdbo_clause_t pointer.
  * \param[in] clause_list libdbo_clause_list_t pointer.
  * \param[in] ', $field->{name}, ' a ', $name, '_', $field->{name}, '_t.
@@ -476,11 +476,11 @@ libdbo_clause_t* ', $name, '_', $field->{name}, '_clause(libdbo_clause_list_t* c
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
         print HEADER '/**
  * Create a clause for ', $field->{name}, ' of a ', $tname, ' object and add it to a database clause list.
- * The clause operator is set to DB_CLAUSE_OPERATOR_AND and the clause type is
- * set to DB_CLAUSE_EQUAL, if you want to change these you can do it with the
+ * The clause operator is set to LIBDBO_CLAUSE_OPERATOR_AND and the clause type is
+ * set to LIBDBO_CLAUSE_EQUAL, if you want to change these you can do it with the
  * returned libdbo_clause_t pointer.
  * \param[in] clause_list libdbo_clause_list_t pointer.
  * \param[in] ', $field->{name}, '_text a character pointer.
@@ -494,14 +494,14 @@ libdbo_clause_t* ', $name, '_', $field->{name}, '_clause(libdbo_clause_list_t* c
 
     print HEADER '/**
  * Create a clause for ', $field->{name}, ' of a ', $tname, ' object and add it to a database clause list.
- * The clause operator is set to DB_CLAUSE_OPERATOR_AND and the clause type is
- * set to DB_CLAUSE_EQUAL, if you want to change these you can do it with the
+ * The clause operator is set to LIBDBO_CLAUSE_OPERATOR_AND and the clause type is
+ * set to LIBDBO_CLAUSE_EQUAL, if you want to change these you can do it with the
  * returned libdbo_clause_t pointer.
  * \param[in] clause_list libdbo_clause_list_t pointer.
- * \param[in] ', $field->{name}, ' ', $DB_TYPE_TO_TEXT{$field->{type}}, '.
+ * \param[in] ', $field->{name}, ' ', $LIBDBO_TYPE_TO_TEXT{$field->{type}}, '.
  * \return a libdbo_clause_t pointer to the added clause or NULL on error.
  */
-libdbo_clause_t* ', $name, '_', $field->{name}, '_clause(libdbo_clause_list_t* clause_list, ', $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ');
+libdbo_clause_t* ', $name, '_', $field->{name}, '_clause(libdbo_clause_list_t* clause_list, ', $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ');
 
 ';
 }
@@ -509,18 +509,18 @@ libdbo_clause_t* ', $name, '_', $field->{name}, '_clause(libdbo_clause_list_t* c
 print HEADER '/**
  * Create a ', $tname, ' object in the database.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_create(', $name, '_t* ', $name, ');
 
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY') {
 print HEADER '/**
  * Get a ', $tname, ' object from the database by a ', $field->{name}, ' specified in `', $field->{name}, '`.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
  * \param[in] ', $field->{name}, ' a libdbo_value_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $name, ', const libdbo_value_t* ', $field->{name}, ');
 
@@ -536,22 +536,22 @@ int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $name, ', const li
         next;
     }
     if ($field->{unique}) {
-        if ($field->{type} eq 'DB_TYPE_TEXT') {
+        if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print HEADER '/**
  * Get a ', $tname, ' object from the database by a ', $field->{name}, ' specified in `', $field->{name}, '`.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
- * \param[in] ', $field->{name}, ' ', $DB_TYPE_TO_TEXT{$field->{type}}, '.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \param[in] ', $field->{name}, ' ', $LIBDBO_TYPE_TO_TEXT{$field->{type}}, '.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
-int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $name, ', const ', $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ');
+int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $name, ', const ', $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ');
 
 /**
  * Get a new ', $tname, ' object from the database by a ', $field->{name}, ' specified in `', $field->{name}, '`.
  * \param[in] connection a libdbo_connection_t pointer.
- * \param[in] ', $field->{name}, ' ', $DB_TYPE_TO_TEXT{$field->{type}}, '.
+ * \param[in] ', $field->{name}, ' ', $LIBDBO_TYPE_TO_TEXT{$field->{type}}, '.
  * \return a ', $name, '_t pointer or NULL on error or if it does not exist.
  */
-', $name, '_t* ', $name, '_new_get_by_', $field->{name}, '(const libdbo_connection_t* connection, const ', $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ');
+', $name, '_t* ', $name, '_new_get_by_', $field->{name}, '(const libdbo_connection_t* connection, const ', $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ');
 
 ';
         next;
@@ -559,18 +559,18 @@ int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $name, ', const ',
 print HEADER '/**
  * Get a ', $tname, ' object from the database by a ', $field->{name}, ' specified in `', $field->{name}, '`.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
- * \param[in] ', $field->{name}, ' ', $DB_TYPE_TO_TEXT{$field->{type}}, '.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \param[in] ', $field->{name}, ' ', $LIBDBO_TYPE_TO_TEXT{$field->{type}}, '.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
-int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $name, ', ', $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ');
+int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $name, ', ', $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ');
 
 /**
  * Get a new ', $tname, ' object from the database by a ', $field->{name}, ' specified in `', $field->{name}, '`.
  * \param[in] connection a libdbo_connection_t pointer.
- * \param[in] ', $field->{name}, ' ', $DB_TYPE_TO_TEXT{$field->{type}}, '.
+ * \param[in] ', $field->{name}, ' ', $LIBDBO_TYPE_TO_TEXT{$field->{type}}, '.
  * \return a ', $name, '_t pointer or NULL on error or if it does not exist.
  */
-', $name, '_t* ', $name, '_new_get_by_', $field->{name}, '(const libdbo_connection_t* connection, ', $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ');
+', $name, '_t* ', $name, '_new_get_by_', $field->{name}, '(const libdbo_connection_t* connection, ', $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ');
 
 ';
         next;
@@ -579,14 +579,14 @@ int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $name, ', ', $DB_T
 print HEADER '/**
  * Update a ', $tname, ' object in the database.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_update(', $name, '_t* ', $name, ');
 
 /**
  * Delete a ', $tname, ' object from the database.
  * \param[in] ', $name, ' a ', $name, '_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_delete(', $name, '_t* ', $name, ');
 
@@ -598,7 +598,7 @@ int ', $name, '_delete(', $name, '_t* ', $name, ');
  * \param[in] clause_list a libdbo_clause_list_t pointer or NULL if all objects.
  * \param[out] count a size_t pointer to where the count should be stored.
  * should be counted.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_count(', $name, '_t* ', $name, ', libdbo_clause_list_t* clause_list, size_t* count);
 
@@ -643,7 +643,7 @@ print HEADER '};
  * Specify that objects should be stored within the list as they are fetch,
  * this is optimal if the list is to be iterated over more then once.
  * \param[in] ', $name, '_list a ', $name, '_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_list_object_store(', $name, '_list_t* ', $name, '_list);
 
@@ -652,7 +652,7 @@ int ', $name, '_list_object_store(', $name, '_list_t* ', $name, '_list);
  * way then fetching them for each individual object later on. This also forces
  * the list to store all objects (see ', $name, '_list_object_store()).
  * \param[in] ', $name, '_list a ', $name, '_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_list_associated_fetch(', $name, '_list_t* ', $name, '_list);
 
@@ -666,14 +666,14 @@ void ', $name, '_list_free(', $name, '_list_t* ', $name, '_list);
  * Copy the content of another ', $tname, ' object list.
  * \param[in] ', $name, '_list a ', $name, '_list_t pointer.
  * \param[in] from_', $name, '_list a ', $name, '_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_list_copy(', $name, '_list_t* ', $name, '_list, const ', $name, '_list_t* from_', $name, '_list);
 
 /**
  * Get all ', $tname, ' objects.
  * \param[in] ', $name, '_list a ', $name, '_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_list_get(', $name, '_list_t* ', $name, '_list);
 
@@ -688,7 +688,7 @@ int ', $name, '_list_get(', $name, '_list_t* ', $name, '_list);
  * Get ', $tname, ' objects from the database by a clause list.
  * \param[in] ', $name, '_list a ', $name, '_list_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_list_get_by_clauses(', $name, '_list_t* ', $name, '_list, const libdbo_clause_list_t* clause_list);
 
@@ -707,7 +707,7 @@ print HEADER '/**
  * Get ', $tname, ' objects from the database by a ', $field->{name}, ' specified in `', $field->{name}, '`.
  * \param[in] ', $name, '_list a ', $name, '_list_t pointer.
  * \param[in] ', $field->{name}, ' a libdbo_value_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int ', $name, '_list_get_by_', $field->{name}, '(', $name, '_list_t* ', $name, '_list, const libdbo_value_t* ', $field->{name}, ');
 
@@ -818,7 +818,7 @@ print SOURCE '/*
 ';
 
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} ne 'DB_TYPE_ENUM') {
+    if ($field->{type} ne 'LIBDBO_TYPE_ENUM') {
         next;
     }
 
@@ -861,7 +861,7 @@ print SOURCE '    if (!(object_field = libdbo_object_field_new())
         || libdbo_object_field_set_name(object_field, "', camelize($field->{name}), '")
         || libdbo_object_field_set_type(object_field, ', $field->{type}, ')
 ';
-if ($field->{type} eq 'DB_TYPE_ENUM') {
+if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
     print SOURCE '        || libdbo_object_field_set_enum_set(object_field, ', $name, '_enum_set_', $field->{name}, ')
 ';
 }
@@ -886,7 +886,7 @@ print SOURCE '    if (libdbo_object_set_object_field_list(object, object_field_l
 
 /* ', uc($tname), ' */
 
-static libdbo_mm_t __', $name, '_alloc = DB_MM_T_STATIC_NEW(sizeof(', $name, '_t));
+static libdbo_mm_t __', $name, '_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(', $name, '_t));
 
 ', $name, '_t* ', $name, '_new(const libdbo_connection_t* connection) {
     ', $name, '_t* ', $name, ' =
@@ -899,12 +899,12 @@ static libdbo_mm_t __', $name, '_alloc = DB_MM_T_STATIC_NEW(sizeof(', $name, '_t
         }
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
 print SOURCE '        libdbo_value_reset(&(', $name, '->', $field->{name}, '));
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         if ($field->{default}) {
 print SOURCE '        ', $name, '->', $field->{name}, ' = ', uc($name.'_'.$field->{name}), '_', $field->{default}, ';
 ';
@@ -915,7 +915,7 @@ print SOURCE '        ', $name, '->', $field->{name}, ' = ', uc($name.'_'.$field
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
         if (exists $field->{default}) {
 print SOURCE '        ', $name, '->', $field->{name}, ' = strdup("', $field->{default}, '");
 ';
@@ -959,7 +959,7 @@ void ', $name, '_free(', $name, '_t* ', $name, ') {
         }
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
 print SOURCE '        libdbo_value_reset(&(', $name, '->', $field->{name}, '));
 ';
         if ($field->{foreign}) {
@@ -970,7 +970,7 @@ print SOURCE '        if (', $name, '->private_', $field->{name}, ') {
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '        if (', $name, '->', $field->{name}, ') {
             free(', $name, '->', $field->{name}, ');
         }
@@ -991,7 +991,7 @@ void ', $name, '_reset(', $name, '_t* ', $name, ') {
     if (', $name, ') {
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
 print SOURCE '        libdbo_value_reset(&(', $name, '->', $field->{name}, '));
 ';
         if ($field->{foreign}) {
@@ -1004,7 +1004,7 @@ print SOURCE '        if (', $name, '->private_', $field->{name}, ') {
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         if ($field->{default}) {
 print SOURCE '        ', $name, '->', $field->{name}, ' = ', uc($name.'_'.$field->{name}), '_', $field->{default}, ';
 ';
@@ -1015,7 +1015,7 @@ print SOURCE '        ', $name, '->', $field->{name}, ' = ', uc($name.'_'.$field
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '        if (', $name, '->', $field->{name}, ') {
             free(', $name, '->', $field->{name}, ');
 ';
@@ -1055,7 +1055,7 @@ int ', $name, '_copy(', $name, '_t* ', $name, ', const ', $name, '_t* ', $name, 
 ';
 my $newline = 0;
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    char* ', $field->{name}, '_text = NULL;
 ';
         $newline = 1;
@@ -1066,28 +1066,28 @@ if ($newline) {
 ';
 }
 print SOURCE '    if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '_copy) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
 my @free = ();
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    if (', $name, '_copy->', $field->{name}, ') {
         if (!(', $field->{name}, '_text = strdup(', $name, '_copy->', $field->{name}, '))) {
 ';
 foreach my $field2 (@free) {
-    if ($field2->{type} eq 'DB_TYPE_TEXT') {
+    if ($field2->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '            if (', $field2->{name}, '_text) {
                 free(', $field2->{name}, '_text);
             }
 ';
     }
 }
-print SOURCE '            return DB_ERROR_UNKNOWN;
+print SOURCE '            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 ';
@@ -1095,18 +1095,18 @@ print SOURCE '            return DB_ERROR_UNKNOWN;
     }
 }
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
 print SOURCE '    if (libdbo_value_copy(&(', $name, '->', $field->{name}, '), &(', $name, '_copy->', $field->{name}, '))) {
 ';
 foreach my $field2 (@free) {
-    if ($field2->{type} eq 'DB_TYPE_TEXT') {
+    if ($field2->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '        if (', $field2->{name}, '_text) {
             free(', $field2->{name}, '_text);
         }
 ';
     }
 }
-print SOURCE '        return DB_ERROR_UNKNOWN;
+print SOURCE '        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
         if ($field->{foreign}) {
@@ -1119,14 +1119,14 @@ print SOURCE '    if (', $name, '->private_', $field->{name}, ') {
     {
 ';
 foreach my $field2 (@free) {
-    if ($field2->{type} eq 'DB_TYPE_TEXT') {
+    if ($field2->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '        if (', $field2->{name}, '_text) {
             free(', $field2->{name}, '_text);
         }
 ';
     }
 }
-print SOURCE '        return DB_ERROR_UNKNOWN;
+print SOURCE '        return LIBDBO_ERROR_UNKNOWN;
     }
     ', $name, '->associated_', $field->{name}, ' = NULL;
     if (!', $name, '_copy->private_', $field->{name}, '
@@ -1135,14 +1135,14 @@ print SOURCE '        return DB_ERROR_UNKNOWN;
     {
 ';
 foreach my $field2 (@free) {
-    if ($field2->{type} eq 'DB_TYPE_TEXT') {
+    if ($field2->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '        if (', $field2->{name}, '_text) {
             free(', $field2->{name}, '_text);
         }
 ';
     }
 }
-print SOURCE '        return DB_ERROR_UNKNOWN;
+print SOURCE '        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
         }
@@ -1159,22 +1159,22 @@ print SOURCE '    if (', $name, '->', $associated->{foreign}, '_list) {
     {
 ';
 foreach my $field2 (@free) {
-    if ($field2->{type} eq 'DB_TYPE_TEXT') {
+    if ($field2->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '        if (', $field2->{name}, '_text) {
             free(', $field2->{name}, '_text);
         }
 ';
     }
 }
-print SOURCE '        return DB_ERROR_UNKNOWN;
+print SOURCE '        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
 }
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    if (', $name, '->', $field->{name}, ') {
         free(', $name, '->', $field->{name}, ');
     }
@@ -1185,16 +1185,16 @@ print SOURCE '    if (', $name, '->', $field->{name}, ') {
 print SOURCE '    ', $name, '->', $field->{name}, ' = ', $name, '_copy->', $field->{name}, ';
 ';
 }
-print SOURCE '    return DB_OK;
+print SOURCE '    return LIBDBO_OK;
 }
 
 int ', $name, '_cmp(const ', $name, '_t* ', $name, '_a, const ', $name, '_t* ', $name, '_b) {
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
-    if ($field->{foreign} or $field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{foreign} or $field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    int ret;
 
 ';
@@ -1212,7 +1212,7 @@ print SOURCE '    if (!', $name, '_a && !', $name, '_b) {
     }
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
     if ($field->{foreign}) {
@@ -1225,7 +1225,7 @@ print SOURCE '
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '
     if (', $name, '_a->', $field->{name}, ' && ', $name, '_b->', $field->{name}, ') {
         if ((ret = strcmp(', $name, '_a->', $field->{name}, ', ', $name, '_b->', $field->{name}, '))) {
@@ -1256,26 +1256,26 @@ int ', $name, '_from_result(', $name, '_t* ', $name, ', const libdbo_result_t* r
     const libdbo_value_set_t* value_set;
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
 print SOURCE '    int ', $field->{name}, ';
 ';
     }
 }
 print SOURCE '
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!result) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
 print SOURCE '    libdbo_value_reset(&(', $name, '->', $field->{name}, '));
 ';
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    if (', $name, '->', $field->{name}, ') {
         free(', $name, '->', $field->{name}, ');
     }
@@ -1287,28 +1287,28 @@ print SOURCE '    if (!(value_set = libdbo_result_value_set(result))
         || libdbo_value_set_size(value_set) != ', (scalar @{$object->{fields}});
 my $count = 0;
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
 print SOURCE '
         || libdbo_value_copy(&(', $name, '->', $field->{name}, '), libdbo_value_set_at(value_set, ', $count++, '))';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
 print SOURCE '
         || libdbo_value_to_enum_value(libdbo_value_set_at(value_set, ', $count++, '), &', $field->{name}, ', ', $name, '_enum_set_', $field->{name}, ')';
         next;
     }
 print SOURCE '
-        || libdbo_value_to_', $DB_TYPE_TO_FUNC{$field->{type}}, '(libdbo_value_set_at(value_set, ', $count++, '), &(', $name, '->', $field->{name}, '))';
+        || libdbo_value_to_', $LIBDBO_TYPE_TO_FUNC{$field->{type}}, '(libdbo_value_set_at(value_set, ', $count++, '), &(', $name, '->', $field->{name}, '))';
 }
 print SOURCE ')
     {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
 
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         my $first = 1;
         foreach my $enum (@{$field->{enum}}) {
 print SOURCE '    ', ($first ? '' : 'else '),'if (', $field->{name}, ' == (', $name, '_', $field->{name}, '_t)', uc($name.'_'.$field->{name}), '_', $enum->{name}, ') {
@@ -1318,23 +1318,23 @@ print SOURCE '    ', ($first ? '' : 'else '),'if (', $field->{name}, ' == (', $n
             $first = 0;
         }
 print SOURCE '    else {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
     }
 }
 
-print SOURCE '    return DB_OK;
+print SOURCE '    return LIBDBO_OK;
 }
 
 ';
 
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{foreign}) {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{foreign}) {
 print SOURCE 'const libdbo_value_t* ', $name, '_', $field->{name}, '(const ', $name, '_t* ', $name, ') {
     if (!', $name, ') {
         return NULL;
@@ -1349,25 +1349,25 @@ print SOURCE 'const libdbo_value_t* ', $name, '_', $field->{name}, '(const ', $n
             $func_name =~ s/_id//o;
 print SOURCE 'int ', $name, '_cache_', $func_name, '(', $name, '_t* ', $name, ') {
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (', $name, '->associated_', $field->{name}, '
         || ', $name, '->private_', $field->{name}, ')
     {
-        return DB_OK;
+        return LIBDBO_OK;
     }
 
     if (!(', $name, '->private_', $field->{name}, ' = ', $field->{foreign}, '_new(libdbo_object_connection(', $name, '->dbo)))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (', $field->{foreign}, '_get_by_id(', $name, '->private_', $field->{name}, ', &(', $name, '->', $field->{name}, '))) {
         ', $field->{foreign}, '_free(', $name, '->private_', $field->{name}, ');
         ', $name, '->private_', $field->{name}, ' = NULL;
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 ';
@@ -1425,7 +1425,7 @@ print SOURCE $field->{foreign}, '_t* ', $name, '_get_', $func_name, '(const ', $
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
 print SOURCE $name, '_', $field->{name}, '_t ', $name, '_', $field->{name}, '(const ', $name, '_t* ', $name, ') {
     if (!', $name, ') {
         return ', uc($name.'_'.$field->{name}), '_INVALID;
@@ -1453,7 +1453,7 @@ const char* ', $name, '_', $field->{name}, '_text(const ', $name, '_t* ', $name,
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE 'const char* ', $name, '_', $field->{name}, '(const ', $name, '_t* ', $name, ') {
     if (!', $name, ') {
         return NULL;
@@ -1466,7 +1466,7 @@ print SOURCE 'const char* ', $name, '_', $field->{name}, '(const ', $name, '_t* 
         next;
     }
 
-print SOURCE $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $name, '_', $field->{name}, '(const ', $name, '_t* ', $name, ') {
+print SOURCE $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $name, '_', $field->{name}, '(const ', $name, '_t* ', $name, ') {
     if (!', $name, ') {
         return 0;
     }
@@ -1500,10 +1500,10 @@ int ', $name, '_retrieve_', $associated->{foreign}, '_list(', $name, '_t* ', $na
     libdbo_clause_list_t* clause_list;
 
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '->dbo) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (', $name, '->', $associated->{foreign}, '_list) {
@@ -1520,67 +1520,67 @@ int ', $name, '_retrieve_', $associated->{foreign}, '_list(', $name, '_t* ', $na
         ', $associated->{foreign}, '_list_free(', $name, '->', $associated->{foreign}, '_list);
         ', $name, '->', $associated->{foreign}, '_list = NULL;
         libdbo_clause_list_free(clause_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     libdbo_clause_list_free(clause_list);
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 ';
 }
 
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
 print SOURCE 'int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, ', ', $name, '_', $field->{name}, '_t ', $field->{name}, ') {
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (', $field->{name}, ' == ', uc($name.'_'.$field->{name}), '_INVALID) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     ', $name, '->', $field->{name}, ' = ', $field->{name}, ';
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int ', $name, '_set_', $field->{name}, '_text(', $name, '_t* ', $name, ', const char* ', $field->{name}, ') {
     const libdbo_enum_t* enum_set = ', $name, '_enum_set_', $field->{name}, ';
 
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     while (enum_set->text) {
         if (!strcmp(enum_set->text, ', $field->{name}, ')) {
             ', $name, '->', $field->{name}, ' = enum_set->value;
-            return DB_OK;
+            return LIBDBO_OK;
         }
         enum_set++;
     }
-    return DB_ERROR_UNKNOWN;
+    return LIBDBO_ERROR_UNKNOWN;
 }
 
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE 'int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, ', const char* ', $field->{name}, '_text) {
     char* new_', $field->{name}, ';
 
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $field->{name}, '_text) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (!(new_', $field->{name}, ' = strdup(', $field->{name}, '_text))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (', $name, '->', $field->{name}, ') {
@@ -1588,72 +1588,72 @@ print SOURCE 'int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, 
     }
     ', $name, '->', $field->{name}, ' = new_', $field->{name}, ';
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 ';
         next;
     }
 
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY') {
         next;
     }
     if ($field->{foreign}) {
 print SOURCE 'int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, ', const libdbo_value_t* ', $field->{name}, ') {
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $field->{name}, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (libdbo_value_not_empty(', $field->{name}, ')) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     libdbo_value_reset(&(', $name, '->', $field->{name}, '));
     if (libdbo_value_copy(&(', $name, '->', $field->{name}, '), ', $field->{name}, ')) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 ';
         next;
     }
-print SOURCE 'int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, ', ', $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ') {
+print SOURCE 'int ', $name, '_set_', $field->{name}, '(', $name, '_t* ', $name, ', ', $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ') {
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
 if ($field->{min}) {
 print SOURCE '
     if (', $field->{name}, ' < ', $field->{min}, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
 }
 if ($field->{max}) {
 print SOURCE '
     if (', $field->{name}, ' > ', $field->{max}, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
 }
 print SOURCE '
     ', $name, '->', $field->{name}, ' = ', $field->{name}, ';
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 ';
 }
 
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY') {
         next;
     }
     if ($field->{foreign}) {
@@ -1672,8 +1672,8 @@ foreach my $field (@{$object->{fields}}) {
 
     if (!(clause = libdbo_clause_new())
         || libdbo_clause_set_field(clause, "', camelize($field->{name}), '")
-        || libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL)
-        || libdbo_clause_set_operator(clause, DB_CLAUSE_OPERATOR_AND)
+        || libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL)
+        || libdbo_clause_set_operator(clause, LIBDBO_CLAUSE_OPERATOR_AND)
         || libdbo_value_copy(libdbo_clause_get_value(clause), ', $field->{name}, ')
         || libdbo_clause_list_add(clause_list, clause))
     {
@@ -1687,7 +1687,7 @@ foreach my $field (@{$object->{fields}}) {
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         print SOURCE 'libdbo_clause_t* ', $name, '_', $field->{name}, '_clause(libdbo_clause_list_t* clause_list, ', $name, '_', $field->{name}, '_t ', $field->{name}, ') {
     libdbo_clause_t* clause;
 
@@ -1697,8 +1697,8 @@ foreach my $field (@{$object->{fields}}) {
 
     if (!(clause = libdbo_clause_new())
         || libdbo_clause_set_field(clause, "', camelize($field->{name}), '")
-        || libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL)
-        || libdbo_clause_set_operator(clause, DB_CLAUSE_OPERATOR_AND)
+        || libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL)
+        || libdbo_clause_set_operator(clause, LIBDBO_CLAUSE_OPERATOR_AND)
         || libdbo_value_from_enum_value(libdbo_clause_get_value(clause), ', $field->{name}, ', ', $name, '_enum_set_', $field->{name}, ')
         || libdbo_clause_list_add(clause_list, clause))
     {
@@ -1712,7 +1712,7 @@ foreach my $field (@{$object->{fields}}) {
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
         print SOURCE 'libdbo_clause_t* ', $name, '_', $field->{name}, '_clause(libdbo_clause_list_t* clause_list, const char* ', $field->{name}, '_text) {
     libdbo_clause_t* clause;
 
@@ -1725,8 +1725,8 @@ foreach my $field (@{$object->{fields}}) {
 
     if (!(clause = libdbo_clause_new())
         || libdbo_clause_set_field(clause, "', camelize($field->{name}), '")
-        || libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL)
-        || libdbo_clause_set_operator(clause, DB_CLAUSE_OPERATOR_AND)
+        || libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL)
+        || libdbo_clause_set_operator(clause, LIBDBO_CLAUSE_OPERATOR_AND)
         || libdbo_value_from_text(libdbo_clause_get_value(clause), ', $field->{name}, '_text)
         || libdbo_clause_list_add(clause_list, clause))
     {
@@ -1741,7 +1741,7 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
 
-    print SOURCE 'libdbo_clause_t* ', $name, '_', $field->{name}, '_clause(libdbo_clause_list_t* clause_list, ', $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ') {
+    print SOURCE 'libdbo_clause_t* ', $name, '_', $field->{name}, '_clause(libdbo_clause_list_t* clause_list, ', $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ') {
     libdbo_clause_t* clause;
 
     if (!clause_list) {
@@ -1750,9 +1750,9 @@ foreach my $field (@{$object->{fields}}) {
 
     if (!(clause = libdbo_clause_new())
         || libdbo_clause_set_field(clause, "', camelize($field->{name}), '")
-        || libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL)
-        || libdbo_clause_set_operator(clause, DB_CLAUSE_OPERATOR_AND)
-        || libdbo_value_from_', $DB_TYPE_TO_FUNC{$field->{type}}, '(libdbo_clause_get_value(clause), ', $field->{name}, ')
+        || libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL)
+        || libdbo_clause_set_operator(clause, LIBDBO_CLAUSE_OPERATOR_AND)
+        || libdbo_value_from_', $LIBDBO_TYPE_TO_FUNC{$field->{type}}, '(libdbo_clause_get_value(clause), ', $field->{name}, ')
         || libdbo_clause_list_add(clause_list, clause))
     {
         libdbo_clause_free(clause);
@@ -1772,30 +1772,30 @@ print SOURCE 'int ', $name, '_create(', $name, '_t* ', $name, ') {
     int ret;
 
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '->dbo) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
 print SOURCE '    if (!libdbo_value_not_empty(&(', $name, '->', $field->{name}, '))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
         next;
     }
     if ($field->{foreign}) {
 print SOURCE '    if (libdbo_value_not_empty(&(', $name, '->', $field->{name}, '))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    if (!', $name, '->', $field->{name}, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
         next;
@@ -1804,20 +1804,20 @@ print SOURCE '    if (!', $name, '->', $field->{name}, ') {
 print SOURCE '    /* TODO: validate content more */
 
     if (!(object_field_list = libdbo_object_field_list_new())) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
 my $fields = 0;
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
 print SOURCE '    if (!(object_field = libdbo_object_field_new())
         || libdbo_object_field_set_name(object_field, "', camelize($field->{name}), '")
         || libdbo_object_field_set_type(object_field, ', $field->{type}, ')
 ';
-if ($field->{type} eq 'DB_TYPE_ENUM') {
+if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
     print SOURCE '        || libdbo_object_field_set_enum_set(object_field, ', $name, '_enum_set_', $field->{name}, ')
 ';
 }
@@ -1825,7 +1825,7 @@ print SOURCE '        || libdbo_object_field_list_add(object_field_list, object_
     {
         libdbo_object_field_free(object_field);
         libdbo_object_field_list_free(object_field_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
@@ -1836,7 +1836,7 @@ if (!$fields) {
 }
 print SOURCE '    if (!(value_set = libdbo_value_set_new(', $fields, '))) {
         libdbo_object_field_list_free(object_field_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
@@ -1844,14 +1844,14 @@ if ($fields) {
 print SOURCE '    if (';
 my $count = 0;
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
     if ($count) {
         print SOURCE '
         || ';
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
 print SOURCE 'libdbo_value_from_enum_value(libdbo_value_set_get(value_set, ', $count++, '), ', $name, '->', $field->{name}, ', ', $name, '_enum_set_', $field->{name}, ')';
         next;
     }
@@ -1859,13 +1859,13 @@ print SOURCE 'libdbo_value_from_enum_value(libdbo_value_set_get(value_set, ', $c
 print SOURCE 'libdbo_value_copy(libdbo_value_set_get(value_set, ', $count++, '), &(', $name, '->', $field->{name}, '))';
         next;
     }
-print SOURCE 'libdbo_value_from_', $DB_TYPE_TO_FUNC{$field->{type}}, '(libdbo_value_set_get(value_set, ', $count++, '), ', $name, '->', $field->{name}, ')';
+print SOURCE 'libdbo_value_from_', $LIBDBO_TYPE_TO_FUNC{$field->{type}}, '(libdbo_value_set_get(value_set, ', $count++, '), ', $name, '->', $field->{name}, ')';
 }
 print SOURCE ')
     {
         libdbo_value_set_free(value_set);
         libdbo_object_field_list_free(object_field_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
@@ -1878,7 +1878,7 @@ print SOURCE '    ret = libdbo_object_create(', $name, '->dbo, object_field_list
 
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY') {
 print SOURCE 'int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $name, ', const libdbo_value_t* ', $field->{name}, ') {
     libdbo_clause_list_t* clause_list;
     libdbo_clause_t* clause;
@@ -1886,30 +1886,30 @@ print SOURCE 'int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $nam
     const libdbo_result_t* result;
 
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '->dbo) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $field->{name}, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (libdbo_value_not_empty(', $field->{name}, ')) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (!(clause_list = libdbo_clause_list_new())) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!(clause = libdbo_clause_new())
         || libdbo_clause_set_field(clause, "', camelize($field->{name}), '")
-        || libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL)
+        || libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL)
         || libdbo_value_copy(libdbo_clause_get_value(clause), ', $field->{name}, ')
         || libdbo_clause_list_add(clause_list, clause))
     {
         libdbo_clause_free(clause);
         libdbo_clause_list_free(clause_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     result_list = libdbo_object_read(', $name, '->dbo, NULL, clause_list);
@@ -1920,16 +1920,16 @@ print SOURCE 'int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $nam
         if (result) {
             if (', $name, '_from_result(', $name, ', result)) {
                 libdbo_result_list_free(result_list);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
 
             libdbo_result_list_free(result_list);
-            return DB_OK;
+            return LIBDBO_OK;
         }
     }
 
     libdbo_result_list_free(result_list);
-    return DB_ERROR_UNKNOWN;
+    return LIBDBO_ERROR_UNKNOWN;
 }
 
 ', $name, '_t* ', $name, '_new_get_by_', $field->{name}, '(const libdbo_connection_t* connection, const libdbo_value_t* ', $field->{name}, ') {
@@ -1959,12 +1959,12 @@ print SOURCE 'int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $nam
         next;
     }
     if ($field->{unique}) {
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE 'int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $name, ', const char* ', $field->{name}, ') {
 ';
     }
     else {
-print SOURCE 'int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $name, ', ', $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ') {
+print SOURCE 'int ', $name, '_get_by_', $field->{name}, '(', $name, '_t* ', $name, ', ', $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ') {
 ';
     }
 print SOURCE '    libdbo_clause_list_t* clause_list;
@@ -1973,31 +1973,31 @@ print SOURCE '    libdbo_clause_list_t* clause_list;
     const libdbo_result_t* result;
 
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '->dbo) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    if (!', $field->{name}, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
     }
 print SOURCE '
     if (!(clause_list = libdbo_clause_list_new())) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!(clause = libdbo_clause_new())
         || libdbo_clause_set_field(clause, "', camelize($field->{name}), '")
-        || libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL)
-        || libdbo_value_from_', $DB_TYPE_TO_FUNC{$field->{type}}, '(libdbo_clause_get_value(clause), ', $field->{name}, ')
+        || libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL)
+        || libdbo_value_from_', $LIBDBO_TYPE_TO_FUNC{$field->{type}}, '(libdbo_clause_get_value(clause), ', $field->{name}, ')
         || libdbo_clause_list_add(clause_list, clause))
     {
         libdbo_clause_free(clause);
         libdbo_clause_list_free(clause_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     result_list = libdbo_object_read(', $name, '->dbo, NULL, clause_list);
@@ -2008,25 +2008,25 @@ print SOURCE '
         if (result) {
             if (', $name, '_from_result(', $name, ', result)) {
                 libdbo_result_list_free(result_list);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
 
             libdbo_result_list_free(result_list);
-            return DB_OK;
+            return LIBDBO_OK;
         }
     }
 
     libdbo_result_list_free(result_list);
-    return DB_ERROR_UNKNOWN;
+    return LIBDBO_ERROR_UNKNOWN;
 }
 
 ';
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE $name, '_t* ', $name, '_new_get_by_', $field->{name}, '(const libdbo_connection_t* connection, const char* ', $field->{name}, ') {
 ';
     }
     else {
-print SOURCE $name, '_t* ', $name, '_new_get_by_', $field->{name}, '(const libdbo_connection_t* connection, ', $DB_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ') {
+print SOURCE $name, '_t* ', $name, '_new_get_by_', $field->{name}, '(const libdbo_connection_t* connection, ', $LIBDBO_TYPE_TO_C_TYPE{$field->{type}}, ' ', $field->{name}, ') {
 ';
     }
 print SOURCE '    ', $name, '_t* ', $name, ';
@@ -2035,7 +2035,7 @@ print SOURCE '    ', $name, '_t* ', $name, ';
         return NULL;
     }
 ';
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    if (!', $field->{name}, ') {
         return NULL;
     }
@@ -2064,23 +2064,23 @@ print SOURCE 'int ', $name, '_update(', $name, '_t* ', $name, ') {
     int ret;
 
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '->dbo) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{foreign} or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
 print SOURCE '    if (libdbo_value_not_empty(&(', $name, '->', $field->{name}, '))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    if (!', $name, '->', $field->{name}, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
         next;
@@ -2089,20 +2089,20 @@ print SOURCE '    if (!', $name, '->', $field->{name}, ') {
 print SOURCE '    /* TODO: validate content more */
 
     if (!(object_field_list = libdbo_object_field_list_new())) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
 my $fields = 0;
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
 print SOURCE '    if (!(object_field = libdbo_object_field_new())
         || libdbo_object_field_set_name(object_field, "', camelize($field->{name}), '")
         || libdbo_object_field_set_type(object_field, ', $field->{type}, ')
 ';
-if ($field->{type} eq 'DB_TYPE_ENUM') {
+if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
     print SOURCE '        || libdbo_object_field_set_enum_set(object_field, ', $name, '_enum_set_', $field->{name}, ')
 ';
 }
@@ -2110,7 +2110,7 @@ print SOURCE '        || libdbo_object_field_list_add(object_field_list, object_
     {
         libdbo_object_field_free(object_field);
         libdbo_object_field_list_free(object_field_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
@@ -2121,7 +2121,7 @@ if (!$fields) {
 }
 print SOURCE '    if (!(value_set = libdbo_value_set_new(', $fields, '))) {
         libdbo_object_field_list_free(object_field_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
@@ -2129,14 +2129,14 @@ if ($fields) {
 print SOURCE '    if (';
 my $count = 0;
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
     if ($count) {
         print SOURCE '
         || ';
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
 print SOURCE 'libdbo_value_from_enum_value(libdbo_value_set_get(value_set, ', $count++, '), ', $name, '->', $field->{name}, ', ', $name, '_enum_set_', $field->{name}, ')';
         next;
     }
@@ -2144,13 +2144,13 @@ print SOURCE 'libdbo_value_from_enum_value(libdbo_value_set_get(value_set, ', $c
 print SOURCE 'libdbo_value_copy(libdbo_value_set_get(value_set, ', $count++, '), &(', $name, '->', $field->{name}, '))';
         next;
     }
-print SOURCE 'libdbo_value_from_', $DB_TYPE_TO_FUNC{$field->{type}}, '(libdbo_value_set_get(value_set, ', $count++, '), ', $name, '->', $field->{name}, ')';
+print SOURCE 'libdbo_value_from_', $LIBDBO_TYPE_TO_FUNC{$field->{type}}, '(libdbo_value_set_get(value_set, ', $count++, '), ', $name, '->', $field->{name}, ')';
 }
 print SOURCE ')
     {
         libdbo_value_set_free(value_set);
         libdbo_object_field_list_free(object_field_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
@@ -2158,15 +2158,15 @@ print SOURCE ')
 print SOURCE '    if (!(clause_list = libdbo_clause_list_new())) {
         libdbo_value_set_free(value_set);
         libdbo_object_field_list_free(object_field_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
 print SOURCE '    if (!(clause = libdbo_clause_new())
         || libdbo_clause_set_field(clause, "', camelize($field->{name}), '")
-        || libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL)
+        || libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL)
         || libdbo_value_copy(libdbo_clause_get_value(clause), &(', $name, '->', $field->{name}, '))
         || libdbo_clause_list_add(clause_list, clause))
     {
@@ -2174,7 +2174,7 @@ print SOURCE '    if (!(clause = libdbo_clause_new())
         libdbo_clause_list_free(clause_list);
         libdbo_value_set_free(value_set);
         libdbo_object_field_list_free(object_field_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
@@ -2193,37 +2193,37 @@ int ', $name, '_delete(', $name, '_t* ', $name, ') {
     int ret;
 
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '->dbo) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY') {
 print SOURCE '    if (libdbo_value_not_empty(&(', $name, '->', $field->{name}, '))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
     }
 }
 print SOURCE '
     if (!(clause_list = libdbo_clause_list_new())) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
 print SOURCE '    if (!(clause = libdbo_clause_new())
         || libdbo_clause_set_field(clause, "', camelize($field->{name}), '")
-        || libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL)
+        || libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL)
         || libdbo_value_copy(libdbo_clause_get_value(clause), &(', $name, '->', $field->{name}, '))
         || libdbo_clause_list_add(clause_list, clause))
     {
         libdbo_clause_free(clause);
         libdbo_clause_list_free(clause_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
@@ -2236,13 +2236,13 @@ print SOURCE '    ret = libdbo_object_delete(', $name, '->dbo, clause_list);
 
 int ', $name, '_count(', $name, '_t* ', $name, ', libdbo_clause_list_t* clause_list, size_t* count) {
     if (!', $name, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '->dbo) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!count) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     return libdbo_object_count(', $name, '->dbo, NULL, clause_list, count);
@@ -2250,7 +2250,7 @@ int ', $name, '_count(', $name, '_t* ', $name, ', libdbo_clause_list_t* clause_l
 
 /* ', uc($tname), ' LIST */
 
-static libdbo_mm_t __', $name, '_list_alloc = DB_MM_T_STATIC_NEW(sizeof(', $name, '_list_t));
+static libdbo_mm_t __', $name, '_list_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(', $name, '_list_t));
 
 ', $name, '_list_t* ', $name, '_list_new(const libdbo_connection_t* connection) {
     ', $name, '_list_t* ', $name, '_list =
@@ -2287,23 +2287,23 @@ static libdbo_mm_t __', $name, '_list_alloc = DB_MM_T_STATIC_NEW(sizeof(', $name
 
 int ', $name, '_list_object_store(', $name, '_list_t* ', $name, '_list) {
     if (!', $name, '_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     ', $name, '_list->object_store = 1;
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int ', $name, '_list_associated_fetch(', $name, '_list_t* ', $name, '_list) {
     if (!', $name, '_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     ', $name, '_list->object_store = 1;
     ', $name, '_list->associated_fetch = 1;
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 void ', $name, '_list_free(', $name, '_list_t* ', $name, '_list) {
@@ -2344,13 +2344,13 @@ int ', $name, '_list_copy(', $name, '_list_t* ', $name, '_list, const ', $name, 
     size_t i;
 
     if (!', $name, '_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!from_', $name, '_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (from_', $name, '_list->object_list && !from_', $name, '_list->object_list_size) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (', $name, '_list->result_list) {
@@ -2360,7 +2360,7 @@ int ', $name, '_list_copy(', $name, '_list_t* ', $name, '_list, const ', $name, 
     if (from_', $name, '_list->result_list
         && !(', $name, '_list->result_list = libdbo_result_list_new_copy(from_', $name, '_list->result_list)))
     {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     ', $name, '_list->object_store = from_', $name, '_list->object_store;
@@ -2376,7 +2376,7 @@ int ', $name, '_list_copy(', $name, '_list_t* ', $name, '_list, const ', $name, 
     }
     if (from_', $name, '_list->object_list) {
         if (!(', $name, '_list->object_list = (', $name, '_t**)calloc(from_', $name, '_list->object_list_size, sizeof(', $name, '_t*)))) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         ', $name, '_list->object_list_size = from_', $name, '_list->object_list_size;
         for (i = 0; i < from_', $name, '_list->object_list_size; i++) {
@@ -2384,7 +2384,7 @@ int ', $name, '_list_copy(', $name, '_list_t* ', $name, '_list, const ', $name, 
                 continue;
             }
             if (!(', $name, '_list->object_list[i] = ', $name, '_new_copy(from_', $name, '_list->object_list[i]))) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
         }
     }
@@ -2398,13 +2398,13 @@ foreach my $field (@{$object->{fields}}) {
         print SOURCE '    if (from_', $name, '_list->', $field->{name}, '_list
         && !(', $name, '_list->', $field->{name}, '_list = ', $field->{foreign}, '_list_new_copy(from_', $name, '_list->', $field->{name}, '_list)))
     {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
 ';
     }
 }
-print SOURCE '    return DB_OK;
+print SOURCE '    return LIBDBO_OK;
 }
 
 ';
@@ -2452,19 +2452,19 @@ print SOURCE '    ', $associated->{foreign}, '_list_t* ', $associated->{foreign}
 }
 print SOURCE '
     if (!', $name, '_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '_list->dbo) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '_list->associated_fetch) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '_list->result_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (', $name, '_list->object_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 ';
 if ($has_associated) {
@@ -2492,7 +2492,7 @@ foreach my $field (@{$object->{fields}}) {
     if ($field->{foreign}) {
 print SOURCE '
     if (!(clause_list = libdbo_clause_list_new())) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     ', $name, ' = ', $name, '_list_begin(', $name, '_list);
     while (', $name, ') {
@@ -2501,7 +2501,7 @@ print SOURCE '
         while (clause_walk) {
             if (libdbo_value_cmp(libdbo_clause_value(clause_walk), ', $name, '_', $field->{name}, '(', $name, '), &cmp)) {
                 libdbo_clause_list_free(clause_list);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             if (!cmp) {
                 break;
@@ -2511,14 +2511,14 @@ print SOURCE '
         if (cmp) {
             if (!(clause = libdbo_clause_new())
                 || libdbo_clause_set_field(clause, "', camelize($field->{foreign_name}), '")
-                || libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL)
-                || libdbo_clause_set_operator(clause, DB_CLAUSE_OPERATOR_OR)
+                || libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL)
+                || libdbo_clause_set_operator(clause, LIBDBO_CLAUSE_OPERATOR_OR)
                 || libdbo_value_copy(libdbo_clause_get_value(clause), ', $name, '_', $field->{name}, '(', $name, '))
                 || libdbo_clause_list_add(clause_list, clause))
             {
                 libdbo_clause_free(clause);
                 libdbo_clause_list_free(clause_list);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
         }
 
@@ -2534,19 +2534,19 @@ print SOURCE '
             ', $name, '_list->', $field->{name}, '_list = NULL;
         }
         libdbo_clause_list_free(clause_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     libdbo_clause_list_free(clause_list);
 
     for (i = 0; i < ', $name, '_list->object_list_size; i++) {
         if (!(', $name, '_list->object_list[i])) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         ', $field->{foreign}, '_', $field->{name}, ' = ', $field->{foreign}, '_list_begin(', $name, '_list->', $field->{name}, '_list);
         while (', $field->{foreign}, '_', $field->{name}, ') {
             if (libdbo_value_cmp(', $name, '_', $field->{name}, '(', $name, '_list->object_list[i]), ', $field->{foreign}, '_', $field->{foreign_name}, '(', $field->{foreign}, '_', $field->{name}, '), &cmp)) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             if (!cmp) {
                 ', $name, '_list->object_list[i]->associated_', $field->{name}, ' = ', $field->{foreign}, '_', $field->{name}, ';
@@ -2568,20 +2568,20 @@ print SOURCE '
 }
 print SOURCE '
     if (!(clause_list = libdbo_clause_list_new())) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     ', $name, ' = ', $name, '_list_begin(', $name, '_list);
     while (', $name, ') {
         if (!(clause = libdbo_clause_new())
             || libdbo_clause_set_field(clause, "', camelize($associated->{foreign_name}), '")
-            || libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL)
-            || libdbo_clause_set_operator(clause, DB_CLAUSE_OPERATOR_OR)
+            || libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL)
+            || libdbo_clause_set_operator(clause, LIBDBO_CLAUSE_OPERATOR_OR)
             || libdbo_value_copy(libdbo_clause_get_value(clause), ', $name, '_', $associated->{name}, '(', $name, '))
             || libdbo_clause_list_add(clause_list, clause))
         {
             libdbo_clause_free(clause);
             libdbo_clause_list_free(clause_list);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         ', $name, ' = ', $name, '_list_next(', $name, '_list);
@@ -2595,12 +2595,12 @@ print SOURCE '
     {
         ', $associated->{foreign}, '_list_free(', $associated->{foreign}, '_list);
         libdbo_clause_list_free(clause_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     for (i = 0; i < ', $name, '_list->object_list_size; i++) {
         if (!(', $name, '_list->object_list[i])) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         count = 0;
@@ -2609,7 +2609,7 @@ print SOURCE '
             if (libdbo_value_cmp(', $name, '_', $associated->{name}, '(', $name, '_list->object_list[i]), ', $associated->{foreign}, '_', $associated->{foreign_name}, '(', $associated->{foreign}, '), &cmp)) {
                 ', $associated->{foreign}, '_list_free(', $associated->{foreign}, '_list);
                 libdbo_clause_list_free(clause_list);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             if (!cmp) {
                 count++;
@@ -2623,13 +2623,13 @@ print SOURCE '
         if (!(', $name, '_list->object_list[i]->', $associated->{foreign}, '_list = ', $associated->{foreign}, '_list_new(libdbo_object_connection(', $name, '_list->dbo)))) {
             ', $associated->{foreign}, '_list_free(', $associated->{foreign}, '_list);
             libdbo_clause_list_free(clause_list);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         if (count) {
             if (!(', $name, '_list->object_list[i]->', $associated->{foreign}, '_list->object_list = (', $associated->{foreign}, '_t**)calloc(count, sizeof(', $associated->{foreign}, '_t*)))) {
                 ', $associated->{foreign}, '_list_free(', $associated->{foreign}, '_list);
                 libdbo_clause_list_free(clause_list);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
 
             j = 0;
@@ -2638,18 +2638,18 @@ print SOURCE '
                 if (j >= count) {
                     ', $associated->{foreign}, '_list_free(', $associated->{foreign}, '_list);
                     libdbo_clause_list_free(clause_list);
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 if (libdbo_value_cmp(', $name, '_', $associated->{name}, '(', $name, '_list->object_list[i]), ', $associated->{foreign}, '_', $associated->{foreign_name}, '(', $associated->{foreign}, '), &cmp)) {
                     ', $associated->{foreign}, '_list_free(', $associated->{foreign}, '_list);
                     libdbo_clause_list_free(clause_list);
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 if (!cmp) {
                     if (!(', $name, '_list->object_list[i]->', $associated->{foreign}, '_list->object_list[j] = ', $associated->{foreign}, '_new_copy(', $associated->{foreign}, '))) {
                         ', $associated->{foreign}, '_list_free(', $associated->{foreign}, '_list);
                         libdbo_clause_list_free(clause_list);
-                        return DB_ERROR_UNKNOWN;
+                        return LIBDBO_ERROR_UNKNOWN;
                     }
                     j++;
                 }
@@ -2658,7 +2658,7 @@ print SOURCE '
             if (j != count) {
                 ', $associated->{foreign}, '_list_free(', $associated->{foreign}, '_list);
                 libdbo_clause_list_free(clause_list);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
         }
         ', $name, '_list->object_list[i]->', $associated->{foreign}, '_list->object_store = 1;
@@ -2676,17 +2676,17 @@ print SOURCE '
     ', $name, '_list->object_list_first = 1;
 ';
 }
-print SOURCE '    return DB_OK;
+print SOURCE '    return LIBDBO_OK;
 }
 
 int ', $name, '_list_get(', $name, '_list_t* ', $name, '_list) {
     size_t i;
 
     if (!', $name, '_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '_list->dbo) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (', $name, '_list->result_list) {
@@ -2708,14 +2708,14 @@ int ', $name, '_list_get(', $name, '_list_t* ', $name, '_list) {
     if (!(', $name, '_list->result_list = libdbo_object_read(', $name, '_list->dbo, NULL, NULL))
         || libdbo_result_list_fetch_all(', $name, '_list->result_list))
     {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (', $name, '_list->associated_fetch
         && ', $name, '_list_get_associated(', $name, '_list))
     {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 ', $name, '_list_t* ', $name, '_list_new_get(const libdbo_connection_t* connection) {
@@ -2739,13 +2739,13 @@ int ', $name, '_list_get_by_clauses(', $name, '_list_t* ', $name, '_list, const 
     size_t i;
 
     if (!', $name, '_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!clause_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '_list->dbo) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (', $name, '_list->result_list) {
@@ -2767,14 +2767,14 @@ int ', $name, '_list_get_by_clauses(', $name, '_list_t* ', $name, '_list, const 
     if (!(', $name, '_list->result_list = libdbo_object_read(', $name, '_list->dbo, NULL, clause_list))
         || libdbo_result_list_fetch_all(', $name, '_list->result_list))
     {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (', $name, '_list->associated_fetch
         && ', $name, '_list_get_associated(', $name, '_list))
     {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 ', $name, '_list_t* ', $name, '_list_new_get_by_clauses(const libdbo_connection_t* connection, const libdbo_clause_list_t* clause_list) {
@@ -2806,30 +2806,30 @@ print SOURCE 'int ', $name, '_list_get_by_', $field->{name}, '(', $name, '_list_
     size_t i;
 
     if (!', $name, '_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $name, '_list->dbo) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!', $field->{name}, ') {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (libdbo_value_not_empty(', $field->{name}, ')) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (!(clause_list = libdbo_clause_list_new())) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!(clause = libdbo_clause_new())
         || libdbo_clause_set_field(clause, "', camelize($field->{name}), '")
-        || libdbo_clause_set_type(clause, DB_CLAUSE_EQUAL)
+        || libdbo_clause_set_type(clause, LIBDBO_CLAUSE_EQUAL)
         || libdbo_value_copy(libdbo_clause_get_value(clause), ', $field->{name}, ')
         || libdbo_clause_list_add(clause_list, clause))
     {
         libdbo_clause_free(clause);
         libdbo_clause_list_free(clause_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (', $name, '_list->result_list) {
@@ -2852,15 +2852,15 @@ print SOURCE 'int ', $name, '_list_get_by_', $field->{name}, '(', $name, '_list_
         || libdbo_result_list_fetch_all(', $name, '_list->result_list))
     {
         libdbo_clause_list_free(clause_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     libdbo_clause_list_free(clause_list);
     if (', $name, '_list->associated_fetch
         && ', $name, '_list_get_associated(', $name, '_list))
     {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 ', $name, '_list_t* ', $name, '_list_new_get_by_', $field->{name}, '(const libdbo_connection_t* connection, const libdbo_value_t* ', $field->{name}, ') {

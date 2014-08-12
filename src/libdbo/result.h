@@ -132,7 +132,7 @@ void libdbo_result_free(libdbo_result_t* result);
  * Copy the content of another database result.
  * \param[in] result a libdbo_result_t pointer.
  * \param[in] from_result a libdbo_result_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_result_copy(libdbo_result_t* result, const libdbo_result_t* from_result);
 
@@ -156,7 +156,7 @@ const libdbo_backend_meta_data_list_t* libdbo_result_backend_meta_data_list(cons
  * Set the value set of a database result.
  * \param[in] result a libdbo_result_t pointer.
  * \param[in] value_set a libdbo_value_set_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_result_set_value_set(libdbo_result_t* result, libdbo_value_set_t* value_set);
 
@@ -165,14 +165,14 @@ int libdbo_result_set_value_set(libdbo_result_t* result, libdbo_value_set_t* val
  * ownership of the backend meta data list.
  * \param[in] result a libdbo_result_t pointer.
  * \param[in] backend_meta_data_list a libdbo_backend_meta_data_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_result_set_backend_meta_data_list(libdbo_result_t* result, libdbo_backend_meta_data_list_t* backend_meta_data_list);
 
 /**
  * Check if a database result is not empty.
  * \param[in] result a libdbo_result_t pointer.
- * \return DB_ERROR_* if empty, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* if empty, otherwise LIBDBO_OK.
  */
 int libdbo_result_not_empty(const libdbo_result_t* result);
 
@@ -216,7 +216,7 @@ void libdbo_result_list_free(libdbo_result_list_t* result_list);
  * Copy the content of another database result list.
  * \param[in] result_list a libdbo_result_list_t pointer.
  * \param[in] from_result_list a libdbo_result_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_result_list_copy(libdbo_result_list_t* result_list, const libdbo_result_list_t* from_result_list);
 
@@ -228,7 +228,7 @@ int libdbo_result_list_copy(libdbo_result_list_t* result_list, const libdbo_resu
  * \param[in] next_function a libdbo_result_list_next_t function pointer.
  * \param[in] next_data a void pointer.
  * \param[in] size a size_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_result_list_set_next(libdbo_result_list_t* result_list, libdbo_result_list_next_t next_function, void* next_data, size_t size);
 
@@ -237,7 +237,7 @@ int libdbo_result_list_set_next(libdbo_result_list_t* result_list, libdbo_result
  * ownership of the database result.
  * \param[in] result_list a libdbo_result_list_t pointer.
  * \param[in] result a libdbo_result_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_result_list_add(libdbo_result_list_t* result_list, libdbo_result_t* result);
 
@@ -271,7 +271,7 @@ size_t libdbo_result_list_size(const libdbo_result_list_t* result_list);
  * so that libdbo_result_list_begin() can be used to iterate over the list multiple
  * times.
  * \param[in] result_list a libdbo_result_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_result_list_fetch_all(libdbo_result_list_t* result_list);
 

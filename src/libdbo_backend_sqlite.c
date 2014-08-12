@@ -77,7 +77,7 @@ typedef struct libdbo_backend_sqlite {
     long usleep;
 } libdbo_backend_sqlite_t;
 
-static libdbo_mm_t __sqlite_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_backend_sqlite_t));
+static libdbo_mm_t __sqlite_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_backend_sqlite_t));
 
 /**
  * The SQLite database backend specific data for walking a result.
@@ -89,7 +89,7 @@ typedef struct libdbo_backend_sqlite_statement {
     const libdbo_object_t* object;
 } libdbo_backend_sqlite_statement_t;
 
-static libdbo_mm_t __sqlite_statement_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_backend_sqlite_statement_t));
+static libdbo_mm_t __sqlite_statement_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_backend_sqlite_statement_t));
 
 /**
  * The SQLite bust handler that is used to wait for database access.
@@ -149,19 +149,19 @@ static inline int __db_backend_sqlite_prepare(libdbo_backend_sqlite_t* backend_s
     int ret;
 
     if (!backend_sqlite) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite->db) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!statement) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (*statement) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!sql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*ods_log_debug("%s", sql);*/
@@ -178,10 +178,10 @@ static inline int __db_backend_sqlite_prepare(libdbo_backend_sqlite_t* backend_s
             sqlite3_finalize(*statement);
         }
         *statement = NULL;
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 /**
@@ -260,34 +260,34 @@ static int libdbo_backend_sqlite_initialize(void* data) {
     libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
 
     if (!backend_sqlite) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (!__sqlite3_initialized) {
         int ret = sqlite3_initialize();
         if (ret != SQLITE_OK) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         __sqlite3_initialized = 1;
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_sqlite_shutdown(void* data) {
     libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
 
     if (!backend_sqlite) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__sqlite3_initialized) {
         int ret = sqlite3_shutdown();
         if (ret != SQLITE_OK) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         __sqlite3_initialized = 0;
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_sqlite_connect(void* data, const libdbo_configuration_list_t* configuration_list) {
@@ -298,35 +298,35 @@ static int libdbo_backend_sqlite_connect(void* data, const libdbo_configuration_
     int ret;
 
     if (!__sqlite3_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (backend_sqlite->db) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!configuration_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (!(file = libdbo_configuration_list_find(configuration_list, "file"))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
-    backend_sqlite->timeout = DB_BACKEND_SQLITE_DEFAULT_TIMEOUT;
+    backend_sqlite->timeout = LIBDBO_BACKEND_SQLITE_DEFAULT_TIMEOUT;
     if ((timeout = libdbo_configuration_list_find(configuration_list, "timeout"))) {
         backend_sqlite->timeout = atoi(libdbo_configuration_value(timeout));
         if (backend_sqlite->timeout < 1) {
-            backend_sqlite->timeout = DB_BACKEND_SQLITE_DEFAULT_TIMEOUT;
+            backend_sqlite->timeout = LIBDBO_BACKEND_SQLITE_DEFAULT_TIMEOUT;
         }
     }
 
-    backend_sqlite->usleep = DB_BACKEND_SQLITE_DEFAULT_USLEEP;
+    backend_sqlite->usleep = LIBDBO_BACKEND_SQLITE_DEFAULT_USLEEP;
     if ((usleep = libdbo_configuration_list_find(configuration_list, "usleep"))) {
         backend_sqlite->usleep = atoi(libdbo_configuration_value(usleep));
         if (backend_sqlite->usleep < 1) {
-            backend_sqlite->usleep = DB_BACKEND_SQLITE_DEFAULT_TIMEOUT;
+            backend_sqlite->usleep = LIBDBO_BACKEND_SQLITE_DEFAULT_TIMEOUT;
         }
     }
 
@@ -337,17 +337,17 @@ static int libdbo_backend_sqlite_connect(void* data, const libdbo_configuration_
         | SQLITE_OPEN_FULLMUTEX,
         NULL);
     if (ret != SQLITE_OK) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if ((ret = sqlite3_busy_handler(backend_sqlite->db, __db_backend_sqlite_busy_handler, backend_sqlite)) != SQLITE_OK) {
         /*ods_log_error("libdbo_backend_sqlite: sqlite3_busy_handler() error %d", ret);*/
         sqlite3_close(backend_sqlite->db);
         backend_sqlite->db = NULL;
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_sqlite_disconnect(void* data) {
@@ -355,13 +355,13 @@ static int libdbo_backend_sqlite_disconnect(void* data) {
     int ret;
 
     if (!__sqlite3_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite->db) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (backend_sqlite->transaction) {
@@ -369,10 +369,10 @@ static int libdbo_backend_sqlite_disconnect(void* data) {
     }
     ret = sqlite3_close(backend_sqlite->db);
     if (ret != SQLITE_OK) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     backend_sqlite->db = NULL;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 /**
@@ -382,26 +382,26 @@ static int libdbo_backend_sqlite_disconnect(void* data) {
  * \param[in] clause_list a libdbo_clause_list_t pointer.
  * \param[in] sqlp a character pointer pointer.
  * \param[in] left an integer pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 static int __db_backend_sqlite_build_clause(const libdbo_object_t* object, const libdbo_clause_list_t* clause_list, char** sqlp, int* left) {
     const libdbo_clause_t* clause;
     int first, ret;
 
     if (!clause_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!sqlp) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!*sqlp) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!left) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (*left < 1) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     clause = libdbo_clause_list_begin(clause_list);
@@ -412,121 +412,121 @@ static int __db_backend_sqlite_build_clause(const libdbo_object_t* object, const
         }
         else {
             switch (libdbo_clause_operator(clause)) {
-            case DB_CLAUSE_OPERATOR_AND:
+            case LIBDBO_CLAUSE_OPERATOR_AND:
                 if ((ret = snprintf(*sqlp, *left, " AND")) >= *left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 break;
 
-            case DB_CLAUSE_OPERATOR_OR:
+            case LIBDBO_CLAUSE_OPERATOR_OR:
                 if ((ret = snprintf(*sqlp, *left, " OR")) >= *left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 break;
 
             default:
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             *sqlp += ret;
             *left -= ret;
         }
 
         switch (libdbo_clause_type(clause)) {
-        case DB_CLAUSE_EQUAL:
+        case LIBDBO_CLAUSE_EQUAL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s = ?",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_NOT_EQUAL:
+        case LIBDBO_CLAUSE_NOT_EQUAL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s != ?",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_LESS_THEN:
+        case LIBDBO_CLAUSE_LESS_THEN:
             if ((ret = snprintf(*sqlp, *left, " %s.%s < ?",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_LESS_OR_EQUAL:
+        case LIBDBO_CLAUSE_LESS_OR_EQUAL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s <= ?",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_GREATER_OR_EQUAL:
+        case LIBDBO_CLAUSE_GREATER_OR_EQUAL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s >= ?",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_GREATER_THEN:
+        case LIBDBO_CLAUSE_GREATER_THEN:
             if ((ret = snprintf(*sqlp, *left, " %s.%s > ?",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_IS_NULL:
+        case LIBDBO_CLAUSE_IS_NULL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s IS NULL",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_IS_NOT_NULL:
+        case LIBDBO_CLAUSE_IS_NOT_NULL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s IS NOT NULL",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_NESTED:
+        case LIBDBO_CLAUSE_NESTED:
             if ((ret = snprintf(*sqlp, *left, " (")) >= *left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             *sqlp += ret;
             *left -= ret;
             if (__db_backend_sqlite_build_clause(object, libdbo_clause_list(clause), sqlp, left)) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(*sqlp, *left, " )")) >= *left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
         default:
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         *sqlp += ret;
         *left -= ret;
 
         clause = libdbo_clause_next(clause);
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 /**
@@ -535,7 +535,7 @@ static int __db_backend_sqlite_build_clause(const libdbo_object_t* object, const
  * \param[in] statement a sqlite3_stmt pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
  * \param[in] bind an integer pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 static int __db_backend_sqlite_bind_clause(sqlite3_stmt* statement, const libdbo_clause_list_t* clause_list, int* bind) {
     const libdbo_clause_t* clause;
@@ -548,111 +548,111 @@ static int __db_backend_sqlite_bind_clause(sqlite3_stmt* statement, const libdbo
     libdbo_type_uint64_t uint64;
 
     if (!statement) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!clause_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!bind) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!*bind) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     clause = libdbo_clause_list_begin(clause_list);
     while (clause) {
         switch (libdbo_clause_type(clause)) {
-        case DB_CLAUSE_EQUAL:
-        case DB_CLAUSE_NOT_EQUAL:
-        case DB_CLAUSE_LESS_THEN:
-        case DB_CLAUSE_LESS_OR_EQUAL:
-        case DB_CLAUSE_GREATER_OR_EQUAL:
-        case DB_CLAUSE_GREATER_THEN:
+        case LIBDBO_CLAUSE_EQUAL:
+        case LIBDBO_CLAUSE_NOT_EQUAL:
+        case LIBDBO_CLAUSE_LESS_THEN:
+        case LIBDBO_CLAUSE_LESS_OR_EQUAL:
+        case LIBDBO_CLAUSE_GREATER_OR_EQUAL:
+        case LIBDBO_CLAUSE_GREATER_THEN:
             switch (libdbo_value_type(libdbo_clause_value(clause))) {
-            case DB_TYPE_PRIMARY_KEY:
-            case DB_TYPE_INT32:
+            case LIBDBO_TYPE_PRIMARY_KEY:
+            case LIBDBO_TYPE_INT32:
                 if (libdbo_value_to_int32(libdbo_clause_value(clause), &int32)) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 to_int = int32;
                 ret = sqlite3_bind_int(statement, (*bind)++, to_int);
                 if (ret != SQLITE_OK) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 break;
 
-            case DB_TYPE_UINT32:
+            case LIBDBO_TYPE_UINT32:
                 if (libdbo_value_to_uint32(libdbo_clause_value(clause), &uint32)) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 to_int = uint32;
                 ret = sqlite3_bind_int(statement, (*bind)++, to_int);
                 if (ret != SQLITE_OK) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 break;
 
-            case DB_TYPE_INT64:
+            case LIBDBO_TYPE_INT64:
                 if (libdbo_value_to_int64(libdbo_clause_value(clause), &int64)) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 to_int64 = int64;
                 ret = sqlite3_bind_int64(statement, (*bind)++, to_int64);
                 if (ret != SQLITE_OK) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 break;
 
-            case DB_TYPE_UINT64:
+            case LIBDBO_TYPE_UINT64:
                 if (libdbo_value_to_uint64(libdbo_clause_value(clause), &uint64)) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 to_int64 = uint64;
                 ret = sqlite3_bind_int64(statement, (*bind)++, to_int64);
                 if (ret != SQLITE_OK) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 break;
 
-            case DB_TYPE_TEXT:
+            case LIBDBO_TYPE_TEXT:
                 ret = sqlite3_bind_text(statement, (*bind)++, libdbo_value_text(libdbo_clause_value(clause)), -1, SQLITE_TRANSIENT);
                 if (ret != SQLITE_OK) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 break;
 
-            case DB_TYPE_ENUM:
+            case LIBDBO_TYPE_ENUM:
                 if (libdbo_value_enum_value(libdbo_clause_value(clause), &to_int)) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 ret = sqlite3_bind_int(statement, (*bind)++, to_int);
                 if (ret != SQLITE_OK) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 break;
 
             default:
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_IS_NULL:
-        case DB_CLAUSE_IS_NOT_NULL:
+        case LIBDBO_CLAUSE_IS_NULL:
+        case LIBDBO_CLAUSE_IS_NOT_NULL:
             break;
 
-        case DB_CLAUSE_NESTED:
+        case LIBDBO_CLAUSE_NESTED:
             if (__db_backend_sqlite_bind_clause(statement, libdbo_clause_list(clause), bind)) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
         default:
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         clause = libdbo_clause_next(clause);
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static libdbo_result_t* libdbo_backend_sqlite_next(void* data, int finish) {
@@ -702,7 +702,7 @@ static libdbo_result_t* libdbo_backend_sqlite_next(void* data, int finish) {
     bind = 0;
     while (object_field) {
         switch (libdbo_object_field_type(object_field)) {
-        case DB_TYPE_PRIMARY_KEY:
+        case LIBDBO_TYPE_PRIMARY_KEY:
             from_int = sqlite3_column_int(statement->statement, bind);
             int32 = from_int;
             ret = sqlite3_errcode(statement->backend_sqlite->db);
@@ -715,12 +715,12 @@ static libdbo_result_t* libdbo_backend_sqlite_next(void* data, int finish) {
             }
             break;
 
-        case DB_TYPE_ENUM:
+        case LIBDBO_TYPE_ENUM:
             /*
              * Enum needs to be handled elsewhere since we don't know the
              * enum_set_t here.
              */
-        case DB_TYPE_INT32:
+        case LIBDBO_TYPE_INT32:
             from_int = sqlite3_column_int(statement->statement, bind);
             int32 = from_int;
             ret = sqlite3_errcode(statement->backend_sqlite->db);
@@ -732,7 +732,7 @@ static libdbo_result_t* libdbo_backend_sqlite_next(void* data, int finish) {
             }
             break;
 
-        case DB_TYPE_UINT32:
+        case LIBDBO_TYPE_UINT32:
             from_int = sqlite3_column_int(statement->statement, bind);
             uint32 = from_int;
             ret = sqlite3_errcode(statement->backend_sqlite->db);
@@ -744,7 +744,7 @@ static libdbo_result_t* libdbo_backend_sqlite_next(void* data, int finish) {
             }
             break;
 
-        case DB_TYPE_INT64:
+        case LIBDBO_TYPE_INT64:
             from_int64 = sqlite3_column_int64(statement->statement, bind);
             int64 = from_int64;
             ret = sqlite3_errcode(statement->backend_sqlite->db);
@@ -756,7 +756,7 @@ static libdbo_result_t* libdbo_backend_sqlite_next(void* data, int finish) {
             }
             break;
 
-        case DB_TYPE_UINT64:
+        case LIBDBO_TYPE_UINT64:
             from_int64 = sqlite3_column_int64(statement->statement, bind);
             uint64 = from_int64;
             ret = sqlite3_errcode(statement->backend_sqlite->db);
@@ -768,7 +768,7 @@ static libdbo_result_t* libdbo_backend_sqlite_next(void* data, int finish) {
             }
             break;
 
-        case DB_TYPE_TEXT:
+        case LIBDBO_TYPE_TEXT:
             text = (const char*)sqlite3_column_text(statement->statement, bind);
             ret = sqlite3_errcode(statement->backend_sqlite->db);
             if (!text
@@ -780,8 +780,8 @@ static libdbo_result_t* libdbo_backend_sqlite_next(void* data, int finish) {
             }
             break;
 
-        case DB_TYPE_ANY:
-        case DB_TYPE_REVISION:
+        case LIBDBO_TYPE_ANY:
+        case LIBDBO_TYPE_REVISION:
             switch (sqlite3_column_type(statement->statement, bind)) {
             case SQLITE_INTEGER:
                 from_int64 = sqlite3_column_int64(statement->statement, bind);
@@ -841,19 +841,19 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
     libdbo_type_uint64_t uint64;
 
     if (!__sqlite3_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object_field_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!value_set) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -861,12 +861,12 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
      */
     object_field = libdbo_object_field_list_begin(libdbo_object_object_field_list(object));
     while (object_field) {
-        if (libdbo_object_field_type(object_field) == DB_TYPE_REVISION) {
+        if (libdbo_object_field_type(object_field) == LIBDBO_TYPE_REVISION) {
             if (revision_field) {
                 /*
                  * We do not support multiple revision fields.
                  */
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
 
             revision_field = object_field;
@@ -882,14 +882,14 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
          * Special case when tables has no fields except maybe a primary key.
          */
         if ((ret = snprintf(sqlp, left, "INSERT INTO %s DEFAULT VALUES", libdbo_object_table(object))) >= left) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         sqlp += ret;
         left -= ret;
     }
     else {
         if ((ret = snprintf(sqlp, left, "INSERT INTO %s (", libdbo_object_table(object))) >= left) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         sqlp += ret;
         left -= ret;
@@ -902,13 +902,13 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
         while (object_field) {
             if (first) {
                 if ((ret = snprintf(sqlp, left, " %s", libdbo_object_field_name(object_field))) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 first = 0;
             }
             else {
                 if ((ret = snprintf(sqlp, left, ", %s", libdbo_object_field_name(object_field))) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
             }
             sqlp += ret;
@@ -923,13 +923,13 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
         if (revision_field) {
             if (first) {
                 if ((ret = snprintf(sqlp, left, " %s", libdbo_object_field_name(revision_field))) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 first = 0;
             }
             else {
                 if ((ret = snprintf(sqlp, left, ", %s", libdbo_object_field_name(revision_field))) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
             }
             sqlp += ret;
@@ -937,7 +937,7 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
         }
 
         if ((ret = snprintf(sqlp, left, " ) VALUES (")) >= left) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         sqlp += ret;
         left -= ret;
@@ -950,13 +950,13 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
         while (object_field) {
             if (first) {
                 if ((ret = snprintf(sqlp, left, " ?")) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 first = 0;
             }
             else {
                 if ((ret = snprintf(sqlp, left, ", ?")) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
             }
             sqlp += ret;
@@ -971,13 +971,13 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
         if (revision_field) {
             if (first) {
                 if ((ret = snprintf(sqlp, left, " ?")) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 first = 0;
             }
             else {
                 if ((ret = snprintf(sqlp, left, ", ?")) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
             }
             sqlp += ret;
@@ -985,7 +985,7 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
         }
 
         if ((ret = snprintf(sqlp, left, " )")) >= left) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         sqlp += ret;
         left -= ret;
@@ -995,7 +995,7 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
      * Prepare the SQL, create a SQLite statement.
      */
     if (__db_backend_sqlite_prepare(backend_sqlite, &statement, sql, sizeof(sql))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -1005,85 +1005,85 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
     for (value_pos = 0; value_pos < libdbo_value_set_size(value_set); value_pos++) {
         if (!(value = libdbo_value_set_at(value_set, value_pos))) {
             __db_backend_sqlite_finalize(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         switch (libdbo_value_type(value)) {
-        case DB_TYPE_INT32:
+        case LIBDBO_TYPE_INT32:
             if (libdbo_value_to_int32(value, &int32)) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             to_int = int32;
             ret = sqlite3_bind_int(statement, bind++, to_int);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_TYPE_UINT32:
+        case LIBDBO_TYPE_UINT32:
             if (libdbo_value_to_uint32(value, &uint32)) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             to_int = uint32;
             ret = sqlite3_bind_int(statement, bind++, to_int);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_TYPE_INT64:
+        case LIBDBO_TYPE_INT64:
             if (libdbo_value_to_int64(value, &int64)) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             to_int64 = int64;
             ret = sqlite3_bind_int64(statement, bind++, to_int64);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_TYPE_UINT64:
+        case LIBDBO_TYPE_UINT64:
             if (libdbo_value_to_uint64(value, &uint64)) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             to_int64 = uint64;
             ret = sqlite3_bind_int64(statement, bind++, to_int64);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_TYPE_TEXT:
+        case LIBDBO_TYPE_TEXT:
             ret = sqlite3_bind_text(statement, bind++, libdbo_value_text(value), -1, SQLITE_TRANSIENT);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_TYPE_ENUM:
+        case LIBDBO_TYPE_ENUM:
             if (libdbo_value_enum_value(value, &to_int)) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             ret = sqlite3_bind_int(statement, bind++, to_int);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
         default:
             __db_backend_sqlite_finalize(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1094,7 +1094,7 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
         ret = sqlite3_bind_int(statement, bind++, 1);
         if (ret != SQLITE_OK) {
             __db_backend_sqlite_finalize(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1103,11 +1103,11 @@ static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* objec
      */
     if (__db_backend_sqlite_step(backend_sqlite, statement) != SQLITE_DONE) {
         __db_backend_sqlite_finalize(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     __db_backend_sqlite_finalize(statement);
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static libdbo_result_list_t* libdbo_backend_sqlite_read(void* data, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list) {
@@ -1253,19 +1253,19 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
     libdbo_type_uint64_t uint64;
 
     if (!__sqlite3_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object_field_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!value_set) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -1273,12 +1273,12 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
      */
     object_field = libdbo_object_field_list_begin(libdbo_object_object_field_list(object));
     while (object_field) {
-        if (libdbo_object_field_type(object_field) == DB_TYPE_REVISION) {
+        if (libdbo_object_field_type(object_field) == LIBDBO_TYPE_REVISION) {
             if (revision_field) {
                 /*
                  * We do not support multiple revision fields.
                  */
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
 
             revision_field = object_field;
@@ -1299,39 +1299,39 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
             clause = libdbo_clause_next(clause);
         }
         if (!revision_clause) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         switch (libdbo_value_type(libdbo_clause_value(revision_clause))) {
-        case DB_TYPE_INT32:
+        case LIBDBO_TYPE_INT32:
             if (libdbo_value_to_int32(libdbo_clause_value(revision_clause), &int32)) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             revision_number = int32;
             break;
 
-        case DB_TYPE_UINT32:
+        case LIBDBO_TYPE_UINT32:
             if (libdbo_value_to_uint32(libdbo_clause_value(revision_clause), &uint32)) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             revision_number = uint32;
             break;
 
-        case DB_TYPE_INT64:
+        case LIBDBO_TYPE_INT64:
             if (libdbo_value_to_int64(libdbo_clause_value(revision_clause), &int64)) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             revision_number = int64;
             break;
 
-        case DB_TYPE_UINT64:
+        case LIBDBO_TYPE_UINT64:
             if (libdbo_value_to_uint64(libdbo_clause_value(revision_clause), &uint64)) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             revision_number = uint64;
             break;
 
         default:
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1339,7 +1339,7 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
     sqlp = sql;
 
     if ((ret = snprintf(sqlp, left, "UPDATE %s SET", libdbo_object_table(object))) >= left) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     sqlp += ret;
     left -= ret;
@@ -1352,13 +1352,13 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
     while (object_field) {
         if (first) {
             if ((ret = snprintf(sqlp, left, " %s = ?", libdbo_object_field_name(object_field))) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             first = 0;
         }
         else {
             if ((ret = snprintf(sqlp, left, ", %s = ?", libdbo_object_field_name(object_field))) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
         }
         sqlp += ret;
@@ -1373,13 +1373,13 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
     if (revision_field) {
         if (first) {
             if ((ret = snprintf(sqlp, left, " %s = ?", libdbo_object_field_name(revision_field))) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             first = 0;
         }
         else {
             if ((ret = snprintf(sqlp, left, ", %s = ?", libdbo_object_field_name(revision_field))) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
         }
         sqlp += ret;
@@ -1392,13 +1392,13 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
     if (clause_list) {
         if (libdbo_clause_list_begin(clause_list)) {
             if ((ret = snprintf(sqlp, left, " WHERE")) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             sqlp += ret;
             left -= ret;
         }
         if (__db_backend_sqlite_build_clause(object, clause_list, &sqlp, &left)) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1406,7 +1406,7 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
      * Prepare the SQL.
      */
     if (__db_backend_sqlite_prepare(backend_sqlite, &statement, sql, sizeof(sql))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -1416,85 +1416,85 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
     for (value_pos = 0; value_pos < libdbo_value_set_size(value_set); value_pos++) {
         if (!(value = libdbo_value_set_at(value_set, value_pos))) {
             __db_backend_sqlite_finalize(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         switch (libdbo_value_type(value)) {
-        case DB_TYPE_INT32:
+        case LIBDBO_TYPE_INT32:
             if (libdbo_value_to_int32(value, &int32)) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             to_int = int32;
             ret = sqlite3_bind_int(statement, bind++, to_int);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_TYPE_UINT32:
+        case LIBDBO_TYPE_UINT32:
             if (libdbo_value_to_uint32(value, &uint32)) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             to_int = uint32;
             ret = sqlite3_bind_int(statement, bind++, to_int);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_TYPE_INT64:
+        case LIBDBO_TYPE_INT64:
             if (libdbo_value_to_int64(value, &int64)) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             to_int64 = int64;
             ret = sqlite3_bind_int64(statement, bind++, to_int64);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_TYPE_UINT64:
+        case LIBDBO_TYPE_UINT64:
             if (libdbo_value_to_uint64(value, &uint64)) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             to_int64 = uint64;
             ret = sqlite3_bind_int64(statement, bind++, to_int64);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_TYPE_TEXT:
+        case LIBDBO_TYPE_TEXT:
             ret = sqlite3_bind_text(statement, bind++, libdbo_value_text(value), -1, SQLITE_TRANSIENT);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_TYPE_ENUM:
+        case LIBDBO_TYPE_ENUM:
             if (libdbo_value_enum_value(value, &to_int)) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             ret = sqlite3_bind_int(statement, bind++, to_int);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
         default:
             __db_backend_sqlite_finalize(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1505,7 +1505,7 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
         ret = sqlite3_bind_int64(statement, bind++, revision_number + 1);
         if (ret != SQLITE_OK) {
             __db_backend_sqlite_finalize(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1515,7 +1515,7 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
     if (clause_list) {
         if (__db_backend_sqlite_bind_clause(statement, clause_list, &bind)) {
             __db_backend_sqlite_finalize(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1524,7 +1524,7 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
      */
     if (__db_backend_sqlite_step(backend_sqlite, statement) != SQLITE_DONE) {
         __db_backend_sqlite_finalize(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     __db_backend_sqlite_finalize(statement);
 
@@ -1534,11 +1534,11 @@ static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* objec
      */
     if (revision_field) {
         if (sqlite3_changes(backend_sqlite->db) < 1) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_sqlite_delete(void* data, const libdbo_object_t* object, const libdbo_clause_list_t* clause_list) {
@@ -1552,13 +1552,13 @@ static int libdbo_backend_sqlite_delete(void* data, const libdbo_object_t* objec
     const libdbo_clause_t* clause;
 
     if (!__sqlite3_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -1566,12 +1566,12 @@ static int libdbo_backend_sqlite_delete(void* data, const libdbo_object_t* objec
      */
     object_field = libdbo_object_field_list_begin(libdbo_object_object_field_list(object));
     while (object_field) {
-        if (libdbo_object_field_type(object_field) == DB_TYPE_REVISION) {
+        if (libdbo_object_field_type(object_field) == LIBDBO_TYPE_REVISION) {
             if (revision_field) {
                 /*
                  * We do not support multiple revision fields.
                  */
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
 
             revision_field = object_field;
@@ -1591,7 +1591,7 @@ static int libdbo_backend_sqlite_delete(void* data, const libdbo_object_t* objec
             clause = libdbo_clause_next(clause);
         }
         if (!clause) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1599,7 +1599,7 @@ static int libdbo_backend_sqlite_delete(void* data, const libdbo_object_t* objec
     sqlp = sql;
 
     if ((ret = snprintf(sqlp, left, "DELETE FROM %s", libdbo_object_table(object))) >= left) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     sqlp += ret;
     left -= ret;
@@ -1607,31 +1607,31 @@ static int libdbo_backend_sqlite_delete(void* data, const libdbo_object_t* objec
     if (clause_list) {
         if (libdbo_clause_list_begin(clause_list)) {
             if ((ret = snprintf(sqlp, left, " WHERE")) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             sqlp += ret;
             left -= ret;
         }
         if (__db_backend_sqlite_build_clause(object, clause_list, &sqlp, &left)) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
     if (__db_backend_sqlite_prepare(backend_sqlite, &statement, sql, sizeof(sql))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (clause_list) {
         bind = 1;
         if (__db_backend_sqlite_bind_clause(statement, clause_list, &bind)) {
             __db_backend_sqlite_finalize(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
     if (__db_backend_sqlite_step(backend_sqlite, statement) != SQLITE_DONE) {
         __db_backend_sqlite_finalize(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     __db_backend_sqlite_finalize(statement);
 
@@ -1641,11 +1641,11 @@ static int libdbo_backend_sqlite_delete(void* data, const libdbo_object_t* objec
      */
     if (revision_field) {
         if (sqlite3_changes(backend_sqlite->db) < 1) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_sqlite_count(void* data, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list, size_t* count) {
@@ -1658,29 +1658,29 @@ static int libdbo_backend_sqlite_count(void* data, const libdbo_object_t* object
     int sqlite_count;
 
     if (!__sqlite3_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!count) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     left = sizeof(sql);
     sqlp = sql;
 
     if ((ret = snprintf(sqlp, left, "SELECT COUNT(*)")) >= left) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     sqlp += ret;
     left -= ret;
 
     if ((ret = snprintf(sqlp, left, " FROM %s", libdbo_object_table(object))) >= left) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     sqlp += ret;
     left -= ret;
@@ -1695,7 +1695,7 @@ static int libdbo_backend_sqlite_count(void* data, const libdbo_object_t* object
                 libdbo_join_from_table(join),
                 libdbo_join_from_field(join))) >= left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             sqlp += ret;
             left -= ret;
@@ -1706,44 +1706,44 @@ static int libdbo_backend_sqlite_count(void* data, const libdbo_object_t* object
     if (clause_list) {
         if (libdbo_clause_list_begin(clause_list)) {
             if ((ret = snprintf(sqlp, left, " WHERE")) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             sqlp += ret;
             left -= ret;
         }
         if (__db_backend_sqlite_build_clause(object, clause_list, &sqlp, &left)) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
     if (__db_backend_sqlite_prepare(backend_sqlite, &statement, sql, sizeof(sql))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (clause_list) {
         bind = 1;
         if (__db_backend_sqlite_bind_clause(statement, clause_list, &bind)) {
             __db_backend_sqlite_finalize(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
     ret = __db_backend_sqlite_step(backend_sqlite, statement);
     if (ret != SQLITE_DONE && ret != SQLITE_ROW) {
         __db_backend_sqlite_finalize(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     sqlite_count = sqlite3_column_int(statement, 0);
     ret = sqlite3_errcode(backend_sqlite->db);
     if ((ret != SQLITE_OK && ret != SQLITE_ROW && ret != SQLITE_DONE)) {
         __db_backend_sqlite_finalize(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     *count = sqlite_count;
     __db_backend_sqlite_finalize(statement);
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static void libdbo_backend_sqlite_free(void* data) {
@@ -1763,27 +1763,27 @@ static int libdbo_backend_sqlite_transaction_begin(void* data) {
     sqlite3_stmt* statement = NULL;
 
     if (!__sqlite3_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (backend_sqlite->transaction) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_sqlite_prepare(backend_sqlite, &statement, sql, sizeof(sql))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_sqlite_step(backend_sqlite, statement) != SQLITE_DONE) {
         __db_backend_sqlite_finalize(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     __db_backend_sqlite_finalize(statement);
 
     backend_sqlite->transaction = 1;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_sqlite_transaction_commit(void* data) {
@@ -1792,27 +1792,27 @@ static int libdbo_backend_sqlite_transaction_commit(void* data) {
     sqlite3_stmt* statement = NULL;
 
     if (!__sqlite3_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite->transaction) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_sqlite_prepare(backend_sqlite, &statement, sql, sizeof(sql))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_sqlite_step(backend_sqlite, statement) != SQLITE_DONE) {
         __db_backend_sqlite_finalize(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     __db_backend_sqlite_finalize(statement);
 
     backend_sqlite->transaction = 0;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_sqlite_transaction_rollback(void* data) {
@@ -1821,27 +1821,27 @@ static int libdbo_backend_sqlite_transaction_rollback(void* data) {
     sqlite3_stmt* statement = NULL;
 
     if (!__sqlite3_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_sqlite->transaction) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_sqlite_prepare(backend_sqlite, &statement, sql, sizeof(sql))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_sqlite_step(backend_sqlite, statement) != SQLITE_DONE) {
         __db_backend_sqlite_finalize(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     __db_backend_sqlite_finalize(statement);
 
     backend_sqlite->transaction = 0;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 libdbo_backend_handle_t* libdbo_backend_sqlite_new_handle(void) {

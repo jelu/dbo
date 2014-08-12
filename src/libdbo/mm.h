@@ -56,7 +56,7 @@ extern "C" {
 /**
  * A libdbo_mm_t static allocation for a memory pool.
  */
-#define DB_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, PTHREAD_MUTEX_INITIALIZER }
+#define LIBDBO_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, PTHREAD_MUTEX_INITIALIZER }
 
 /**
  * A memory pool handle.
@@ -98,7 +98,7 @@ void libdbo_mm_init(void);
  * function pointers needs to be set in other for them to be called instead of
  * the database layer memory management code.
  * \param[in] malloc_function a libdbo_mm_malloc_t function pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_mm_set_malloc(libdbo_mm_malloc_t malloc_function);
 
@@ -107,7 +107,7 @@ int libdbo_mm_set_malloc(libdbo_mm_malloc_t malloc_function);
  * function pointers needs to be set in other for them to be called instead of
  * the database layer memory management code.
  * \param[in] free_function a libdbo_mm_free_t function pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_mm_set_free(libdbo_mm_free_t free_function);
 

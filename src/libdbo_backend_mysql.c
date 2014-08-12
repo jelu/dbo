@@ -63,7 +63,7 @@ typedef struct libdbo_backend_mysql {
     unsigned int timeout;
 } libdbo_backend_mysql_t;
 
-static libdbo_mm_t __mysql_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_backend_mysql_t));
+static libdbo_mm_t __mysql_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_backend_mysql_t));
 
 /**
  * The MySQL database backend specific data for a statement bind.
@@ -77,7 +77,7 @@ struct libdbo_backend_mysql_bind {
     int value_enum;
 };
 
-static libdbo_mm_t __mysql_bind_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_backend_mysql_bind_t));
+static libdbo_mm_t __mysql_bind_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_backend_mysql_bind_t));
 
 /**
  * The MySQL database backend specific data for statements.
@@ -96,7 +96,7 @@ typedef struct libdbo_backend_mysql_statement {
     int bound;
 } libdbo_backend_mysql_statement_t;
 
-static libdbo_mm_t __mysql_statement_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_backend_mysql_statement_t));
+static libdbo_mm_t __mysql_statement_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_backend_mysql_statement_t));
 
 /**
  * MySQL finish function.
@@ -154,19 +154,19 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
     MYSQL_FIELD* field;
 
     if (!backend_mysql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql->db) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!statement) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (*statement) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!sql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -183,7 +183,7 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
         }
         __db_backend_mysql_finish(*statement);
         *statement = NULL;
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     (*statement)->backend_mysql = backend_mysql;
@@ -196,14 +196,14 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
         if (!((*statement)->mysql_bind_input = calloc(params, sizeof(MYSQL_BIND)))) {
             __db_backend_mysql_finish(*statement);
             *statement = NULL;
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         for (i = 0; i < params; i++) {
             if (!(bind = libdbo_mm_new0(&__mysql_bind_alloc))) {
                 __db_backend_mysql_finish(*statement);
                 *statement = NULL;
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
 
             bind->bind = &((*statement)->mysql_bind_input[i]);
@@ -230,7 +230,7 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
             mysql_free_result(result_metadata);
             __db_backend_mysql_finish(*statement);
             *statement = NULL;
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         (*statement)->fields = params;
@@ -244,7 +244,7 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
                 mysql_free_result(result_metadata);
                 __db_backend_mysql_finish(*statement);
                 *statement = NULL;
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
 
             bind->bind = (mysql_bind = &((*statement)->mysql_bind_output[i]));
@@ -253,7 +253,7 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
             mysql_bind->length = &bind->length;
 
             switch (libdbo_object_field_type(object_field)) {
-            case DB_TYPE_PRIMARY_KEY:
+            case LIBDBO_TYPE_PRIMARY_KEY:
                 switch (field->type) {
                 case MYSQL_TYPE_TINY:
                 case MYSQL_TYPE_SHORT:
@@ -264,7 +264,7 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
                         mysql_free_result(result_metadata);
                         __db_backend_mysql_finish(*statement);
                         *statement = NULL;
-                        return DB_ERROR_UNKNOWN;
+                        return LIBDBO_ERROR_UNKNOWN;
                     }
                     mysql_bind->buffer_length = sizeof(libdbo_type_uint32_t);
                     bind->length = mysql_bind->buffer_length;
@@ -277,7 +277,7 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
                         mysql_free_result(result_metadata);
                         __db_backend_mysql_finish(*statement);
                         *statement = NULL;
-                        return DB_ERROR_UNKNOWN;
+                        return LIBDBO_ERROR_UNKNOWN;
                     }
                     mysql_bind->buffer_length = sizeof(libdbo_type_uint64_t);
                     bind->length = mysql_bind->buffer_length;
@@ -292,14 +292,14 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
                      * we increase it by one.
                      */
                     bind->length = field->length + 1;
-                    if (bind->length < DB_BACKEND_MYSQL_STRING_MIN_SIZE) {
-                        bind->length = DB_BACKEND_MYSQL_STRING_MIN_SIZE;
+                    if (bind->length < LIBDBO_BACKEND_MYSQL_STRING_MIN_SIZE) {
+                        bind->length = LIBDBO_BACKEND_MYSQL_STRING_MIN_SIZE;
                     }
                     if (!(mysql_bind->buffer = calloc(1, bind->length))) {
                         mysql_free_result(result_metadata);
                         __db_backend_mysql_finish(*statement);
                         *statement = NULL;
-                        return DB_ERROR_UNKNOWN;
+                        return LIBDBO_ERROR_UNKNOWN;
                     }
                     mysql_bind->buffer_length = bind->length;
                     mysql_bind->is_unsigned = 0;
@@ -309,91 +309,91 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
                     mysql_free_result(result_metadata);
                     __db_backend_mysql_finish(*statement);
                     *statement = NULL;
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 break;
 
-            case DB_TYPE_ENUM:
+            case LIBDBO_TYPE_ENUM:
                 /*
                  * Enum needs to be handled elsewhere since we don't know the
                  * enum_set_t here.
                  *
                  * TODO: can something be done here?
                  */
-            case DB_TYPE_INT32:
+            case LIBDBO_TYPE_INT32:
                 mysql_bind->buffer_type = MYSQL_TYPE_LONG;
                 if (!(mysql_bind->buffer = calloc(1, sizeof(libdbo_type_int32_t)))) {
                     mysql_free_result(result_metadata);
                     __db_backend_mysql_finish(*statement);
                     *statement = NULL;
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 mysql_bind->buffer_length = sizeof(libdbo_type_int32_t);
                 bind->length = mysql_bind->buffer_length;
                 mysql_bind->is_unsigned = 0;
                 break;
 
-            case DB_TYPE_UINT32:
+            case LIBDBO_TYPE_UINT32:
                 mysql_bind->buffer_type = MYSQL_TYPE_LONG;
                 if (!(mysql_bind->buffer = calloc(1, sizeof(libdbo_type_uint32_t)))) {
                     mysql_free_result(result_metadata);
                     __db_backend_mysql_finish(*statement);
                     *statement = NULL;
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 mysql_bind->buffer_length = sizeof(libdbo_type_uint32_t);
                 bind->length = mysql_bind->buffer_length;
                 mysql_bind->is_unsigned = 1;
                 break;
 
-            case DB_TYPE_INT64:
+            case LIBDBO_TYPE_INT64:
                 mysql_bind->buffer_type = MYSQL_TYPE_LONGLONG;
                 if (!(mysql_bind->buffer = calloc(1, sizeof(libdbo_type_int64_t)))) {
                     mysql_free_result(result_metadata);
                     __db_backend_mysql_finish(*statement);
                     *statement = NULL;
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 mysql_bind->buffer_length = sizeof(libdbo_type_int64_t);
                 bind->length = mysql_bind->buffer_length;
                 mysql_bind->is_unsigned = 0;
                 break;
 
-            case DB_TYPE_UINT64:
+            case LIBDBO_TYPE_UINT64:
                 mysql_bind->buffer_type = MYSQL_TYPE_LONGLONG;
                 if (!(mysql_bind->buffer = calloc(1, sizeof(libdbo_type_uint64_t)))) {
                     mysql_free_result(result_metadata);
                     __db_backend_mysql_finish(*statement);
                     *statement = NULL;
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 mysql_bind->buffer_length = sizeof(libdbo_type_uint64_t);
                 bind->length = mysql_bind->buffer_length;
                 mysql_bind->is_unsigned = 1;
                 break;
 
-            case DB_TYPE_TEXT:
+            case LIBDBO_TYPE_TEXT:
                 mysql_bind->buffer_type = MYSQL_TYPE_STRING;
                 /*
                  * field->length does not include ending NULL character so
                  * we increase it by one.
                  */
                 bind->length = field->length + 1;
-                if (bind->length < DB_BACKEND_MYSQL_STRING_MIN_SIZE) {
-                    bind->length = DB_BACKEND_MYSQL_STRING_MIN_SIZE;
+                if (bind->length < LIBDBO_BACKEND_MYSQL_STRING_MIN_SIZE) {
+                    bind->length = LIBDBO_BACKEND_MYSQL_STRING_MIN_SIZE;
                 }
                 if (!(mysql_bind->buffer = calloc(1, bind->length))) {
                     mysql_free_result(result_metadata);
                     __db_backend_mysql_finish(*statement);
                     *statement = NULL;
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 mysql_bind->buffer_length = bind->length;
                 mysql_bind->is_unsigned = 0;
                 break;
 
-            case DB_TYPE_ANY:
-            case DB_TYPE_REVISION:
+            case LIBDBO_TYPE_ANY:
+            case LIBDBO_TYPE_REVISION:
                 switch (field->type) {
                 case MYSQL_TYPE_TINY:
                 case MYSQL_TYPE_SHORT:
@@ -405,7 +405,7 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
                             mysql_free_result(result_metadata);
                             __db_backend_mysql_finish(*statement);
                             *statement = NULL;
-                            return DB_ERROR_UNKNOWN;
+                            return LIBDBO_ERROR_UNKNOWN;
                         }
                         mysql_bind->buffer_length = sizeof(libdbo_type_uint32_t);
                         mysql_bind->is_unsigned = 1;
@@ -415,7 +415,7 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
                             mysql_free_result(result_metadata);
                             __db_backend_mysql_finish(*statement);
                             *statement = NULL;
-                            return DB_ERROR_UNKNOWN;
+                            return LIBDBO_ERROR_UNKNOWN;
                         }
                         mysql_bind->buffer_length = sizeof(libdbo_type_int32_t);
                         mysql_bind->is_unsigned = 0;
@@ -430,7 +430,7 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
                             mysql_free_result(result_metadata);
                             __db_backend_mysql_finish(*statement);
                             *statement = NULL;
-                            return DB_ERROR_UNKNOWN;
+                            return LIBDBO_ERROR_UNKNOWN;
                         }
                         mysql_bind->buffer_length = sizeof(libdbo_type_uint64_t);
                         mysql_bind->is_unsigned = 1;
@@ -440,7 +440,7 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
                             mysql_free_result(result_metadata);
                             __db_backend_mysql_finish(*statement);
                             *statement = NULL;
-                            return DB_ERROR_UNKNOWN;
+                            return LIBDBO_ERROR_UNKNOWN;
                         }
                         mysql_bind->buffer_length = sizeof(libdbo_type_int64_t);
                         mysql_bind->is_unsigned = 0;
@@ -456,14 +456,14 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
                      * we increase it by one.
                      */
                     bind->length = field->length + 1;
-                    if (bind->length < DB_BACKEND_MYSQL_STRING_MIN_SIZE) {
-                        bind->length = DB_BACKEND_MYSQL_STRING_MIN_SIZE;
+                    if (bind->length < LIBDBO_BACKEND_MYSQL_STRING_MIN_SIZE) {
+                        bind->length = LIBDBO_BACKEND_MYSQL_STRING_MIN_SIZE;
                     }
                     if (!(mysql_bind->buffer = calloc(1, bind->length))) {
                         mysql_free_result(result_metadata);
                         __db_backend_mysql_finish(*statement);
                         *statement = NULL;
-                        return DB_ERROR_UNKNOWN;
+                        return LIBDBO_ERROR_UNKNOWN;
                     }
                     mysql_bind->buffer_length = bind->length;
                     mysql_bind->is_unsigned = 0;
@@ -473,12 +473,12 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
                     mysql_free_result(result_metadata);
                     __db_backend_mysql_finish(*statement);
                     *statement = NULL;
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 break;
 
             default:
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
 
             if (!(*statement)->bind_output) {
@@ -499,14 +499,14 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
             mysql_free_result(result_metadata);
             __db_backend_mysql_finish(*statement);
             *statement = NULL;
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
     if (result_metadata) {
         mysql_free_result(result_metadata);
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 /**
@@ -518,10 +518,10 @@ static inline int __db_backend_mysql_fetch(libdbo_backend_mysql_statement_t* sta
     int ret;
 
     if (!statement) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!statement->statement) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -532,7 +532,7 @@ static inline int __db_backend_mysql_fetch(libdbo_backend_mysql_statement_t* sta
             && mysql_stmt_bind_result(statement->statement, statement->mysql_bind_output))
         {
             /*ods_log_info("DB bind result Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         statement->bound = 1;
     }
@@ -543,7 +543,7 @@ static inline int __db_backend_mysql_fetch(libdbo_backend_mysql_statement_t* sta
     ret = mysql_stmt_fetch(statement->statement);
     if (ret == 1) {
         /*ods_log_info("DB fetch Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     else if (ret == MYSQL_DATA_TRUNCATED) {
         int i;
@@ -564,14 +564,14 @@ static inline int __db_backend_mysql_fetch(libdbo_backend_mysql_statement_t* sta
                     || bind->length <= statement->mysql_bind_output[i].buffer_length)
                 {
                     /*ods_log_info("DB fetch Err data truncated");*/
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
 
                 free(statement->mysql_bind_output[i].buffer);
                 statement->mysql_bind_output[i].buffer = NULL;
                 if (!(statement->mysql_bind_output[i].buffer = calloc(1, bind->length))) {
                     /*ods_log_info("DB fetch Err data truncated");*/
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 statement->mysql_bind_output[i].buffer_length = bind->length;
                 bind->error = 0;
@@ -579,7 +579,7 @@ static inline int __db_backend_mysql_fetch(libdbo_backend_mysql_statement_t* sta
                     || bind->error)
                 {
                     /*ods_log_info("DB fetch Err data truncated");*/
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
             }
         }
@@ -589,14 +589,14 @@ static inline int __db_backend_mysql_fetch(libdbo_backend_mysql_statement_t* sta
          * Not really an error but we need to indicate that there is no more
          * data some how.
          */
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     else if (ret) {
         /*ods_log_info("DB fetch UNKNOWN %d Err %d: %s", ret, mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 /**
@@ -606,10 +606,10 @@ static inline int __db_backend_mysql_fetch(libdbo_backend_mysql_statement_t* sta
  */
 static inline int __db_backend_mysql_execute(libdbo_backend_mysql_statement_t* statement) {
     if (!statement) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!statement->statement) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -619,7 +619,7 @@ static inline int __db_backend_mysql_execute(libdbo_backend_mysql_statement_t* s
         && mysql_stmt_bind_param(statement->statement, statement->mysql_bind_input))
     {
         /*ods_log_info("DB bind param Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -627,40 +627,40 @@ static inline int __db_backend_mysql_execute(libdbo_backend_mysql_statement_t* s
      */
     if (mysql_stmt_execute(statement->statement)) {
         /*ods_log_info("DB execute Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_mysql_initialize(void* data) {
     libdbo_backend_mysql_t* backend_mysql = (libdbo_backend_mysql_t*)data;
 
     if (!backend_mysql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (!__mysql_initialized) {
         if (mysql_library_init(0, NULL, NULL)) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         __mysql_initialized = 1;
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_mysql_shutdown(void* data) {
     libdbo_backend_mysql_t* backend_mysql = (libdbo_backend_mysql_t*)data;
 
     if (!backend_mysql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__mysql_initialized) {
         mysql_library_end();
         __mysql_initialized = 0;
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_mysql_connect(void* data, const libdbo_configuration_list_t* configuration_list) {
@@ -675,16 +675,16 @@ static int libdbo_backend_mysql_connect(void* data, const libdbo_configuration_l
     unsigned int port = 0;
 
     if (!__mysql_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (backend_mysql->db) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!configuration_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     host = libdbo_configuration_list_find(configuration_list, "host");
@@ -696,11 +696,11 @@ static int libdbo_backend_mysql_connect(void* data, const libdbo_configuration_l
         port = atoi(libdbo_configuration_value(port_configuration));
     }
 
-    backend_mysql->timeout = DB_BACKEND_MYSQL_DEFAULT_TIMEOUT;
+    backend_mysql->timeout = LIBDBO_BACKEND_MYSQL_DEFAULT_TIMEOUT;
     if ((timeout_configuration = libdbo_configuration_list_find(configuration_list, "timeout"))) {
         timeout = atoi(libdbo_configuration_value(timeout_configuration));
         if (timeout < 1) {
-            backend_mysql->timeout = DB_BACKEND_MYSQL_DEFAULT_TIMEOUT;
+            backend_mysql->timeout = LIBDBO_BACKEND_MYSQL_DEFAULT_TIMEOUT;
         }
         else {
             backend_mysql->timeout = (unsigned int)timeout;
@@ -724,23 +724,23 @@ static int libdbo_backend_mysql_connect(void* data, const libdbo_configuration_l
             mysql_close(backend_mysql->db);
             backend_mysql->db = NULL;
         }
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_mysql_disconnect(void* data) {
     libdbo_backend_mysql_t* backend_mysql = (libdbo_backend_mysql_t*)data;
 
     if (!__mysql_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql->db) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (backend_mysql->transaction) {
@@ -750,7 +750,7 @@ static int libdbo_backend_mysql_disconnect(void* data) {
     mysql_close(backend_mysql->db);
     backend_mysql->db = NULL;
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 /**
@@ -760,26 +760,26 @@ static int libdbo_backend_mysql_disconnect(void* data) {
  * \param[in] clause_list a libdbo_clause_list_t pointer.
  * \param[in] sqlp a character pointer pointer.
  * \param[in] left an integer pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 static int __db_backend_mysql_build_clause(const libdbo_object_t* object, const libdbo_clause_list_t* clause_list, char** sqlp, int* left) {
     const libdbo_clause_t* clause;
     int first, ret;
 
     if (!clause_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!sqlp) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!*sqlp) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!left) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (*left < 1) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     clause = libdbo_clause_list_begin(clause_list);
@@ -790,127 +790,127 @@ static int __db_backend_mysql_build_clause(const libdbo_object_t* object, const 
         }
         else {
             switch (libdbo_clause_operator(clause)) {
-            case DB_CLAUSE_OPERATOR_AND:
+            case LIBDBO_CLAUSE_OPERATOR_AND:
                 if ((ret = snprintf(*sqlp, *left, " AND")) >= *left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 break;
 
-            case DB_CLAUSE_OPERATOR_OR:
+            case LIBDBO_CLAUSE_OPERATOR_OR:
                 if ((ret = snprintf(*sqlp, *left, " OR")) >= *left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 break;
 
             default:
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             *sqlp += ret;
             *left -= ret;
         }
 
         switch (libdbo_clause_type(clause)) {
-        case DB_CLAUSE_EQUAL:
+        case LIBDBO_CLAUSE_EQUAL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s = ?",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_NOT_EQUAL:
+        case LIBDBO_CLAUSE_NOT_EQUAL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s != ?",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_LESS_THEN:
+        case LIBDBO_CLAUSE_LESS_THEN:
             if ((ret = snprintf(*sqlp, *left, " %s.%s < ?",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_LESS_OR_EQUAL:
+        case LIBDBO_CLAUSE_LESS_OR_EQUAL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s <= ?",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_GREATER_OR_EQUAL:
+        case LIBDBO_CLAUSE_GREATER_OR_EQUAL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s >= ?",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_GREATER_THEN:
+        case LIBDBO_CLAUSE_GREATER_THEN:
             if ((ret = snprintf(*sqlp, *left, " %s.%s > ?",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_IS_NULL:
+        case LIBDBO_CLAUSE_IS_NULL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s IS NULL",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_IS_NOT_NULL:
+        case LIBDBO_CLAUSE_IS_NOT_NULL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s IS NOT NULL",
                 (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
                 libdbo_clause_field(clause))) >= *left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_NESTED:
+        case LIBDBO_CLAUSE_NESTED:
             if ((ret = snprintf(*sqlp, *left, " (")) >= *left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             *sqlp += ret;
             *left -= ret;
             if (__db_backend_mysql_build_clause(object, libdbo_clause_list(clause), sqlp, left)) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(*sqlp, *left, " )")) >= *left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
         default:
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         *sqlp += ret;
         *left -= ret;
 
         clause = libdbo_clause_next(clause);
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 /**
  * Bind values from the clause list to a MySQL bind structure.
  * TODO
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 static int __db_backend_mysql_bind_clause(libdbo_backend_mysql_bind_t** bind, const libdbo_clause_list_t* clause_list) {
     const libdbo_clause_t* clause;
@@ -921,36 +921,36 @@ static int __db_backend_mysql_bind_clause(libdbo_backend_mysql_bind_t** bind, co
     const char* text;
 
     if (!bind) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!*bind) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!clause_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     clause = libdbo_clause_list_begin(clause_list);
     while (clause) {
         if (!*bind) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         (*bind)->bind->length = &((*bind)->bind->buffer_length);
         (*bind)->bind->is_null = (my_bool*)0;
 
         switch (libdbo_clause_type(clause)) {
-        case DB_CLAUSE_EQUAL:
-        case DB_CLAUSE_NOT_EQUAL:
-        case DB_CLAUSE_LESS_THEN:
-        case DB_CLAUSE_LESS_OR_EQUAL:
-        case DB_CLAUSE_GREATER_OR_EQUAL:
-        case DB_CLAUSE_GREATER_THEN:
+        case LIBDBO_CLAUSE_EQUAL:
+        case LIBDBO_CLAUSE_NOT_EQUAL:
+        case LIBDBO_CLAUSE_LESS_THEN:
+        case LIBDBO_CLAUSE_LESS_OR_EQUAL:
+        case LIBDBO_CLAUSE_GREATER_OR_EQUAL:
+        case LIBDBO_CLAUSE_GREATER_THEN:
             switch (libdbo_value_type(libdbo_clause_value(clause))) {
-            case DB_TYPE_PRIMARY_KEY:
-            case DB_TYPE_INT32:
+            case LIBDBO_TYPE_PRIMARY_KEY:
+            case LIBDBO_TYPE_INT32:
                 if (!(int32 = libdbo_value_int32(libdbo_clause_value(clause)))) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 (*bind)->bind->buffer_type = MYSQL_TYPE_LONG;
                 (*bind)->bind->buffer = (void*)int32;
@@ -958,9 +958,9 @@ static int __db_backend_mysql_bind_clause(libdbo_backend_mysql_bind_t** bind, co
                 (*bind)->bind->is_unsigned = 0;
                 break;
 
-            case DB_TYPE_UINT32:
+            case LIBDBO_TYPE_UINT32:
                 if (!(uint32 = libdbo_value_uint32(libdbo_clause_value(clause)))) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 (*bind)->bind->buffer_type = MYSQL_TYPE_LONG;
                 (*bind)->bind->buffer = (void*)uint32;
@@ -968,9 +968,9 @@ static int __db_backend_mysql_bind_clause(libdbo_backend_mysql_bind_t** bind, co
                 (*bind)->bind->is_unsigned = 1;
                 break;
 
-            case DB_TYPE_INT64:
+            case LIBDBO_TYPE_INT64:
                 if (!(int64 = libdbo_value_int64(libdbo_clause_value(clause)))) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 (*bind)->bind->buffer_type = MYSQL_TYPE_LONGLONG;
                 (*bind)->bind->buffer = (void*)int64;
@@ -978,9 +978,9 @@ static int __db_backend_mysql_bind_clause(libdbo_backend_mysql_bind_t** bind, co
                 (*bind)->bind->is_unsigned = 0;
                 break;
 
-            case DB_TYPE_UINT64:
+            case LIBDBO_TYPE_UINT64:
                 if (!(uint64 = libdbo_value_uint64(libdbo_clause_value(clause)))) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 (*bind)->bind->buffer_type = MYSQL_TYPE_LONGLONG;
                 (*bind)->bind->buffer = (void*)uint64;
@@ -988,9 +988,9 @@ static int __db_backend_mysql_bind_clause(libdbo_backend_mysql_bind_t** bind, co
                 (*bind)->bind->is_unsigned = 1;
                 break;
 
-            case DB_TYPE_TEXT:
+            case LIBDBO_TYPE_TEXT:
                 if (!(text = libdbo_value_text(libdbo_clause_value(clause)))) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 (*bind)->bind->buffer_type = MYSQL_TYPE_STRING;
                 (*bind)->bind->buffer = (void*)text;
@@ -998,9 +998,9 @@ static int __db_backend_mysql_bind_clause(libdbo_backend_mysql_bind_t** bind, co
                 (*bind)->bind->is_unsigned = 0;
                 break;
 
-            case DB_TYPE_ENUM:
+            case LIBDBO_TYPE_ENUM:
                 if (libdbo_value_enum_value(libdbo_clause_value(clause), &((*bind)->value_enum))) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 (*bind)->bind->buffer_type = MYSQL_TYPE_LONG;
                 (*bind)->bind->buffer = (void*)&((*bind)->value_enum);
@@ -1009,34 +1009,34 @@ static int __db_backend_mysql_bind_clause(libdbo_backend_mysql_bind_t** bind, co
                 break;
 
             default:
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             break;
 
-        case DB_CLAUSE_IS_NULL:
+        case LIBDBO_CLAUSE_IS_NULL:
             /* TODO: is null */
             break;
 
-        case DB_CLAUSE_IS_NOT_NULL:
+        case LIBDBO_CLAUSE_IS_NOT_NULL:
             /* TODO: is not null */
             break;
 
-        case DB_CLAUSE_NESTED:
+        case LIBDBO_CLAUSE_NESTED:
             *bind = (*bind)->next;
             if (__db_backend_mysql_bind_clause(bind, libdbo_clause_list(clause))) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             clause = libdbo_clause_next(clause);
             continue;
 
         default:
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         *bind = (*bind)->next;
         clause = libdbo_clause_next(clause);
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int __db_backend_mysql_bind_value(libdbo_backend_mysql_bind_t* bind, const libdbo_value_t* value) {
@@ -1047,23 +1047,23 @@ static int __db_backend_mysql_bind_value(libdbo_backend_mysql_bind_t* bind, cons
     const char* text;
 
     if (!bind) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!bind->bind) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!value) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     bind->bind->length = &(bind->bind->buffer_length);
     bind->bind->is_null = (my_bool*)0;
 
     switch (libdbo_value_type(value)) {
-    case DB_TYPE_PRIMARY_KEY:
-    case DB_TYPE_INT32:
+    case LIBDBO_TYPE_PRIMARY_KEY:
+    case LIBDBO_TYPE_INT32:
         if (!(int32 = libdbo_value_int32(value))) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         bind->bind->buffer_type = MYSQL_TYPE_LONG;
         bind->bind->buffer = (void*)int32;
@@ -1071,9 +1071,9 @@ static int __db_backend_mysql_bind_value(libdbo_backend_mysql_bind_t* bind, cons
         bind->bind->is_unsigned = 0;
         break;
 
-    case DB_TYPE_UINT32:
+    case LIBDBO_TYPE_UINT32:
         if (!(uint32 = libdbo_value_uint32(value))) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         bind->bind->buffer_type = MYSQL_TYPE_LONG;
         bind->bind->buffer = (void*)uint32;
@@ -1081,9 +1081,9 @@ static int __db_backend_mysql_bind_value(libdbo_backend_mysql_bind_t* bind, cons
         bind->bind->is_unsigned = 1;
         break;
 
-    case DB_TYPE_INT64:
+    case LIBDBO_TYPE_INT64:
         if (!(int64 = libdbo_value_int64(value))) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         bind->bind->buffer_type = MYSQL_TYPE_LONGLONG;
         bind->bind->buffer = (void*)int64;
@@ -1091,9 +1091,9 @@ static int __db_backend_mysql_bind_value(libdbo_backend_mysql_bind_t* bind, cons
         bind->bind->is_unsigned = 0;
         break;
 
-    case DB_TYPE_UINT64:
+    case LIBDBO_TYPE_UINT64:
         if (!(uint64 = libdbo_value_uint64(value))) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         bind->bind->buffer_type = MYSQL_TYPE_LONGLONG;
         bind->bind->buffer = (void*)uint64;
@@ -1101,9 +1101,9 @@ static int __db_backend_mysql_bind_value(libdbo_backend_mysql_bind_t* bind, cons
         bind->bind->is_unsigned = 1;
         break;
 
-    case DB_TYPE_TEXT:
+    case LIBDBO_TYPE_TEXT:
         if (!(text = libdbo_value_text(value))) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         bind->bind->buffer_type = MYSQL_TYPE_STRING;
         bind->bind->buffer = (void*)text;
@@ -1111,9 +1111,9 @@ static int __db_backend_mysql_bind_value(libdbo_backend_mysql_bind_t* bind, cons
         bind->bind->is_unsigned = 0;
         break;
 
-    case DB_TYPE_ENUM:
+    case LIBDBO_TYPE_ENUM:
         if (libdbo_value_enum_value(value, &(bind->value_enum))) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         bind->bind->buffer_type = MYSQL_TYPE_LONG;
         bind->bind->buffer = (void*)&(bind->value_enum);
@@ -1122,35 +1122,35 @@ static int __db_backend_mysql_bind_value(libdbo_backend_mysql_bind_t* bind, cons
         break;
 
     default:
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int __db_backend_mysql_bind_value_set(libdbo_backend_mysql_bind_t** bind, const libdbo_value_set_t* value_set) {
     size_t i;
 
     if (!bind) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!*bind) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!value_set) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     for (i = 0; i < libdbo_value_set_size(value_set); i++, *bind = (*bind)->next) {
         if (!*bind) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         if (__db_backend_mysql_bind_value(*bind, libdbo_value_set_at(value_set, i))) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static libdbo_result_t* libdbo_backend_mysql_next(void* data, int finish) {
@@ -1198,9 +1198,9 @@ static libdbo_result_t* libdbo_backend_mysql_next(void* data, int finish) {
         }
 
         switch (libdbo_object_field_type(object_field)) {
-        case DB_TYPE_PRIMARY_KEY:
-        case DB_TYPE_ANY:
-        case DB_TYPE_REVISION:
+        case LIBDBO_TYPE_PRIMARY_KEY:
+        case LIBDBO_TYPE_ANY:
+        case LIBDBO_TYPE_REVISION:
             switch (bind->bind->buffer_type) {
             case MYSQL_TYPE_LONG:
                 if ((bind->bind->is_unsigned
@@ -1239,7 +1239,7 @@ static libdbo_result_t* libdbo_backend_mysql_next(void* data, int finish) {
                 libdbo_result_free(result);
                 return NULL;
             }
-            if (libdbo_object_field_type(object_field) == DB_TYPE_PRIMARY_KEY
+            if (libdbo_object_field_type(object_field) == LIBDBO_TYPE_PRIMARY_KEY
                 && libdbo_value_set_primary_key(libdbo_value_set_get(value_set, value)))
             {
                 libdbo_result_free(result);
@@ -1247,13 +1247,13 @@ static libdbo_result_t* libdbo_backend_mysql_next(void* data, int finish) {
             }
             break;
 
-        case DB_TYPE_ENUM:
+        case LIBDBO_TYPE_ENUM:
             /*
              * Enum needs to be handled elsewhere since we don't know the
              * enum_set_t here.
              */
-        case DB_TYPE_INT32:
-        case DB_TYPE_UINT32:
+        case LIBDBO_TYPE_INT32:
+        case LIBDBO_TYPE_UINT32:
             if (bind->bind->buffer_type != MYSQL_TYPE_LONG
                 || (bind->bind->is_unsigned
                     && libdbo_value_from_uint32(libdbo_value_set_get(value_set, value), *((libdbo_type_uint32_t*)bind->bind->buffer)))
@@ -1265,8 +1265,8 @@ static libdbo_result_t* libdbo_backend_mysql_next(void* data, int finish) {
             }
             break;
 
-        case DB_TYPE_INT64:
-        case DB_TYPE_UINT64:
+        case LIBDBO_TYPE_INT64:
+        case LIBDBO_TYPE_UINT64:
             if (bind->bind->buffer_type != MYSQL_TYPE_LONGLONG
                 || (bind->bind->is_unsigned
                     && libdbo_value_from_uint64(libdbo_value_set_get(value_set, value), *((libdbo_type_uint64_t*)bind->bind->buffer)))
@@ -1278,7 +1278,7 @@ static libdbo_result_t* libdbo_backend_mysql_next(void* data, int finish) {
             }
             break;
 
-        case DB_TYPE_TEXT:
+        case LIBDBO_TYPE_TEXT:
             if (bind->bind->buffer_type != MYSQL_TYPE_STRING
                 || (!bind->length
                     && libdbo_value_from_text(libdbo_value_set_get(value_set, value), ""))
@@ -1311,22 +1311,22 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
     int ret, left, first;
     libdbo_backend_mysql_statement_t* statement = NULL;
     libdbo_backend_mysql_bind_t* bind;
-    libdbo_value_t revision = DB_VALUE_EMPTY;
+    libdbo_value_t revision = LIBDBO_VALUE_EMPTY;
 
     if (!__mysql_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object_field_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!value_set) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -1334,12 +1334,12 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
      */
     object_field = libdbo_object_field_list_begin(libdbo_object_object_field_list(object));
     while (object_field) {
-        if (libdbo_object_field_type(object_field) == DB_TYPE_REVISION) {
+        if (libdbo_object_field_type(object_field) == LIBDBO_TYPE_REVISION) {
             if (revision_field) {
                 /*
                  * We do not support multiple revision fields.
                  */
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
 
             revision_field = object_field;
@@ -1355,14 +1355,14 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
          * Special case when tables has no fields except maybe a primary key.
          */
         if ((ret = snprintf(sqlp, left, "INSERT INTO %s () VALUES ()", libdbo_object_table(object))) >= left) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         sqlp += ret;
         left -= ret;
     }
     else {
         if ((ret = snprintf(sqlp, left, "INSERT INTO %s (", libdbo_object_table(object))) >= left) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         sqlp += ret;
         left -= ret;
@@ -1375,13 +1375,13 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
         while (object_field) {
             if (first) {
                 if ((ret = snprintf(sqlp, left, " %s", libdbo_object_field_name(object_field))) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 first = 0;
             }
             else {
                 if ((ret = snprintf(sqlp, left, ", %s", libdbo_object_field_name(object_field))) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
             }
             sqlp += ret;
@@ -1396,13 +1396,13 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
         if (revision_field) {
             if (first) {
                 if ((ret = snprintf(sqlp, left, " %s", libdbo_object_field_name(revision_field))) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 first = 0;
             }
             else {
                 if ((ret = snprintf(sqlp, left, ", %s", libdbo_object_field_name(revision_field))) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
             }
             sqlp += ret;
@@ -1410,7 +1410,7 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
         }
 
         if ((ret = snprintf(sqlp, left, " ) VALUES (")) >= left) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         sqlp += ret;
         left -= ret;
@@ -1423,13 +1423,13 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
         while (object_field) {
             if (first) {
                 if ((ret = snprintf(sqlp, left, " ?")) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 first = 0;
             }
             else {
                 if ((ret = snprintf(sqlp, left, ", ?")) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
             }
             sqlp += ret;
@@ -1444,13 +1444,13 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
         if (revision_field) {
             if (first) {
                 if ((ret = snprintf(sqlp, left, " ?")) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
                 first = 0;
             }
             else {
                 if ((ret = snprintf(sqlp, left, ", ?")) >= left) {
-                    return DB_ERROR_UNKNOWN;
+                    return LIBDBO_ERROR_UNKNOWN;
                 }
             }
             sqlp += ret;
@@ -1458,7 +1458,7 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
         }
 
         if ((ret = snprintf(sqlp, left, " )")) >= left) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         sqlp += ret;
         left -= ret;
@@ -1472,7 +1472,7 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
         || !(bind = statement->bind_input))
     {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -1480,7 +1480,7 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
      */
     if (__db_backend_mysql_bind_value_set(&bind, value_set)) {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -1492,7 +1492,7 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
         {
             libdbo_value_reset(&revision);
             __db_backend_mysql_finish(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         libdbo_value_reset(&revision);
     }
@@ -1504,11 +1504,11 @@ static int libdbo_backend_mysql_create(void* data, const libdbo_object_t* object
         || mysql_stmt_affected_rows(statement->statement) != 1)
     {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     __db_backend_mysql_finish(statement);
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static libdbo_result_list_t* libdbo_backend_mysql_read(void* data, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list) {
@@ -1644,26 +1644,26 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
     int ret, left, first;
     libdbo_backend_mysql_statement_t* statement = NULL;
     libdbo_backend_mysql_bind_t* bind;
-    libdbo_value_t revision = DB_VALUE_EMPTY;
+    libdbo_value_t revision = LIBDBO_VALUE_EMPTY;
     libdbo_type_int32_t int32;
     libdbo_type_uint32_t uint32;
     libdbo_type_int64_t int64;
     libdbo_type_uint64_t uint64;
 
     if (!__mysql_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object_field_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!value_set) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -1671,12 +1671,12 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
      */
     object_field = libdbo_object_field_list_begin(libdbo_object_object_field_list(object));
     while (object_field) {
-        if (libdbo_object_field_type(object_field) == DB_TYPE_REVISION) {
+        if (libdbo_object_field_type(object_field) == LIBDBO_TYPE_REVISION) {
             if (revision_field) {
                 /*
                  * We do not support multiple revision fields.
                  */
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
 
             revision_field = object_field;
@@ -1697,39 +1697,39 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
             clause = libdbo_clause_next(clause);
         }
         if (!revision_clause) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         switch (libdbo_value_type(libdbo_clause_value(revision_clause))) {
-        case DB_TYPE_INT32:
+        case LIBDBO_TYPE_INT32:
             if (libdbo_value_to_int32(libdbo_clause_value(revision_clause), &int32)) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             revision_number = int32;
             break;
 
-        case DB_TYPE_UINT32:
+        case LIBDBO_TYPE_UINT32:
             if (libdbo_value_to_uint32(libdbo_clause_value(revision_clause), &uint32)) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             revision_number = uint32;
             break;
 
-        case DB_TYPE_INT64:
+        case LIBDBO_TYPE_INT64:
             if (libdbo_value_to_int64(libdbo_clause_value(revision_clause), &int64)) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             revision_number = int64;
             break;
 
-        case DB_TYPE_UINT64:
+        case LIBDBO_TYPE_UINT64:
             if (libdbo_value_to_uint64(libdbo_clause_value(revision_clause), &uint64)) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             revision_number = uint64;
             break;
 
         default:
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1737,7 +1737,7 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
     sqlp = sql;
 
     if ((ret = snprintf(sqlp, left, "UPDATE %s SET", libdbo_object_table(object))) >= left) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     sqlp += ret;
     left -= ret;
@@ -1750,13 +1750,13 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
     while (object_field) {
         if (first) {
             if ((ret = snprintf(sqlp, left, " %s = ?", libdbo_object_field_name(object_field))) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             first = 0;
         }
         else {
             if ((ret = snprintf(sqlp, left, ", %s = ?", libdbo_object_field_name(object_field))) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
         }
         sqlp += ret;
@@ -1771,13 +1771,13 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
     if (revision_field) {
         if (first) {
             if ((ret = snprintf(sqlp, left, " %s = ?", libdbo_object_field_name(revision_field))) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             first = 0;
         }
         else {
             if ((ret = snprintf(sqlp, left, ", %s = ?", libdbo_object_field_name(revision_field))) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
         }
         sqlp += ret;
@@ -1790,13 +1790,13 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
     if (clause_list) {
         if (libdbo_clause_list_begin(clause_list)) {
             if ((ret = snprintf(sqlp, left, " WHERE")) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             sqlp += ret;
             left -= ret;
         }
         if (__db_backend_mysql_build_clause(object, clause_list, &sqlp, &left)) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1807,7 +1807,7 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
         || !statement)
     {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     bind = statement->bind_input;
@@ -1818,7 +1818,7 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
     if (value_set) {
         if (__db_backend_mysql_bind_value_set(&bind, value_set)) {
             __db_backend_mysql_finish(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1831,7 +1831,7 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
         {
             libdbo_value_reset(&revision);
             __db_backend_mysql_finish(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         libdbo_value_reset(&revision);
 
@@ -1846,7 +1846,7 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
     if (clause_list) {
         if (__db_backend_mysql_bind_clause(&bind, clause_list)) {
             __db_backend_mysql_finish(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1855,7 +1855,7 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
      */
     if (__db_backend_mysql_execute(statement)) {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -1865,12 +1865,12 @@ static int libdbo_backend_mysql_update(void* data, const libdbo_object_t* object
     if (revision_field) {
         if (mysql_stmt_affected_rows(statement->statement) < 1) {
             __db_backend_mysql_finish(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
     __db_backend_mysql_finish(statement);
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_mysql_delete(void* data, const libdbo_object_t* object, const libdbo_clause_list_t* clause_list) {
@@ -1885,13 +1885,13 @@ static int libdbo_backend_mysql_delete(void* data, const libdbo_object_t* object
     libdbo_backend_mysql_bind_t* bind;
 
     if (!__mysql_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -1899,12 +1899,12 @@ static int libdbo_backend_mysql_delete(void* data, const libdbo_object_t* object
      */
     object_field = libdbo_object_field_list_begin(libdbo_object_object_field_list(object));
     while (object_field) {
-        if (libdbo_object_field_type(object_field) == DB_TYPE_REVISION) {
+        if (libdbo_object_field_type(object_field) == LIBDBO_TYPE_REVISION) {
             if (revision_field) {
                 /*
                  * We do not support multiple revision fields.
                  */
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
 
             revision_field = object_field;
@@ -1924,7 +1924,7 @@ static int libdbo_backend_mysql_delete(void* data, const libdbo_object_t* object
             clause = libdbo_clause_next(clause);
         }
         if (!clause) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1932,7 +1932,7 @@ static int libdbo_backend_mysql_delete(void* data, const libdbo_object_t* object
     sqlp = sql;
 
     if ((ret = snprintf(sqlp, left, "DELETE FROM %s", libdbo_object_table(object))) >= left) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     sqlp += ret;
     left -= ret;
@@ -1940,13 +1940,13 @@ static int libdbo_backend_mysql_delete(void* data, const libdbo_object_t* object
     if (clause_list) {
         if (libdbo_clause_list_begin(clause_list)) {
             if ((ret = snprintf(sqlp, left, " WHERE")) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             sqlp += ret;
             left -= ret;
         }
         if (__db_backend_mysql_build_clause(object, clause_list, &sqlp, &left)) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
@@ -1954,7 +1954,7 @@ static int libdbo_backend_mysql_delete(void* data, const libdbo_object_t* object
         || !statement)
     {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     bind = statement->bind_input;
@@ -1962,13 +1962,13 @@ static int libdbo_backend_mysql_delete(void* data, const libdbo_object_t* object
     if (clause_list) {
         if (__db_backend_mysql_bind_clause(&bind, clause_list)) {
             __db_backend_mysql_finish(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
     if (__db_backend_mysql_execute(statement)) {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     /*
@@ -1978,12 +1978,12 @@ static int libdbo_backend_mysql_delete(void* data, const libdbo_object_t* object
     if (revision_field) {
         if (mysql_stmt_affected_rows(statement->statement) < 1) {
             __db_backend_mysql_finish(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
     __db_backend_mysql_finish(statement);
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_mysql_count(void* data, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list, size_t* count) {
@@ -1998,29 +1998,29 @@ static int libdbo_backend_mysql_count(void* data, const libdbo_object_t* object,
     libdbo_object_field_t* object_field = NULL;
 
     if (!__mysql_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!count) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     left = sizeof(sql);
     sqlp = sql;
 
     if ((ret = snprintf(sqlp, left, "SELECT COUNT(*)")) >= left) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     sqlp += ret;
     left -= ret;
 
     if ((ret = snprintf(sqlp, left, " FROM %s", libdbo_object_table(object))) >= left) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     sqlp += ret;
     left -= ret;
@@ -2035,7 +2035,7 @@ static int libdbo_backend_mysql_count(void* data, const libdbo_object_t* object,
                 libdbo_join_from_table(join),
                 libdbo_join_from_field(join))) >= left)
             {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             sqlp += ret;
             left -= ret;
@@ -2046,25 +2046,25 @@ static int libdbo_backend_mysql_count(void* data, const libdbo_object_t* object,
     if (clause_list) {
         if (libdbo_clause_list_begin(clause_list)) {
             if ((ret = snprintf(sqlp, left, " WHERE")) >= left) {
-                return DB_ERROR_UNKNOWN;
+                return LIBDBO_ERROR_UNKNOWN;
             }
             sqlp += ret;
             left -= ret;
         }
         if (__db_backend_mysql_build_clause(object, clause_list, &sqlp, &left)) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
     if (!(object_field_list = libdbo_object_field_list_new())
         || !(object_field = libdbo_object_field_new())
         || libdbo_object_field_set_name(object_field, "countField")
-        || libdbo_object_field_set_type(object_field, DB_TYPE_UINT32)
+        || libdbo_object_field_set_type(object_field, LIBDBO_TYPE_UINT32)
         || libdbo_object_field_list_add(object_field_list, object_field))
     {
         libdbo_object_field_free(object_field);
         libdbo_object_field_list_free(object_field_list);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_mysql_prepare(backend_mysql, &statement, sql, strlen(sql), object_field_list)
@@ -2072,7 +2072,7 @@ static int libdbo_backend_mysql_count(void* data, const libdbo_object_t* object,
     {
         libdbo_object_field_list_free(object_field_list);
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     libdbo_object_field_list_free(object_field_list);
 
@@ -2081,18 +2081,18 @@ static int libdbo_backend_mysql_count(void* data, const libdbo_object_t* object,
     if (clause_list) {
         if (__db_backend_mysql_bind_clause(&bind, clause_list)) {
             __db_backend_mysql_finish(statement);
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
 
     if (__db_backend_mysql_execute(statement)) {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_mysql_fetch(statement)) {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     bind = statement->bind_output;
@@ -2102,13 +2102,13 @@ static int libdbo_backend_mysql_count(void* data, const libdbo_object_t* object,
         || bind->length != sizeof(libdbo_type_uint32_t))
     {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     *count = *((libdbo_type_uint32_t*)bind->bind->buffer);
     __db_backend_mysql_finish(statement);
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static void libdbo_backend_mysql_free(void* data) {
@@ -2128,27 +2128,27 @@ static int libdbo_backend_mysql_transaction_begin(void* data) {
     libdbo_backend_mysql_statement_t* statement = NULL;
 
     if (!__mysql_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (backend_mysql->transaction) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_mysql_prepare(backend_mysql, &statement, sql, strlen(sql), NULL)) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_mysql_execute(statement)) {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     __db_backend_mysql_finish(statement);
 
     backend_mysql->transaction = 1;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_mysql_transaction_commit(void* data) {
@@ -2157,27 +2157,27 @@ static int libdbo_backend_mysql_transaction_commit(void* data) {
     libdbo_backend_mysql_statement_t* statement = NULL;
 
     if (!__mysql_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql->transaction) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_mysql_prepare(backend_mysql, &statement, sql, strlen(sql), NULL)) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_mysql_execute(statement)) {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     __db_backend_mysql_finish(statement);
 
     backend_mysql->transaction = 0;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 static int libdbo_backend_mysql_transaction_rollback(void* data) {
@@ -2186,27 +2186,27 @@ static int libdbo_backend_mysql_transaction_rollback(void* data) {
     libdbo_backend_mysql_statement_t* statement = NULL;
 
     if (!__mysql_initialized) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_mysql->transaction) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_mysql_prepare(backend_mysql, &statement, sql, strlen(sql), NULL)) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (__db_backend_mysql_execute(statement)) {
         __db_backend_mysql_finish(statement);
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     __db_backend_mysql_finish(statement);
 
     backend_mysql->transaction = 0;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 libdbo_backend_handle_t* libdbo_backend_mysql_new_handle(void) {

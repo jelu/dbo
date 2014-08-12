@@ -104,7 +104,7 @@ struct libdbo_value {
 /**
  * Static database value initializer.
  */
-#define DB_VALUE_EMPTY { DB_TYPE_EMPTY, 0, NULL, 0, 0, 0, 0, 0, NULL }
+#define LIBDBO_VALUE_EMPTY { LIBDBO_TYPE_EMPTY, 0, NULL, 0, 0, 0, 0, 0, NULL }
 
 /**
  * Create a new database value.
@@ -135,7 +135,7 @@ void libdbo_value_reset(libdbo_value_t* value);
  * Copy the contant from one database value into another.
  * \param[in] value a libdbo_value_t pointer to copy to.
  * \param[in] from_value a libdbo_value_t pointer to copy from.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_copy(libdbo_value_t* value, const libdbo_value_t* from_value);
 
@@ -146,7 +146,7 @@ int libdbo_value_copy(libdbo_value_t* value, const libdbo_value_t* from_value);
  * \param[in] value_a a libdbo_value_t pointer.
  * \param[in] value_b a libdbo_value_t pointer.
  * \param[out] result an integer pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_cmp(const libdbo_value_t* value_a, const libdbo_value_t* value_b, int* result);
 
@@ -200,7 +200,7 @@ const char* libdbo_value_text(const libdbo_value_t* value);
  * Sets `enum_value` with the integer value of an enumeration database value.
  * \param[in] value a libdbo_value_t pointer.
  * \param[out] enum_value an integer pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_enum_value(const libdbo_value_t* value, int* enum_value);
 
@@ -215,7 +215,7 @@ const char* libdbo_value_enum_text(const libdbo_value_t* value);
 /**
  * Check if a database value is not empty.
  * \param[in] value a libdbo_value_t pointer.
- * \return DB_ERROR_* if empty, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* if empty, otherwise LIBDBO_OK.
  */
 int libdbo_value_not_empty(const libdbo_value_t* value);
 
@@ -223,7 +223,7 @@ int libdbo_value_not_empty(const libdbo_value_t* value);
  * Get the 32bit integer representation of the database value.
  * \param[in] value a libdbo_value_t pointer.
  * \param[out] to_int32 a libdbo_type_int32_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_to_int32(const libdbo_value_t* value, libdbo_type_int32_t* to_int32);
 
@@ -231,7 +231,7 @@ int libdbo_value_to_int32(const libdbo_value_t* value, libdbo_type_int32_t* to_i
  * Get the unsigned 32bit integer representation of the database value.
  * \param[in] value a libdbo_value_t pointer.
  * \param[out] to_uint32 a libdbo_type_uint32_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_to_uint32(const libdbo_value_t* value, libdbo_type_uint32_t* to_uint32);
 
@@ -239,7 +239,7 @@ int libdbo_value_to_uint32(const libdbo_value_t* value, libdbo_type_uint32_t* to
  * Get the 64bit integer representation of the database value.
  * \param[in] value a libdbo_value_t pointer.
  * \param[out] to_int64 a libdbo_type_int64_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_to_int64(const libdbo_value_t* value, libdbo_type_int64_t* to_int64);
 
@@ -247,7 +247,7 @@ int libdbo_value_to_int64(const libdbo_value_t* value, libdbo_type_int64_t* to_i
  * Get the unsigned 64bit integer representation of the database value.
  * \param[in] value a libdbo_value_t pointer.
  * \param[out] to_uint64 a libdbo_type_uint64_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_to_uint64(const libdbo_value_t* value, libdbo_type_uint64_t* to_uint64);
 
@@ -255,7 +255,7 @@ int libdbo_value_to_uint64(const libdbo_value_t* value, libdbo_type_uint64_t* to
  * Get the character representation of the database value.
  * \param[in] value a libdbo_value_t pointer.
  * \param[out] to_text a character pointer pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_to_text(const libdbo_value_t* value, char** to_text);
 
@@ -264,7 +264,7 @@ int libdbo_value_to_text(const libdbo_value_t* value, char** to_text);
  * \param[in] value a libdbo_value_t pointer.
  * \param[out] to_int an integer pointer.
  * \param[in] enum_set a libdbo_enum_t array that MUST end with NULL.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_to_enum_value(const libdbo_value_t* value, int* to_int, const libdbo_enum_t* enum_set);
 
@@ -273,7 +273,7 @@ int libdbo_value_to_enum_value(const libdbo_value_t* value, int* to_int, const l
  * \param[in] value a libdbo_value_t pointer.
  * \param[out] to_text a character pointer pointer.
  * \param[in] enum_set a libdbo_enum_t array that MUST end with NULL.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_to_enum_text(const libdbo_value_t* value, const char** to_text, const libdbo_enum_t* enum_set);
 
@@ -281,7 +281,7 @@ int libdbo_value_to_enum_text(const libdbo_value_t* value, const char** to_text,
  * Set the database value to a 32bit integer value.
  * \param[in] value a libdbo_value_t pointer.
  * \param[in] from_int32 a libdbo_type_int32_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_from_int32(libdbo_value_t* value, libdbo_type_int32_t from_int32);
 
@@ -289,7 +289,7 @@ int libdbo_value_from_int32(libdbo_value_t* value, libdbo_type_int32_t from_int3
  * Set the database value to an unsigned 32bit integer value.
  * \param[in] value a libdbo_value_t pointer.
  * \param[in] from_uint32 a libdbo_type_uint32_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_from_uint32(libdbo_value_t* value, libdbo_type_uint32_t from_uint32);
 
@@ -297,7 +297,7 @@ int libdbo_value_from_uint32(libdbo_value_t* value, libdbo_type_uint32_t from_ui
  * Set the database value to a 64bit integer value.
  * \param[in] value a libdbo_value_t pointer.
  * \param[in] from_int64 a libdbo_type_int64_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_from_int64(libdbo_value_t* value, libdbo_type_int64_t from_int64);
 
@@ -305,7 +305,7 @@ int libdbo_value_from_int64(libdbo_value_t* value, libdbo_type_int64_t from_int6
  * Set the database value to an unsigned 64bit integer value.
  * \param[in] value a libdbo_value_t pointer.
  * \param[in] from_uint64 a libdbo_type_uint64_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_from_uint64(libdbo_value_t* value, libdbo_type_uint64_t from_uint64);
 
@@ -313,7 +313,7 @@ int libdbo_value_from_uint64(libdbo_value_t* value, libdbo_type_uint64_t from_ui
  * Set the database value to a text value.
  * \param[in] value a libdbo_value_t pointer.
  * \param[in] from_text a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_from_text(libdbo_value_t* value, const char* from_text);
 
@@ -322,7 +322,7 @@ int libdbo_value_from_text(libdbo_value_t* value, const char* from_text);
  * \param[in] value a libdbo_value_t pointer.
  * \param[in] from_text a character pointer.
  * \param[in] size a size_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_from_text2(libdbo_value_t* value, const char* from_text, size_t size);
 
@@ -331,7 +331,7 @@ int libdbo_value_from_text2(libdbo_value_t* value, const char* from_text, size_t
  * \param[in] value a libdbo_value_t pointer.
  * \param[in] enum_value an integer pointer.
  * \param[in] enum_set a libdbo_enum_t array that MUST end with NULL.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_from_enum_value(libdbo_value_t* value, int enum_value, const libdbo_enum_t* enum_set);
 
@@ -340,21 +340,21 @@ int libdbo_value_from_enum_value(libdbo_value_t* value, int enum_value, const li
  * \param[in] value a libdbo_value_t pointer.
  * \param[in] enum_text a character pointer.
  * \param[in] enum_set a libdbo_enum_t array that MUST end with NULL.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_from_enum_text(libdbo_value_t* value, const char* enum_text, const libdbo_enum_t* enum_set);
 
 /**
  * Check if the database value is a primary key.
  * \param[in] value a libdbo_value_t pointer.
- * \return DB_ERROR_* if its not a primary key, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* if its not a primary key, otherwise LIBDBO_OK.
  */
 int libdbo_value_primary_key(const libdbo_value_t* value);
 
 /**
  * Mark the database as a primary key.
  * \param[in] value a libdbo_value_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_value_set_primary_key(libdbo_value_t* value);
 

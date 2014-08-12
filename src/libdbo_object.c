@@ -42,14 +42,14 @@
 
 /* DB OBJECT FIELD */
 
-static libdbo_mm_t __object_field_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_object_field_t));
+static libdbo_mm_t __object_field_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_object_field_t));
 
 libdbo_object_field_t* libdbo_object_field_new(void) {
     libdbo_object_field_t* object_field =
         (libdbo_object_field_t*)libdbo_mm_new0(&__object_field_alloc);
 
     if (object_field) {
-        object_field->type = DB_TYPE_EMPTY;
+        object_field->type = LIBDBO_TYPE_EMPTY;
     }
 
     return object_field;
@@ -80,20 +80,20 @@ void libdbo_object_field_free(libdbo_object_field_t* object_field) {
 
 int libdbo_object_field_copy(libdbo_object_field_t* object_field, const libdbo_object_field_t* from_object_field) {
     if (!object_field) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!from_object_field) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (object_field->next) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     object_field->name = from_object_field->name;
     object_field->type = from_object_field->type;
     object_field->enum_set = from_object_field->enum_set;
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 const char* libdbo_object_field_name(const libdbo_object_field_t* object_field) {
@@ -106,7 +106,7 @@ const char* libdbo_object_field_name(const libdbo_object_field_t* object_field) 
 
 libdbo_type_t libdbo_object_field_type(const libdbo_object_field_t* object_field) {
     if (!object_field) {
-        return DB_TYPE_EMPTY;
+        return LIBDBO_TYPE_EMPTY;
     }
 
     return object_field->type;
@@ -122,54 +122,54 @@ const libdbo_enum_t* libdbo_object_field_enum_set(const libdbo_object_field_t* o
 
 int libdbo_object_field_set_name(libdbo_object_field_t* object_field, const char* name) {
     if (!object_field) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!name) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     object_field->name = name;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_object_field_set_type(libdbo_object_field_t* object_field, libdbo_type_t type) {
     if (!object_field) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
-    if (type == DB_TYPE_EMPTY) {
-        return DB_ERROR_UNKNOWN;
+    if (type == LIBDBO_TYPE_EMPTY) {
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     object_field->type = type;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_object_field_set_enum_set(libdbo_object_field_t* object_field, const libdbo_enum_t* enum_set) {
     if (!object_field) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
-    if (object_field->type != DB_TYPE_ENUM) {
-        return DB_ERROR_UNKNOWN;
+    if (object_field->type != LIBDBO_TYPE_ENUM) {
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     object_field->enum_set = enum_set;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_object_field_not_empty(const libdbo_object_field_t* object_field) {
     if (!object_field) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object_field->name) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
-    if (object_field->type == DB_TYPE_EMPTY) {
-        return DB_ERROR_UNKNOWN;
+    if (object_field->type == LIBDBO_TYPE_EMPTY) {
+        return LIBDBO_ERROR_UNKNOWN;
     }
-    if (object_field->type == DB_TYPE_ENUM && !object_field->enum_set) {
-        return DB_ERROR_UNKNOWN;
+    if (object_field->type == LIBDBO_TYPE_ENUM && !object_field->enum_set) {
+        return LIBDBO_ERROR_UNKNOWN;
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 const libdbo_object_field_t* libdbo_object_field_next(const libdbo_object_field_t* object_field) {
@@ -182,7 +182,7 @@ const libdbo_object_field_t* libdbo_object_field_next(const libdbo_object_field_
 
 /* DB OBJECT FIELD LIST */
 
-static libdbo_mm_t __object_field_list_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_object_field_list_t));
+static libdbo_mm_t __object_field_list_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_object_field_list_t));
 
 libdbo_object_field_list_t* libdbo_object_field_list_new(void) {
     libdbo_object_field_list_t* object_field_list =
@@ -229,23 +229,23 @@ int libdbo_object_field_list_copy(libdbo_object_field_list_t* object_field_list,
     libdbo_object_field_t* object_field_copy;
 
     if (!object_field_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     /*
      * TODO: Should we be able to copy into a object field list that already
      * contains data?
      */
     if (object_field_list->begin) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (object_field_list->end) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (object_field_list->size) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!from_object_field_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     object_field = from_object_field_list->begin;
@@ -253,32 +253,32 @@ int libdbo_object_field_list_copy(libdbo_object_field_list_t* object_field_list,
         if (!(object_field_copy = libdbo_object_field_new_copy(object_field))
             || libdbo_object_field_list_add(object_field_list, object_field_copy))
         {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         object_field = object_field->next;
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_object_field_list_add(libdbo_object_field_list_t* object_field_list, libdbo_object_field_t* object_field) {
     if (!object_field_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object_field) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (libdbo_object_field_not_empty(object_field)) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (object_field->next) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (object_field_list->begin) {
         if (!object_field_list->end) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         object_field_list->end->next = object_field;
         object_field_list->end = object_field;
@@ -289,7 +289,7 @@ int libdbo_object_field_list_add(libdbo_object_field_list_t* object_field_list, 
     }
     object_field_list->size++;
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 const libdbo_object_field_t* libdbo_object_field_list_begin(const libdbo_object_field_list_t* object_field_list) {
@@ -310,7 +310,7 @@ size_t libdbo_object_field_list_size(const libdbo_object_field_list_t* object_fi
 
 /* DB OBJECT */
 
-static libdbo_mm_t __object_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_object_t));
+static libdbo_mm_t __object_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_object_t));
 
 libdbo_object_t* libdbo_object_new(void) {
     libdbo_object_t* object =
@@ -368,70 +368,70 @@ const libdbo_backend_meta_data_list_t* libdbo_object_backend_meta_data_list(cons
 
 int libdbo_object_set_connection(libdbo_object_t* object, const libdbo_connection_t* connection) {
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (object->connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     object->connection = connection;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_object_set_table(libdbo_object_t* object, const char* table) {
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!table) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (object->table) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     object->table = table;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_object_set_primary_key_name(libdbo_object_t* object, const char* primary_key_name) {
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!primary_key_name) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (object->primary_key_name) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     object->primary_key_name = primary_key_name;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_object_set_object_field_list(libdbo_object_t* object, libdbo_object_field_list_t* object_field_list) {
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object_field_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (object->object_field_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     object->object_field_list = object_field_list;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_object_set_backend_meta_data_list(libdbo_object_t* object, libdbo_backend_meta_data_list_t* backend_meta_data_list) {
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!backend_meta_data_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (object->backend_meta_data_list) {
@@ -439,24 +439,24 @@ int libdbo_object_set_backend_meta_data_list(libdbo_object_t* object, libdbo_bac
     }
 
     object->backend_meta_data_list = backend_meta_data_list;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_object_create(const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set) {
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!value_set) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object->connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object->table) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object->primary_key_name) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (object_field_list) {
@@ -484,19 +484,19 @@ libdbo_result_list_t* libdbo_object_read(const libdbo_object_t* object, const li
 
 int libdbo_object_update(const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set, const libdbo_clause_list_t* clause_list) {
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!value_set) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object->connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object->table) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object->primary_key_name) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (object_field_list) {
@@ -507,16 +507,16 @@ int libdbo_object_update(const libdbo_object_t* object, const libdbo_object_fiel
 
 int libdbo_object_delete(const libdbo_object_t* object, const libdbo_clause_list_t* clause_list) {
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object->connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object->table) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object->primary_key_name) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     return libdbo_connection_delete(object->connection, object, clause_list);
@@ -524,19 +524,19 @@ int libdbo_object_delete(const libdbo_object_t* object, const libdbo_clause_list
 
 int libdbo_object_count(const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list, size_t* count) {
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!count) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object->connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object->table) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object->primary_key_name) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     return libdbo_connection_count(object->connection, object, join_list, clause_list, count);

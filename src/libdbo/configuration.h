@@ -114,7 +114,7 @@ const char* libdbo_configuration_value(const libdbo_configuration_t* configurati
  * Set the name of a database configuration.
  * \param[in] configuration a libdbo_configuration_t pointer.
  * \param[in] name a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_configuration_set_name(libdbo_configuration_t* configuration, const char* name);
 
@@ -122,14 +122,14 @@ int libdbo_configuration_set_name(libdbo_configuration_t* configuration, const c
  * Set the value of a database configuration.
  * \param[in] configuration a libdbo_configuration_t pointer.
  * \param[in] value a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_configuration_set_value(libdbo_configuration_t* configuration, const char* value);
 
 /**
  * Check if the database configuration is not empty.
  * \param[in] configuration a libdbo_configuration_t pointer.
- * \return DB_ERROR_* if empty, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* if empty, otherwise LIBDBO_OK.
  */
 int libdbo_configuration_not_empty(const libdbo_configuration_t* configuration);
 
@@ -163,7 +163,7 @@ void libdbo_configuration_list_free(libdbo_configuration_list_t* configuration_l
  * over the ownership of the database configuration.
  * \param[in] configuration_list a libdbo_configuration_list_t pointer.
  * \param[in] configuration a libdbo_configuration_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_configuration_list_add(libdbo_configuration_list_t* configuration_list, libdbo_configuration_t* configuration);
 

@@ -136,7 +136,7 @@ void libdbo_object_field_free(libdbo_object_field_t* object_field);
  * Copy the content of a database object field.
  * \param[in] object_field a libdbo_object_field_t pointer.
  * \param[in] from_object_field a libdbo_object_field_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_field_copy(libdbo_object_field_t* object_field, const libdbo_object_field_t* from_object_field);
 
@@ -166,7 +166,7 @@ const libdbo_enum_t* libdbo_object_field_enum_set(const libdbo_object_field_t* o
  * Set the name of a database object field.
  * \param[in] object_field a libdbo_object_field_t pointer.
  * \param[in] name a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_field_set_name(libdbo_object_field_t* object_field, const char* name);
 
@@ -174,7 +174,7 @@ int libdbo_object_field_set_name(libdbo_object_field_t* object_field, const char
  * Set the type of a database object field.
  * \param[in] object_field a libdbo_object_field_t pointer.
  * \param[in] type a libdbo_type_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_field_set_type(libdbo_object_field_t* object_field, libdbo_type_t type);
 
@@ -182,14 +182,14 @@ int libdbo_object_field_set_type(libdbo_object_field_t* object_field, libdbo_typ
  * Set the enumerate set of a database object field.
  * \param[in] object_field a libdbo_object_field_t pointer.
  * \param[in] enum_set a NULL terminated libdbo_enum_t list.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_field_set_enum_set(libdbo_object_field_t* object_field, const libdbo_enum_t* enum_set);
 
 /**
  * Check if the object field is not empty.
  * \param[in] object_field a libdbo_object_field_t pointer.
- * \return DB_ERROR_* if empty, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* if empty, otherwise LIBDBO_OK.
  */
 int libdbo_object_field_not_empty(const libdbo_object_field_t* object_field);
 
@@ -237,7 +237,7 @@ void libdbo_object_field_list_free(libdbo_object_field_list_t* object_field_list
  * Copy the content of a database object field list.
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
  * \param[in] from_object_field_list a libdbo_object_field_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_field_list_copy(libdbo_object_field_list_t* object_field_list, const libdbo_object_field_list_t* from_object_field_list);
 
@@ -246,7 +246,7 @@ int libdbo_object_field_list_copy(libdbo_object_field_list_t* object_field_list,
  * over the ownership of the object field.
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
  * \param[in] object_field a libdbo_object_field_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_field_list_add(libdbo_object_field_list_t* object_field_list, libdbo_object_field_t* object_field);
 
@@ -336,7 +336,7 @@ const libdbo_backend_meta_data_list_t* libdbo_object_backend_meta_data_list(cons
  * Set the database connection of a database object.
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] connection a libdbo_connection_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_set_connection(libdbo_object_t* object, const libdbo_connection_t* connection);
 
@@ -344,7 +344,7 @@ int libdbo_object_set_connection(libdbo_object_t* object, const libdbo_connectio
  * Set the table name of a database object.
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] table a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_set_table(libdbo_object_t* object, const char* table);
 
@@ -352,7 +352,7 @@ int libdbo_object_set_table(libdbo_object_t* object, const char* table);
  * Set the primary key name of a database object.
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] primary_key_name a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_set_primary_key_name(libdbo_object_t* object, const char* primary_key_name);
 
@@ -361,7 +361,7 @@ int libdbo_object_set_primary_key_name(libdbo_object_t* object, const char* prim
  * of the object field list.
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_set_object_field_list(libdbo_object_t* object, libdbo_object_field_list_t* object_field_list);
 
@@ -370,7 +370,7 @@ int libdbo_object_set_object_field_list(libdbo_object_t* object, libdbo_object_f
  * ownership of the backend meta data list.
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] backend_meta_data_list a libdbo_backend_meta_data_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_set_backend_meta_data_list(libdbo_object_t* object, libdbo_backend_meta_data_list_t* backend_meta_data_list);
 
@@ -381,7 +381,7 @@ int libdbo_object_set_backend_meta_data_list(libdbo_object_t* object, libdbo_bac
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
  * \param[in] value_set a libdbo_value_set_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_create(const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set);
 
@@ -401,7 +401,7 @@ libdbo_result_list_t* libdbo_object_read(const libdbo_object_t* object, const li
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
  * \param[in] value_set a libdbo_value_set_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_update(const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set, const libdbo_clause_list_t* clause_list);
 
@@ -409,7 +409,7 @@ int libdbo_object_update(const libdbo_object_t* object, const libdbo_object_fiel
  * Delete an object or objects from the database.
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_delete(const libdbo_object_t* object, const libdbo_clause_list_t* clause_list);
 
@@ -419,7 +419,7 @@ int libdbo_object_delete(const libdbo_object_t* object, const libdbo_clause_list
  * \param[in] join_list a libdbo_join_list_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
  * \param[out] count a size_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_object_count(const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list, size_t* count);
 

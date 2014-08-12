@@ -40,7 +40,7 @@
 
 #include <stdlib.h>
 
-static libdbo_mm_t __connection_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_connection_t));
+static libdbo_mm_t __connection_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_connection_t));
 
 libdbo_connection_t* libdbo_connection_new(void) {
     libdbo_connection_t* connection =
@@ -60,47 +60,47 @@ void libdbo_connection_free(libdbo_connection_t* connection) {
 
 int libdbo_connection_set_configuration_list(libdbo_connection_t* connection, const libdbo_configuration_list_t* configuration_list) {
     if (!connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (connection->configuration_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     connection->configuration_list = configuration_list;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_connection_setup(libdbo_connection_t* connection) {
     if (!connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!connection->configuration_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (!connection->backend) {
         const libdbo_configuration_t* backend = libdbo_configuration_list_find(connection->configuration_list, "backend");
         if (!backend) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
 
         connection->backend = libdbo_backend_factory_get_backend(libdbo_configuration_value(backend));
         if (!connection->backend) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_connection_connect(const libdbo_connection_t* connection) {
     if (!connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!connection->configuration_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!connection->backend) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     return libdbo_backend_connect(connection->backend, connection->configuration_list);
@@ -108,10 +108,10 @@ int libdbo_connection_connect(const libdbo_connection_t* connection) {
 
 int libdbo_connection_disconnect(const libdbo_connection_t* connection) {
     if (!connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!connection->backend) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     return libdbo_backend_disconnect(connection->backend);
@@ -119,19 +119,19 @@ int libdbo_connection_disconnect(const libdbo_connection_t* connection) {
 
 int libdbo_connection_create(const libdbo_connection_t* connection, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set) {
     if (!connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object_field_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!value_set) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!connection->backend) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     return libdbo_backend_create(connection->backend, object, object_field_list, value_set);
@@ -153,19 +153,19 @@ libdbo_result_list_t* libdbo_connection_read(const libdbo_connection_t* connecti
 
 int libdbo_connection_update(const libdbo_connection_t* connection, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set, const libdbo_clause_list_t* clause_list) {
     if (!connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object_field_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!value_set) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!connection->backend) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     return libdbo_backend_update(connection->backend, object, object_field_list, value_set, clause_list);
@@ -173,13 +173,13 @@ int libdbo_connection_update(const libdbo_connection_t* connection, const libdbo
 
 int libdbo_connection_delete(const libdbo_connection_t* connection, const libdbo_object_t* object, const libdbo_clause_list_t* clause_list) {
     if (!connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!connection->backend) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     return libdbo_backend_delete(connection->backend, object, clause_list);
@@ -187,16 +187,16 @@ int libdbo_connection_delete(const libdbo_connection_t* connection, const libdbo
 
 int libdbo_connection_count(const libdbo_connection_t* connection, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list, size_t* count) {
     if (!connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!object) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!count) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!connection->backend) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     return libdbo_backend_count(connection->backend, object, join_list, clause_list, count);
@@ -204,10 +204,10 @@ int libdbo_connection_count(const libdbo_connection_t* connection, const libdbo_
 
 int libdbo_connection_transaction_begin(const libdbo_connection_t* connection) {
     if (!connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!connection->backend) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     return libdbo_backend_transaction_begin(connection->backend);
@@ -215,10 +215,10 @@ int libdbo_connection_transaction_begin(const libdbo_connection_t* connection) {
 
 int libdbo_connection_transaction_commit(const libdbo_connection_t* connection) {
     if (!connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!connection->backend) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     return libdbo_backend_transaction_commit(connection->backend);
@@ -226,10 +226,10 @@ int libdbo_connection_transaction_commit(const libdbo_connection_t* connection) 
 
 int libdbo_connection_transaction_rollback(const libdbo_connection_t* connection) {
     if (!connection) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!connection->backend) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     return libdbo_backend_transaction_rollback(connection->backend);

@@ -142,7 +142,7 @@ const char* libdbo_join_to_field(const libdbo_join_t* join);
  * Set the from table name of a database join.
  * \param[in] join a libdbo_join_t pointer.
  * \param[in] from_table a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_join_set_from_table(libdbo_join_t* join, const char* from_table);
 
@@ -150,7 +150,7 @@ int libdbo_join_set_from_table(libdbo_join_t* join, const char* from_table);
  * Set the from field name of a database join.
  * \param[in] join a libdbo_join_t pointer.
  * \param[in] from_field a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_join_set_from_field(libdbo_join_t* join, const char* from_field);
 
@@ -158,7 +158,7 @@ int libdbo_join_set_from_field(libdbo_join_t* join, const char* from_field);
  * Set the to table name of a database join.
  * \param[in] join a libdbo_join_t pointer.
  * \param[in] to_table a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_join_set_to_table(libdbo_join_t* join, const char* to_table);
 
@@ -166,14 +166,14 @@ int libdbo_join_set_to_table(libdbo_join_t* join, const char* to_table);
  * Set the to field of a database join.
  * \param[in] join a libdbo_join_t pointer.
  * \param[in] to_field a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_join_set_to_field(libdbo_join_t* join, const char* to_field);
 
 /**
  * Check if the database join is not empty.
  * \param[in] join a libdbo_join_t pointer.
- * \return DB_ERROR_* if empty, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* if empty, otherwise LIBDBO_OK.
  */
 int libdbo_join_not_empty(const libdbo_join_t* join);
 
@@ -214,7 +214,7 @@ void libdbo_join_list_free(libdbo_join_list_t* join_list);
  * of the database join.
  * \param[in] join_list a libdbo_join_list_t pointer.
  * \param[in] join a libdbo_join_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_join_list_add(libdbo_join_list_t* join_list, libdbo_join_t* join);
 

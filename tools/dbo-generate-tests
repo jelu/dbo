@@ -37,14 +37,14 @@ while (<FILE>) {
 }
 close(FILE);
 
-my %DB_TYPE_TO_FUNC = (
-    DB_TYPE_PRIMARY_KEY => 'should_not_be_used',
-    DB_TYPE_INT32 => 'int32',
-    DB_TYPE_UINT32 => 'uint32',
-    DB_TYPE_INT64 => 'int64',
-    DB_TYPE_UINT64 => 'uint64',
-    DB_TYPE_TEXT => 'text',
-    DB_TYPE_ANY => 'should_not_be_used'
+my %LIBDBO_TYPE_TO_FUNC = (
+    LIBDBO_TYPE_PRIMARY_KEY => 'should_not_be_used',
+    LIBDBO_TYPE_INT32 => 'int32',
+    LIBDBO_TYPE_UINT32 => 'uint32',
+    LIBDBO_TYPE_INT64 => 'int64',
+    LIBDBO_TYPE_UINT64 => 'uint64',
+    LIBDBO_TYPE_TEXT => 'text',
+    LIBDBO_TYPE_ANY => 'should_not_be_used'
 );
 
 my $objects = $JSON->decode($file);
@@ -99,7 +99,7 @@ static libdbo_connection_t* connection = NULL;
 
 static ', $name, '_t* object = NULL;
 static ', $name, '_list_t* object_list = NULL;
-static libdbo_value_t id = DB_VALUE_EMPTY;
+static libdbo_value_t id = LIBDBO_VALUE_EMPTY;
 static libdbo_clause_list_t* clause_list = NULL;
 
 static int libdbo_sqlite = 0;
@@ -397,14 +397,14 @@ foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = LIBDBO_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 1");
 ';
         next;
@@ -421,7 +421,7 @@ print SOURCE '    if (libdbo_sqlite) {
 ';
 }
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
     if ($field->{foreign}) {
@@ -429,7 +429,7 @@ print SOURCE '    CU_ASSERT(!', $name, '_set_', $field->{name}, '(object, &', $f
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         foreach my $enum (@{$field->{enum}}) {
 print SOURCE '    CU_ASSERT(!', $name, '_set_', $field->{name}, '(object, ', uc($name.'_'.$field->{name}), '_', $enum->{name}, '));
 ';
@@ -438,7 +438,7 @@ print SOURCE '    CU_ASSERT(!', $name, '_set_', $field->{name}, '_text(object, "
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT(!', $name, '_set_', $field->{name}, '(object, "', $field->{name}, ' 1"));
 ';
         next;
@@ -467,14 +467,14 @@ print SOURCE '    int ret;
 ';
         $ret = 1;
     }
-print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = LIBDBO_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 1");
 ';
         next;
@@ -491,7 +491,7 @@ print SOURCE '    if (libdbo_sqlite) {
 ';
 }
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
     if ($field->{foreign}) {
@@ -500,7 +500,7 @@ print SOURCE '    CU_ASSERT(!libdbo_value_cmp(', $name, '_', $field->{name}, '(o
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         foreach my $enum (reverse @{$field->{enum}}) {
 print SOURCE '    CU_ASSERT(', $name, '_', $field->{name}, '(object) == ', uc($name.'_'.$field->{name}), '_', $enum->{name}, ');
 ';
@@ -512,7 +512,7 @@ print SOURCE '    CU_ASSERT(!strcmp(', $name, '_', $field->{name}, '_text(object
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT_PTR_NOT_NULL_FATAL(', $name, '_', $field->{name}, '(object));
 ';
 print SOURCE '    CU_ASSERT(!strcmp(', $name, '_', $field->{name}, '(object), "', $field->{name}, ' 1"));
@@ -539,7 +539,7 @@ static void test_', $name, '_clauses(void) {
     ', $name, '_list_t* new_list;
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
 
@@ -564,7 +564,7 @@ static void test_', $name, '_count(void) {
     CU_ASSERT(count == 1);
 ';
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
 
@@ -658,14 +658,14 @@ print SOURCE '    int ret;
 ';
         $ret = 1;
     }
-print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = LIBDBO_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 1");
 ';
         next;
@@ -682,7 +682,7 @@ print SOURCE '    if (libdbo_sqlite) {
 ';
 }
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
     if ($field->{foreign}) {
@@ -691,7 +691,7 @@ print SOURCE '    CU_ASSERT(!libdbo_value_cmp(', $name, '_', $field->{name}, '(o
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         foreach my $enum (reverse @{$field->{enum}}) {
 print SOURCE '    CU_ASSERT(', $name, '_', $field->{name}, '(object) == ', uc($name.'_'.$field->{name}), '_', $enum->{name}, ');
 ';
@@ -703,7 +703,7 @@ print SOURCE '    CU_ASSERT(!strcmp(', $name, '_', $field->{name}, '_text(object
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT_PTR_NOT_NULL_FATAL(', $name, '_', $field->{name}, '(object));
 ';
 print SOURCE '    CU_ASSERT(!strcmp(', $name, '_', $field->{name}, '(object), "', $field->{name}, ' 1"));
@@ -729,7 +729,7 @@ foreach my $field (@{$object->{fields}}) {
     }
 print SOURCE 'static void test_', $name, '_read_by_', $field->{name}, '(void) {
 ';
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT_FATAL(!', $name, '_get_by_', $field->{name}, '(object, "', $field->{name}, ' 1"));
 ';
     }
@@ -751,14 +751,14 @@ print SOURCE '    int ret;
 ';
         $ret = 1;
     }
-print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = LIBDBO_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 1");
 ';
         next;
@@ -775,7 +775,7 @@ print SOURCE '    if (libdbo_sqlite) {
 ';
 }
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
     if ($field->{foreign}) {
@@ -784,7 +784,7 @@ print SOURCE '    CU_ASSERT(!libdbo_value_cmp(', $name, '_', $field->{name}, '(o
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         foreach my $enum (reverse @{$field->{enum}}) {
 print SOURCE '    CU_ASSERT(', $name, '_', $field->{name}, '(object) == ', uc($name.'_'.$field->{name}), '_', $enum->{name}, ');
 ';
@@ -796,7 +796,7 @@ print SOURCE '    CU_ASSERT(!strcmp(', $name, '_', $field->{name}, '_text(object
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT_PTR_NOT_NULL_FATAL(', $name, '_', $field->{name}, '(object));
 ';
 print SOURCE '    CU_ASSERT(!strcmp(', $name, '_', $field->{name}, '(object), "', $field->{name}, ' 1"));
@@ -823,14 +823,14 @@ foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = LIBDBO_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 2");
 ';
         next;
@@ -847,7 +847,7 @@ print SOURCE '    if (libdbo_sqlite) {
 ';
 }
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
     if ($field->{foreign}) {
@@ -855,7 +855,7 @@ print SOURCE '    CU_ASSERT(!', $name, '_set_', $field->{name}, '(object, &', $f
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         foreach my $enum (@{$field->{enum}}) {
 print SOURCE '    CU_ASSERT(!', $name, '_set_', $field->{name}, '(object, ', uc($name.'_'.$field->{name}), '_', $enum->{name}, '));
 ';
@@ -865,7 +865,7 @@ print SOURCE '    CU_ASSERT(!', $name, '_set_', $field->{name}, '_text(object, "
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT(!', $name, '_set_', $field->{name}, '(object, "', $field->{name}, ' 2"));
 ';
         next;
@@ -906,14 +906,14 @@ print SOURCE '    int ret;
 ';
         $ret = 1;
     }
-print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = LIBDBO_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 2");
 ';
         next;
@@ -930,7 +930,7 @@ print SOURCE '    if (libdbo_sqlite) {
 ';
 }
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
     if ($field->{foreign}) {
@@ -939,7 +939,7 @@ print SOURCE '    CU_ASSERT(!libdbo_value_cmp(', $name, '_', $field->{name}, '(o
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         foreach my $enum (@{$field->{enum}}) {
 print SOURCE '    CU_ASSERT(', $name, '_', $field->{name}, '(object) == ', uc($name.'_'.$field->{name}), '_', $enum->{name}, ');
 ';
@@ -951,7 +951,7 @@ print SOURCE '    CU_ASSERT(!strcmp(', $name, '_', $field->{name}, '_text(object
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT_PTR_NOT_NULL_FATAL(', $name, '_', $field->{name}, '(object));
 ';
 print SOURCE '    CU_ASSERT(!strcmp(', $name, '_', $field->{name}, '(object), "', $field->{name}, ' 2"));
@@ -984,7 +984,7 @@ foreach my $field (@{$object->{fields}}) {
     }
 print SOURCE 'static void test_', $name, '_read_by_', $field->{name}, '2(void) {
 ';
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT_FATAL(!', $name, '_get_by_', $field->{name}, '(object, "', $field->{name}, ' 2"));
 ';
     }
@@ -1006,14 +1006,14 @@ print SOURCE '    int ret;
 ';
         $ret = 1;
     }
-print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = LIBDBO_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 2");
 ';
         next;
@@ -1030,7 +1030,7 @@ print SOURCE '    if (libdbo_sqlite) {
 ';
 }
 foreach my $field (@{$object->{fields}}) {
-    if ($field->{type} eq 'DB_TYPE_PRIMARY_KEY' or $field->{type} eq 'DB_TYPE_REVISION') {
+    if ($field->{type} eq 'LIBDBO_TYPE_PRIMARY_KEY' or $field->{type} eq 'LIBDBO_TYPE_REVISION') {
         next;
     }
     if ($field->{foreign}) {
@@ -1039,7 +1039,7 @@ print SOURCE '    CU_ASSERT(!libdbo_value_cmp(', $name, '_', $field->{name}, '(o
 ';
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_ENUM') {
+    if ($field->{type} eq 'LIBDBO_TYPE_ENUM') {
         foreach my $enum (@{$field->{enum}}) {
 print SOURCE '    CU_ASSERT(', $name, '_', $field->{name}, '(object) == ', uc($name.'_'.$field->{name}), '_', $enum->{name}, ');
 ';
@@ -1051,7 +1051,7 @@ print SOURCE '    CU_ASSERT(!strcmp(', $name, '_', $field->{name}, '_text(object
         }
         next;
     }
-    if ($field->{type} eq 'DB_TYPE_TEXT') {
+    if ($field->{type} eq 'LIBDBO_TYPE_TEXT') {
 print SOURCE '    CU_ASSERT_PTR_NOT_NULL_FATAL(', $name, '_', $field->{name}, '(object));
 ';
 print SOURCE '    CU_ASSERT(!strcmp(', $name, '_', $field->{name}, '(object), "', $field->{name}, ' 2"));

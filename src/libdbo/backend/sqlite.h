@@ -51,11 +51,11 @@
  * Default timeout in seconds waiting for the internal SQLite lock to be
  * released.
  */
-#define DB_BACKEND_SQLITE_DEFAULT_TIMEOUT 30
+#define LIBDBO_BACKEND_SQLITE_DEFAULT_TIMEOUT 30
 /**
  * Default usleep() timeout between checks of the internal SQLite lock.
  */
-#define DB_BACKEND_SQLITE_DEFAULT_USLEEP 200000
+#define LIBDBO_BACKEND_SQLITE_DEFAULT_USLEEP 200000
 
 #ifdef __cplusplus
 extern "C" {

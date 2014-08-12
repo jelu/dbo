@@ -43,7 +43,7 @@
 
 /* DB JOIN */
 
-static libdbo_mm_t __join_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_join_t));
+static libdbo_mm_t __join_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_join_t));
 
 libdbo_join_t* libdbo_join_new(void) {
     libdbo_join_t* join =
@@ -106,91 +106,91 @@ int libdbo_join_set_from_table(libdbo_join_t* join, const char* from_table) {
     char* new_from_table;
 
     if (!join) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (!(new_from_table = strdup(from_table))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (join->from_table) {
         free(join->from_table);
     }
     join->from_table = new_from_table;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_join_set_from_field(libdbo_join_t* join, const char* from_field) {
     char* new_from_field;
 
     if (!join) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (!(new_from_field = strdup(from_field))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (join->from_field) {
         free(join->from_field);
     }
     join->from_field = new_from_field;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_join_set_to_table(libdbo_join_t* join, const char* to_table) {
     char* new_to_table;
 
     if (!join) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (!(new_to_table = strdup(to_table))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (join->to_table) {
         free(join->to_table);
     }
     join->to_table = new_to_table;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_join_set_to_field(libdbo_join_t* join, const char* to_field) {
     char* new_to_field;
 
     if (!join) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (!(new_to_field = strdup(to_field))) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (join->to_field) {
         free(join->to_field);
     }
     join->to_field = new_to_field;
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 int libdbo_join_not_empty(const libdbo_join_t* join) {
     if (!join) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!join->from_table) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!join->from_field) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!join->to_table) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!join->to_field) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 const libdbo_join_t* libdbo_join_next(const libdbo_join_t* join) {
@@ -203,7 +203,7 @@ const libdbo_join_t* libdbo_join_next(const libdbo_join_t* join) {
 
 /* DB JOIN LIST */
 
-static libdbo_mm_t __join_list_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_join_list_t));
+static libdbo_mm_t __join_list_alloc = LIBDBO_MM_T_STATIC_NEW(sizeof(libdbo_join_list_t));
 
 libdbo_join_list_t* libdbo_join_list_new(void) {
     libdbo_join_list_t* join_list =
@@ -230,21 +230,21 @@ void libdbo_join_list_free(libdbo_join_list_t* join_list) {
 
 int libdbo_join_list_add(libdbo_join_list_t* join_list, libdbo_join_t* join) {
     if (!join_list) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (!join) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (libdbo_join_not_empty(join)) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
     if (join->next) {
-        return DB_ERROR_UNKNOWN;
+        return LIBDBO_ERROR_UNKNOWN;
     }
 
     if (join_list->begin) {
         if (!join_list->end) {
-            return DB_ERROR_UNKNOWN;
+            return LIBDBO_ERROR_UNKNOWN;
         }
         join_list->end->next = join;
         join_list->end = join;
@@ -254,7 +254,7 @@ int libdbo_join_list_add(libdbo_join_list_t* join_list, libdbo_join_t* join) {
         join_list->end = join;
     }
 
-    return DB_OK;
+    return LIBDBO_OK;
 }
 
 const libdbo_join_t* libdbo_join_list_begin(const libdbo_join_list_t* join_list) {

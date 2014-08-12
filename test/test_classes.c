@@ -488,8 +488,8 @@ void test_class_libdbo_clause(void) {
 
     CU_ASSERT(!libdbo_clause_set_table(clause, "table"));
     CU_ASSERT(!libdbo_clause_set_field(clause, "field"));
-    CU_ASSERT(!libdbo_clause_set_type(clause, DB_CLAUSE_NOT_EQUAL));
-    CU_ASSERT(!libdbo_clause_set_operator(clause, DB_CLAUSE_OPERATOR_OR));
+    CU_ASSERT(!libdbo_clause_set_type(clause, LIBDBO_CLAUSE_NOT_EQUAL));
+    CU_ASSERT(!libdbo_clause_set_operator(clause, LIBDBO_CLAUSE_OPERATOR_OR));
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_clause_get_value(clause));
     CU_ASSERT(!libdbo_value_from_int32(libdbo_clause_get_value(clause), 1));
     CU_ASSERT(!libdbo_clause_not_empty(clause));
@@ -498,20 +498,20 @@ void test_class_libdbo_clause(void) {
     CU_ASSERT(!strcmp(libdbo_clause_table(clause), "table"));
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_clause_field(clause));
     CU_ASSERT(!strcmp(libdbo_clause_field(clause), "field"));
-    CU_ASSERT(libdbo_clause_type(clause) == DB_CLAUSE_NOT_EQUAL);
-    CU_ASSERT(libdbo_clause_operator(clause) == DB_CLAUSE_OPERATOR_OR);
+    CU_ASSERT(libdbo_clause_type(clause) == LIBDBO_CLAUSE_NOT_EQUAL);
+    CU_ASSERT(libdbo_clause_operator(clause) == LIBDBO_CLAUSE_OPERATOR_OR);
     CU_ASSERT_PTR_NOT_NULL(libdbo_clause_value(clause));
     CU_ASSERT_PTR_NULL(libdbo_clause_next(clause));
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause2 = libdbo_clause_new()));
 
-    CU_ASSERT(!libdbo_clause_set_type(clause2, DB_CLAUSE_NESTED));
-    CU_ASSERT(!libdbo_clause_set_operator(clause2, DB_CLAUSE_OPERATOR_OR));
+    CU_ASSERT(!libdbo_clause_set_type(clause2, LIBDBO_CLAUSE_NESTED));
+    CU_ASSERT(!libdbo_clause_set_operator(clause2, LIBDBO_CLAUSE_OPERATOR_OR));
     CU_ASSERT(!libdbo_clause_set_list(clause2, (libdbo_clause_list_t*)&fake_pointer));
     CU_ASSERT(!libdbo_clause_not_empty(clause2));
 
-    CU_ASSERT(libdbo_clause_type(clause2) == DB_CLAUSE_NESTED);
-    CU_ASSERT(libdbo_clause_operator(clause2) == DB_CLAUSE_OPERATOR_OR);
+    CU_ASSERT(libdbo_clause_type(clause2) == LIBDBO_CLAUSE_NESTED);
+    CU_ASSERT(libdbo_clause_operator(clause2) == LIBDBO_CLAUSE_OPERATOR_OR);
     CU_ASSERT(libdbo_clause_list(clause2) == (libdbo_clause_list_t*)&fake_pointer);
     CU_ASSERT_PTR_NOT_NULL(libdbo_clause_value(clause2));
 }
@@ -656,17 +656,17 @@ void test_class_libdbo_object_field(void) {
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field = libdbo_object_field_new()));
     CU_ASSERT(!libdbo_object_field_set_name(object_field, "field1"));
-    CU_ASSERT(!libdbo_object_field_set_type(object_field, DB_TYPE_INT32));
+    CU_ASSERT(!libdbo_object_field_set_type(object_field, LIBDBO_TYPE_INT32));
     CU_ASSERT(!libdbo_object_field_not_empty(object_field));
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_object_field_name(object_field));
     CU_ASSERT(!strcmp(libdbo_object_field_name(object_field), "field1"));
-    CU_ASSERT(libdbo_object_field_type(object_field) == DB_TYPE_INT32);
+    CU_ASSERT(libdbo_object_field_type(object_field) == LIBDBO_TYPE_INT32);
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((local_object_field = libdbo_object_field_new()));
     CU_ASSERT(!libdbo_object_field_copy(local_object_field, object_field));
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_object_field_name(local_object_field));
     CU_ASSERT(!strcmp(libdbo_object_field_name(local_object_field), "field1"));
-    CU_ASSERT(libdbo_object_field_type(local_object_field) == DB_TYPE_INT32);
+    CU_ASSERT(libdbo_object_field_type(local_object_field) == LIBDBO_TYPE_INT32);
     libdbo_object_field_free(local_object_field);
     local_object_field = NULL;
     CU_PASS("libdbo_object_field_free");
@@ -674,19 +674,19 @@ void test_class_libdbo_object_field(void) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((local_object_field = libdbo_object_field_new_copy(object_field)));
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_object_field_name(local_object_field));
     CU_ASSERT(!strcmp(libdbo_object_field_name(local_object_field), "field1"));
-    CU_ASSERT(libdbo_object_field_type(local_object_field) == DB_TYPE_INT32);
+    CU_ASSERT(libdbo_object_field_type(local_object_field) == LIBDBO_TYPE_INT32);
     libdbo_object_field_free(local_object_field);
     local_object_field = NULL;
     CU_PASS("libdbo_object_field_free");
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field2 = libdbo_object_field_new()));
     CU_ASSERT(!libdbo_object_field_set_name(object_field2, "field2"));
-    CU_ASSERT(!libdbo_object_field_set_type(object_field2, DB_TYPE_ENUM));
+    CU_ASSERT(!libdbo_object_field_set_type(object_field2, LIBDBO_TYPE_ENUM));
     CU_ASSERT(!libdbo_object_field_set_enum_set(object_field2, (libdbo_enum_t*)&fake_pointer));
     CU_ASSERT(!libdbo_object_field_not_empty(object_field2));
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_object_field_name(object_field2));
     CU_ASSERT(!strcmp(libdbo_object_field_name(object_field2), "field2"));
-    CU_ASSERT(libdbo_object_field_type(object_field2) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_object_field_type(object_field2) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(libdbo_object_field_enum_set(object_field2) == (libdbo_enum_t*)&fake_pointer);
 }
 
@@ -706,7 +706,7 @@ void test_class_libdbo_object_field_list(void) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field_walk = libdbo_object_field_list_begin(object_field_list)));
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_object_field_name(object_field_walk));
     CU_ASSERT(!strcmp(libdbo_object_field_name(object_field_walk), "field1"));
-    CU_ASSERT(libdbo_object_field_type(object_field_walk) == DB_TYPE_INT32);
+    CU_ASSERT(libdbo_object_field_type(object_field_walk) == LIBDBO_TYPE_INT32);
     libdbo_object_field_list_free(local_object_field_list);
     local_object_field_list = NULL;
     CU_PASS("libdbo_object_field_list_free");
@@ -715,7 +715,7 @@ void test_class_libdbo_object_field_list(void) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((object_field_walk = libdbo_object_field_list_begin(object_field_list)));
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_object_field_name(object_field_walk));
     CU_ASSERT(!strcmp(libdbo_object_field_name(object_field_walk), "field1"));
-    CU_ASSERT(libdbo_object_field_type(object_field_walk) == DB_TYPE_INT32);
+    CU_ASSERT(libdbo_object_field_type(object_field_walk) == LIBDBO_TYPE_INT32);
     libdbo_object_field_list_free(local_object_field_list);
     local_object_field_list = NULL;
     CU_PASS("libdbo_object_field_list_free");
@@ -961,7 +961,7 @@ void test_class_libdbo_value(void) {
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((value = libdbo_value_new()));
     CU_ASSERT(!libdbo_value_from_text(value, "test"));
-    CU_ASSERT(libdbo_value_type(value) == DB_TYPE_TEXT);
+    CU_ASSERT(libdbo_value_type(value) == LIBDBO_TYPE_TEXT);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_text(value));
     CU_ASSERT_PTR_NULL(libdbo_value_int32(value));
     CU_ASSERT_PTR_NULL(libdbo_value_uint32(value));
@@ -974,13 +974,13 @@ void test_class_libdbo_value(void) {
     text = NULL;
     CU_ASSERT(!libdbo_value_not_empty(value));
     CU_ASSERT(!libdbo_value_copy(value2, value));
-    CU_ASSERT(libdbo_value_type(value2) == DB_TYPE_TEXT);
+    CU_ASSERT(libdbo_value_type(value2) == LIBDBO_TYPE_TEXT);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_text(value2));
     CU_ASSERT(!strcmp(libdbo_value_text(value2), "test"));
     CU_ASSERT(!libdbo_value_cmp(value, value2, &ret));
     CU_ASSERT(!ret);
     CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = libdbo_value_new_copy(value)));
-    CU_ASSERT(libdbo_value_type(local_value) == DB_TYPE_TEXT);
+    CU_ASSERT(libdbo_value_type(local_value) == LIBDBO_TYPE_TEXT);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_text(local_value));
     CU_ASSERT(!strcmp(libdbo_value_text(local_value), "test"));
     CU_ASSERT(!libdbo_value_cmp(value, local_value, &ret));
@@ -999,20 +999,20 @@ void test_class_libdbo_value(void) {
     CU_ASSERT_PTR_NULL(libdbo_value_uint32(value));
     CU_ASSERT_PTR_NULL(libdbo_value_int64(value));
     CU_ASSERT_PTR_NULL(libdbo_value_uint64(value));
-    CU_ASSERT(libdbo_value_type(value) == DB_TYPE_INT32);
+    CU_ASSERT(libdbo_value_type(value) == LIBDBO_TYPE_INT32);
     CU_ASSERT(!libdbo_value_to_int32(value, &int32));
     CU_ASSERT(int32 == -12345);
     CU_ASSERT(!libdbo_value_not_empty(value));
     libdbo_value_reset(value2);
     CU_PASS("libdbo_value_reset");
     CU_ASSERT(!libdbo_value_copy(value2, value));
-    CU_ASSERT(libdbo_value_type(value2) == DB_TYPE_INT32);
+    CU_ASSERT(libdbo_value_type(value2) == LIBDBO_TYPE_INT32);
     CU_ASSERT(!libdbo_value_to_int32(value2, &int32));
     CU_ASSERT(int32 == -12345);
     CU_ASSERT(!libdbo_value_cmp(value, value2, &ret));
     CU_ASSERT(!ret);
     CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = libdbo_value_new_copy(value)));
-    CU_ASSERT(libdbo_value_type(local_value) == DB_TYPE_INT32);
+    CU_ASSERT(libdbo_value_type(local_value) == LIBDBO_TYPE_INT32);
     CU_ASSERT(!libdbo_value_to_int32(local_value, &int32));
     CU_ASSERT(int32 == -12345);
     CU_ASSERT(!libdbo_value_cmp(value, local_value, &ret));
@@ -1031,20 +1031,20 @@ void test_class_libdbo_value(void) {
     CU_ASSERT_PTR_NOT_NULL(libdbo_value_uint32(value));
     CU_ASSERT_PTR_NULL(libdbo_value_int64(value));
     CU_ASSERT_PTR_NULL(libdbo_value_uint64(value));
-    CU_ASSERT(libdbo_value_type(value) == DB_TYPE_UINT32);
+    CU_ASSERT(libdbo_value_type(value) == LIBDBO_TYPE_UINT32);
     CU_ASSERT(!libdbo_value_to_uint32(value, &uint32));
     CU_ASSERT(uint32 == 12345);
     CU_ASSERT(!libdbo_value_not_empty(value));
     libdbo_value_reset(value2);
     CU_PASS("libdbo_value_reset");
     CU_ASSERT(!libdbo_value_copy(value2, value));
-    CU_ASSERT(libdbo_value_type(value2) == DB_TYPE_UINT32);
+    CU_ASSERT(libdbo_value_type(value2) == LIBDBO_TYPE_UINT32);
     CU_ASSERT(!libdbo_value_to_uint32(value2, &uint32));
     CU_ASSERT(uint32 == 12345);
     CU_ASSERT(!libdbo_value_cmp(value, value2, &ret));
     CU_ASSERT(!ret);
     CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = libdbo_value_new_copy(value)));
-    CU_ASSERT(libdbo_value_type(local_value) == DB_TYPE_UINT32);
+    CU_ASSERT(libdbo_value_type(local_value) == LIBDBO_TYPE_UINT32);
     CU_ASSERT(!libdbo_value_to_uint32(local_value, &uint32));
     CU_ASSERT(uint32 == 12345);
     CU_ASSERT(!libdbo_value_cmp(value, local_value, &ret));
@@ -1063,20 +1063,20 @@ void test_class_libdbo_value(void) {
     CU_ASSERT_PTR_NULL(libdbo_value_uint32(value));
     CU_ASSERT_PTR_NOT_NULL(libdbo_value_int64(value));
     CU_ASSERT_PTR_NULL(libdbo_value_uint64(value));
-    CU_ASSERT(libdbo_value_type(value) == DB_TYPE_INT64);
+    CU_ASSERT(libdbo_value_type(value) == LIBDBO_TYPE_INT64);
     CU_ASSERT(!libdbo_value_to_int64(value, &int64));
     CU_ASSERT(int64 == -9223372036854775800);
     CU_ASSERT(!libdbo_value_not_empty(value));
     libdbo_value_reset(value2);
     CU_PASS("libdbo_value_reset");
     CU_ASSERT(!libdbo_value_copy(value2, value));
-    CU_ASSERT(libdbo_value_type(value2) == DB_TYPE_INT64);
+    CU_ASSERT(libdbo_value_type(value2) == LIBDBO_TYPE_INT64);
     CU_ASSERT(!libdbo_value_to_int64(value2, &int64));
     CU_ASSERT(int64 == -9223372036854775800);
     CU_ASSERT(!libdbo_value_cmp(value, value2, &ret));
     CU_ASSERT(!ret);
     CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = libdbo_value_new_copy(value)));
-    CU_ASSERT(libdbo_value_type(local_value) == DB_TYPE_INT64);
+    CU_ASSERT(libdbo_value_type(local_value) == LIBDBO_TYPE_INT64);
     CU_ASSERT(!libdbo_value_to_int64(local_value, &int64));
     CU_ASSERT(int64 == -9223372036854775800);
     CU_ASSERT(!libdbo_value_cmp(value, local_value, &ret));
@@ -1095,20 +1095,20 @@ void test_class_libdbo_value(void) {
     CU_ASSERT_PTR_NULL(libdbo_value_uint32(value));
     CU_ASSERT_PTR_NULL(libdbo_value_int64(value));
     CU_ASSERT_PTR_NOT_NULL(libdbo_value_uint64(value));
-    CU_ASSERT(libdbo_value_type(value) == DB_TYPE_UINT64);
+    CU_ASSERT(libdbo_value_type(value) == LIBDBO_TYPE_UINT64);
     CU_ASSERT(!libdbo_value_to_uint64(value, &uint64));
     CU_ASSERT(uint64 == 17446744073709551615UL);
     CU_ASSERT(!libdbo_value_not_empty(value));
     libdbo_value_reset(value2);
     CU_PASS("libdbo_value_reset");
     CU_ASSERT(!libdbo_value_copy(value2, value));
-    CU_ASSERT(libdbo_value_type(value2) == DB_TYPE_UINT64);
+    CU_ASSERT(libdbo_value_type(value2) == LIBDBO_TYPE_UINT64);
     CU_ASSERT(!libdbo_value_to_uint64(value2, &uint64));
     CU_ASSERT(uint64 == 17446744073709551615UL);
     CU_ASSERT(!libdbo_value_cmp(value, value2, &ret));
     CU_ASSERT(!ret);
     CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = libdbo_value_new_copy(value)));
-    CU_ASSERT(libdbo_value_type(local_value) == DB_TYPE_UINT64);
+    CU_ASSERT(libdbo_value_type(local_value) == LIBDBO_TYPE_UINT64);
     CU_ASSERT(!libdbo_value_to_uint64(local_value, &uint64));
     CU_ASSERT(uint64 == 17446744073709551615UL);
     CU_ASSERT(!libdbo_value_cmp(value, local_value, &ret));
@@ -1123,7 +1123,7 @@ void test_class_libdbo_value(void) {
     CU_PASS("libdbo_value_reset");
 
     CU_ASSERT(!libdbo_value_from_enum_value(value, 2, enum_set));
-    CU_ASSERT(libdbo_value_type(value) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(value) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(value, &ret));
     CU_ASSERT(ret == 2);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(value));
@@ -1138,7 +1138,7 @@ void test_class_libdbo_value(void) {
     libdbo_value_reset(value2);
     CU_PASS("libdbo_value_reset");
     CU_ASSERT(!libdbo_value_copy(value2, value));
-    CU_ASSERT(libdbo_value_type(value2) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(value2) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(value2, &ret));
     CU_ASSERT(ret == 2);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(value2));
@@ -1152,7 +1152,7 @@ void test_class_libdbo_value(void) {
     CU_ASSERT(!libdbo_value_cmp(value, value2, &ret));
     CU_ASSERT(!ret);
     CU_ASSERT_PTR_NOT_NULL_FATAL((local_value = libdbo_value_new_copy(value)));
-    CU_ASSERT(libdbo_value_type(local_value) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(local_value) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(local_value, &ret));
     CU_ASSERT(ret == 2);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(local_value));
@@ -1175,7 +1175,7 @@ void test_class_libdbo_value(void) {
     CU_PASS("libdbo_value_reset");
 
     CU_ASSERT(!libdbo_value_from_enum_text(value, "enum2", enum_set));
-    CU_ASSERT(libdbo_value_type(value) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(value) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(value, &ret));
     CU_ASSERT(ret == 2);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(value));
@@ -1190,7 +1190,7 @@ void test_class_libdbo_value(void) {
     libdbo_value_reset(value2);
     CU_PASS("libdbo_value_reset");
     CU_ASSERT(!libdbo_value_copy(value2, value));
-    CU_ASSERT(libdbo_value_type(value2) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(value2) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(value2, &ret));
     CU_ASSERT(ret == 2);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(value2));
@@ -1210,7 +1210,7 @@ void test_class_libdbo_value(void) {
     CU_PASS("libdbo_value_reset");
 
     CU_ASSERT(!libdbo_value_from_enum_value(value, 3, enum_set));
-    CU_ASSERT(libdbo_value_type(value) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(value) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(value, &ret));
     CU_ASSERT(ret == 3);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(value));
@@ -1225,7 +1225,7 @@ void test_class_libdbo_value(void) {
     libdbo_value_reset(value2);
     CU_PASS("libdbo_value_reset");
     CU_ASSERT(!libdbo_value_copy(value2, value));
-    CU_ASSERT(libdbo_value_type(value2) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(value2) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(value2, &ret));
     CU_ASSERT(ret == 3);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(value2));
@@ -1245,7 +1245,7 @@ void test_class_libdbo_value(void) {
     CU_PASS("libdbo_value_reset");
 
     CU_ASSERT(!libdbo_value_from_enum_text(value, "enum3", enum_set));
-    CU_ASSERT(libdbo_value_type(value) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(value) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(value, &ret));
     CU_ASSERT(ret == 3);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(value));
@@ -1260,7 +1260,7 @@ void test_class_libdbo_value(void) {
     libdbo_value_reset(value2);
     CU_PASS("libdbo_value_reset");
     CU_ASSERT(!libdbo_value_copy(value2, value));
-    CU_ASSERT(libdbo_value_type(value2) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(value2) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(value2, &ret));
     CU_ASSERT(ret == 3);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(value2));
@@ -1280,7 +1280,7 @@ void test_class_libdbo_value(void) {
     CU_PASS("libdbo_value_reset");
 
     CU_ASSERT(!libdbo_value_from_enum_value(value, 1, enum_set));
-    CU_ASSERT(libdbo_value_type(value) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(value) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(value, &ret));
     CU_ASSERT(ret == 1);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(value));
@@ -1295,7 +1295,7 @@ void test_class_libdbo_value(void) {
     libdbo_value_reset(value2);
     CU_PASS("libdbo_value_reset");
     CU_ASSERT(!libdbo_value_copy(value2, value));
-    CU_ASSERT(libdbo_value_type(value2) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(value2) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(value2, &ret));
     CU_ASSERT(ret == 1);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(value2));
@@ -1315,7 +1315,7 @@ void test_class_libdbo_value(void) {
     CU_PASS("libdbo_value_reset");
 
     CU_ASSERT(!libdbo_value_from_enum_text(value, "enum1", enum_set));
-    CU_ASSERT(libdbo_value_type(value) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(value) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(value, &ret));
     CU_ASSERT(ret == 1);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(value));
@@ -1330,7 +1330,7 @@ void test_class_libdbo_value(void) {
     libdbo_value_reset(value2);
     CU_PASS("libdbo_value_reset");
     CU_ASSERT(!libdbo_value_copy(value2, value));
-    CU_ASSERT(libdbo_value_type(value2) == DB_TYPE_ENUM);
+    CU_ASSERT(libdbo_value_type(value2) == LIBDBO_TYPE_ENUM);
     CU_ASSERT(!libdbo_value_enum_value(value2, &ret));
     CU_ASSERT(ret == 1);
     CU_ASSERT_PTR_NOT_NULL_FATAL(libdbo_value_enum_text(value2));

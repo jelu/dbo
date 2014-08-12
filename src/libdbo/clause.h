@@ -60,69 +60,69 @@ typedef enum {
     /**
      * Empty, not set or unknown.
      */
-    DB_CLAUSE_UNKNOWN,
+    LIBDBO_CLAUSE_UNKNOWN,
     /**
      * ==
      */
-    DB_CLAUSE_EQUAL,
+    LIBDBO_CLAUSE_EQUAL,
     /**
      * !=
      */
-    DB_CLAUSE_NOT_EQUAL,
+    LIBDBO_CLAUSE_NOT_EQUAL,
     /**
      * <
      */
-    DB_CLAUSE_LESS_THEN,
+    LIBDBO_CLAUSE_LESS_THEN,
     /**
      * <=
      */
-    DB_CLAUSE_LESS_OR_EQUAL,
+    LIBDBO_CLAUSE_LESS_OR_EQUAL,
     /**
      * >=
      */
-    DB_CLAUSE_GREATER_OR_EQUAL,
+    LIBDBO_CLAUSE_GREATER_OR_EQUAL,
     /**
      * >
      */
-    DB_CLAUSE_GREATER_THEN,
+    LIBDBO_CLAUSE_GREATER_THEN,
     /**
      * Is null.
      */
-    DB_CLAUSE_IS_NULL,
+    LIBDBO_CLAUSE_IS_NULL,
     /**
      * Is not null.
      */
-    DB_CLAUSE_IS_NOT_NULL,
+    LIBDBO_CLAUSE_IS_NOT_NULL,
     /**
      * This adds a nested clause as in wrapping the content with ( ).
      */
-    DB_CLAUSE_NESTED
+    LIBDBO_CLAUSE_NESTED
 } libdbo_clause_type_t;
 
 /**
- * Short for DB_CLAUSE_EQUAL.
+ * Short for LIBDBO_CLAUSE_EQUAL.
  */
-#define DB_CLAUSE_EQ DB_CLAUSE_EQUAL
+#define LIBDBO_CLAUSE_EQ LIBDBO_CLAUSE_EQUAL
 /**
- * Short for DB_CLAUSE_NOT_EQUAL.
+ * Short for LIBDBO_CLAUSE_NOT_EQUAL.
  */
-#define DB_CLAUSE_NE DB_CLAUSE_NOT_EQUAL
+#define LIBDBO_CLAUSE_NE LIBDBO_CLAUSE_NOT_EQUAL
 /**
- * Short for DB_CLAUSE_LESS_THEN.
+ * Short for LIBDBO_CLAUSE_LESS_THEN.
  */
-#define DB_CLAUSE_LT DB_CLAUSE_LESS_THEN
+#define LIBDBO_CLAUSE_LT LIBDBO_CLAUSE_LESS_THEN
 /**
- * Short for DB_CLAUSE_LESS_OR_EQUAL.
+ * Short for LIBDBO_CLAUSE_LESS_OR_EQUAL.
  */
-#define DB_CLAUSE_LE DB_CLAUSE_LESS_OR_EQUAL
+#define LIBDBO_CLAUSE_LE LIBDBO_CLAUSE_LESS_OR_EQUAL
 /**
- * Short for DB_CLAUSE_GREATER_OR_EQUAL.
+ * Short for LIBDBO_CLAUSE_GREATER_OR_EQUAL.
  */
-#define DB_CLAUSE_GE DB_CLAUSE_GREATER_OR_EQUAL
+#define LIBDBO_CLAUSE_GE LIBDBO_CLAUSE_GREATER_OR_EQUAL
 /**
- * Short for DB_CLAUSE_GREATER_THEN.
+ * Short for LIBDBO_CLAUSE_GREATER_THEN.
  */
-#define DB_CLAUSE_GT DB_CLAUSE_GREATER_THEN
+#define LIBDBO_CLAUSE_GT LIBDBO_CLAUSE_GREATER_THEN
 
 /**
  * The operator to do between the previous clause and this one.
@@ -131,25 +131,25 @@ typedef enum {
     /**
      * Empty, not set or unknown.
      */
-    DB_CLAUSE_OPERATOR_UNKNOWN,
+    LIBDBO_CLAUSE_OPERATOR_UNKNOWN,
     /**
      * ||
      */
-    DB_CLAUSE_OPERATOR_AND,
+    LIBDBO_CLAUSE_OPERATOR_AND,
     /**
      * &&
      */
-    DB_CLAUSE_OPERATOR_OR
+    LIBDBO_CLAUSE_OPERATOR_OR
 } libdbo_clause_operator_t;
 
 /**
- * Short for DB_CLAUSE_OPERATOR_AND.
+ * Short for LIBDBO_CLAUSE_OPERATOR_AND.
  */
-#define DB_CLAUSE_OP_AND DB_CLAUSE_OPERATOR_AND
+#define LIBDBO_CLAUSE_OP_AND LIBDBO_CLAUSE_OPERATOR_AND
 /**
- * Short for DB_CLAUSE_OPERATOR_OR.
+ * Short for LIBDBO_CLAUSE_OPERATOR_OR.
  */
-#define DB_CLAUSE_OP_OR  DB_CLAUSE_OPERATOR_OR
+#define LIBDBO_CLAUSE_OP_OR  LIBDBO_CLAUSE_OPERATOR_OR
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct libdbo_clause;
@@ -256,7 +256,7 @@ const libdbo_clause_list_t* libdbo_clause_list(const libdbo_clause_t* clause);
  * Set the table name of a database clause.
  * \param[in] clause a libdbo_clause_t pointer.
  * \param[in] table a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_clause_set_table(libdbo_clause_t* clause, const char* table);
 
@@ -264,7 +264,7 @@ int libdbo_clause_set_table(libdbo_clause_t* clause, const char* table);
  * Set the field name of a database clause.
  * \param[in] clause a libdbo_clause_t pointer.
  * \param[in] field a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_clause_set_field(libdbo_clause_t* clause, const char* field);
 
@@ -272,7 +272,7 @@ int libdbo_clause_set_field(libdbo_clause_t* clause, const char* field);
  * Set the database clause type of a database clause.
  * \param[in] clause a libdbo_clause_t pointer.
  * \param[in] type a libdbo_clause_type_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_clause_set_type(libdbo_clause_t* clause, libdbo_clause_type_t type);
 
@@ -280,7 +280,7 @@ int libdbo_clause_set_type(libdbo_clause_t* clause, libdbo_clause_type_t type);
  * Set the database clause operator of a database clause.
  * \param[in] clause a libdbo_clause_t pointer.
  * \param[in] clause_operator a libdbo_clause_operator_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_clause_set_operator(libdbo_clause_t* clause, libdbo_clause_operator_t clause_operator);
 
@@ -289,14 +289,14 @@ int libdbo_clause_set_operator(libdbo_clause_t* clause, libdbo_clause_operator_t
  * database clauses. The ownership of the database clause list it taken.
  * \param[in] clause a libdbo_clause_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_clause_set_list(libdbo_clause_t* clause, libdbo_clause_list_t* clause_list);
 
 /**
  * Check if the database clause is not empty.
  * \param[in] clause a libdbo_clause_t pointer.
- * \return DB_ERROR_* if empty, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* if empty, otherwise LIBDBO_OK.
  */
 int libdbo_clause_not_empty(const libdbo_clause_t* clause);
 
@@ -344,7 +344,7 @@ void libdbo_clause_list_free(libdbo_clause_list_t* clause_list);
  * ownership of the database clause.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
  * \param[in] clause a libdbo_clause_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_clause_list_add(libdbo_clause_list_t* clause_list, libdbo_clause_t* clause);
 

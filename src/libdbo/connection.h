@@ -99,7 +99,7 @@ void libdbo_connection_free(libdbo_connection_t* connection);
  * Set the database configuration list for a database connection.
  * \param[in] connection a libdbo_connection_t pointer.
  * \param[in] configuration_list a libdbo_configuration_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_connection_set_configuration_list(libdbo_connection_t* connection, const libdbo_configuration_list_t* configuration_list);
 
@@ -107,21 +107,21 @@ int libdbo_connection_set_configuration_list(libdbo_connection_t* connection, co
  * Setup the database connection, this verifies the information in the database
  * configuration list and allocated a database backend.
  * \param[in] connection a libdbo_connection_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_connection_setup(libdbo_connection_t* connection);
 
 /**
  * Connect to the database.
  * \param[in] connection a libdbo_connection_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_connection_connect(const libdbo_connection_t* connection);
 
 /**
  * Disconnect from the database.
  * \param[in] connection a libdbo_connection_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_connection_disconnect(const libdbo_connection_t* connection);
 
@@ -133,7 +133,7 @@ int libdbo_connection_disconnect(const libdbo_connection_t* connection);
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
  * \param[in] value_set a libdbo_value_set_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_connection_create(const libdbo_connection_t* connection, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set);
 
@@ -155,7 +155,7 @@ libdbo_result_list_t* libdbo_connection_read(const libdbo_connection_t* connecti
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
  * \param[in] value_set a libdbo_value_set_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_connection_update(const libdbo_connection_t* connection, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set, const libdbo_clause_list_t* clause_list);
 
@@ -164,7 +164,7 @@ int libdbo_connection_update(const libdbo_connection_t* connection, const libdbo
  * \param[in] connection a libdbo_connection_t pointer.
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_connection_delete(const libdbo_connection_t* connection, const libdbo_object_t* object, const libdbo_clause_list_t* clause_list);
 
@@ -175,28 +175,28 @@ int libdbo_connection_delete(const libdbo_connection_t* connection, const libdbo
  * \param[in] join_list a libdbo_join_list_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
  * \param[out] count a size_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_connection_count(const libdbo_connection_t* connection, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list, size_t* count);
 
 /**
  * Begin a transaction for a database connection.
  * \param[in] connection a libdbo_connection_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_connection_transaction_begin(const libdbo_connection_t* connection);
 
 /**
  * Commit a transaction for a database connection.
  * \param[in] connection a libdbo_connection_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_connection_transaction_commit(const libdbo_connection_t* connection);
 
 /**
  * Roll back a transaction for a database connection.
  * \param[in] connection a libdbo_connection_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_connection_transaction_rollback(const libdbo_connection_t* connection);
 

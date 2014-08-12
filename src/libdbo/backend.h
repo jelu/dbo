@@ -125,7 +125,7 @@ extern "C" {
  * Function pointer for initializing a database backend. The backend handle
  * specific data is supplied in `data`.
  * \param[in] data a void pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 typedef int (*libdbo_backend_handle_initialize_t)(void* data);
 
@@ -133,7 +133,7 @@ typedef int (*libdbo_backend_handle_initialize_t)(void* data);
  * Function pointer for shutting down a database backend. The backend handle
  * specific data is supplied in `data`.
  * \param[in] data a void pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 typedef int (*libdbo_backend_handle_shutdown_t)(void* data);
 
@@ -142,7 +142,7 @@ typedef int (*libdbo_backend_handle_shutdown_t)(void* data);
  * specific data is supplied in `data`.
  * \param[in] data a void pointer.
  * \param[in] configuration_list a libdbo_configuration_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 typedef int (*libdbo_backend_handle_connect_t)(void* data, const libdbo_configuration_list_t* configuration_list);
 
@@ -150,7 +150,7 @@ typedef int (*libdbo_backend_handle_connect_t)(void* data, const libdbo_configur
  * Function pointer for disconnecting a database backend. The backend handle
  * specific data is supplied in `data`.
  * \param[in] data a void pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 typedef int (*libdbo_backend_handle_disconnect_t)(void* data);
 
@@ -161,7 +161,7 @@ typedef int (*libdbo_backend_handle_disconnect_t)(void* data);
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
  * \param[in] value_set a libdbo_value_set_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 typedef int (*libdbo_backend_handle_create_t)(void* data, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set);
 
@@ -185,7 +185,7 @@ typedef libdbo_result_list_t* (*libdbo_backend_handle_read_t)(void* data, const 
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
  * \param[in] value_set a libdbo_value_set_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 typedef int (*libdbo_backend_handle_update_t)(void* data, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set, const libdbo_clause_list_t* clause_list);
 
@@ -195,7 +195,7 @@ typedef int (*libdbo_backend_handle_update_t)(void* data, const libdbo_object_t*
  * \param[in] data a void pointer.
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 typedef int (*libdbo_backend_handle_delete_t)(void* data, const libdbo_object_t* object, const libdbo_clause_list_t* clause_list);
 
@@ -207,7 +207,7 @@ typedef int (*libdbo_backend_handle_delete_t)(void* data, const libdbo_object_t*
  * \param[in] join_list a libdbo_join_list_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
  * \param[out] count a size_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 typedef int (*libdbo_backend_handle_count_t)(void* data, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list, size_t* count);
 
@@ -221,7 +221,7 @@ typedef void (*libdbo_backend_handle_free_t)(void* data);
  * Function pointer for beginning a transaction in a database backend. The
  * backend handle specific data is supplied in `data`.
  * \param[in] data a void pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 typedef int (*libdbo_backend_handle_transaction_begin_t)(void* data);
 
@@ -229,7 +229,7 @@ typedef int (*libdbo_backend_handle_transaction_begin_t)(void* data);
  * Function pointer for committing a transaction in a database backend. The
  * backend handle specific data is supplied in `data`.
  * \param[in] data a void pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 typedef int (*libdbo_backend_handle_transaction_commit_t)(void* data);
 
@@ -237,7 +237,7 @@ typedef int (*libdbo_backend_handle_transaction_commit_t)(void* data);
  * Function pointer for rolling back a transaction in a database backend. The
  * backend handle specific data is supplied in `data`.
  * \param[in] data a void pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 typedef int (*libdbo_backend_handle_transaction_rollback_t)(void* data);
 
@@ -276,14 +276,14 @@ void libdbo_backend_handle_free(libdbo_backend_handle_t* backend_handle);
 /**
  * Initiate the backend of a database backend.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_initialize(const libdbo_backend_handle_t* backend_handle);
 
 /**
  * Shutdown the backend of a database backend.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_shutdown(const libdbo_backend_handle_t* backend_handle);
 
@@ -292,14 +292,14 @@ int libdbo_backend_handle_shutdown(const libdbo_backend_handle_t* backend_handle
  * configuration is given by `configuration_list`.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] configuration_list a libdbo_configuration_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_connect(const libdbo_backend_handle_t* backend_handle, const libdbo_configuration_list_t* configuration_list);
 
 /**
  * Disconnect from the database in a database backend.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_disconnect(const libdbo_backend_handle_t* backend_handle);
 
@@ -311,7 +311,7 @@ int libdbo_backend_handle_disconnect(const libdbo_backend_handle_t* backend_hand
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
  * \param[in] value_set a libdbo_value_set_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_create(const libdbo_backend_handle_t* backend_handle, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set);
 
@@ -333,7 +333,7 @@ libdbo_result_list_t* libdbo_backend_handle_read(const libdbo_backend_handle_t* 
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
  * \param[in] value_set a libdbo_value_set_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_update(const libdbo_backend_handle_t* backend_handle, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set, const libdbo_clause_list_t* clause_list);
 
@@ -342,7 +342,7 @@ int libdbo_backend_handle_update(const libdbo_backend_handle_t* backend_handle, 
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_delete(const libdbo_backend_handle_t* backend_handle, const libdbo_object_t* object, const libdbo_clause_list_t* clause_list);
 
@@ -353,28 +353,28 @@ int libdbo_backend_handle_delete(const libdbo_backend_handle_t* backend_handle, 
  * \param[in] join_list a libdbo_join_list_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
  * \param[out] count a size_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_count(const libdbo_backend_handle_t* backend_handle, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list, size_t* count);
 
 /**
  * Begin a transaction for a database connection.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_transaction_begin(const libdbo_backend_handle_t* backend_handle);
 
 /**
  * Commit a transaction for a database connection.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_transaction_commit(const libdbo_backend_handle_t* backend_handle);
 
 /**
  * Roll back a transaction for a database connection.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_transaction_rollback(const libdbo_backend_handle_t* backend_handle);
 
@@ -389,7 +389,7 @@ const void* libdbo_backend_handle_data(const libdbo_backend_handle_t* backend_ha
  * Set the initialize function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] initialize_function a libdbo_backend_handle_initialize_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_initialize(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_initialize_t initialize_function);
 
@@ -397,7 +397,7 @@ int libdbo_backend_handle_set_initialize(libdbo_backend_handle_t* backend_handle
  * Set the shutdown function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] shutdown_function a libdbo_backend_handle_shutdown_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_shutdown(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_shutdown_t shutdown_function);
 
@@ -405,7 +405,7 @@ int libdbo_backend_handle_set_shutdown(libdbo_backend_handle_t* backend_handle, 
  * Set the connect function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] connect_function a libdbo_backend_handle_connect_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_connect(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_connect_t connect_function);
 
@@ -413,7 +413,7 @@ int libdbo_backend_handle_set_connect(libdbo_backend_handle_t* backend_handle, l
  * Set the disconnect function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] disconnect_function a libdbo_backend_handle_disconnect_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_disconnect(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_disconnect_t disconnect_function);
 
@@ -421,7 +421,7 @@ int libdbo_backend_handle_set_disconnect(libdbo_backend_handle_t* backend_handle
  * Set the create function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] create_function a libdbo_backend_handle_create_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_create(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_create_t create_function);
 
@@ -429,7 +429,7 @@ int libdbo_backend_handle_set_create(libdbo_backend_handle_t* backend_handle, li
  * Set the read function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] read_function a libdbo_backend_handle_read_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_read(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_read_t read_function);
 
@@ -437,7 +437,7 @@ int libdbo_backend_handle_set_read(libdbo_backend_handle_t* backend_handle, libd
  * Set the update function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] update_function a libdbo_backend_handle_update_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_update(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_update_t update_function);
 
@@ -445,7 +445,7 @@ int libdbo_backend_handle_set_update(libdbo_backend_handle_t* backend_handle, li
  * Set the delete function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] delete_function a libdbo_backend_handle_delete_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_delete(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_delete_t delete_function);
 
@@ -453,7 +453,7 @@ int libdbo_backend_handle_set_delete(libdbo_backend_handle_t* backend_handle, li
  * Set the count function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] count_function a libdbo_backend_handle_count_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_count(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_count_t count_function);
 
@@ -461,7 +461,7 @@ int libdbo_backend_handle_set_count(libdbo_backend_handle_t* backend_handle, lib
  * Set the free function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] free_function a libdbo_backend_handle_free_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_free(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_free_t free_function);
 
@@ -469,7 +469,7 @@ int libdbo_backend_handle_set_free(libdbo_backend_handle_t* backend_handle, libd
  * Set the transaction begin function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] transaction_begin_function a libdbo_backend_handle_transaction_begin_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_transaction_begin(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_transaction_begin_t transaction_begin_function);
 
@@ -477,7 +477,7 @@ int libdbo_backend_handle_set_transaction_begin(libdbo_backend_handle_t* backend
  * Set the transaction commit function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] transaction_commit_function a libdbo_backend_handle_transaction_commit_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_transaction_commit(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_transaction_commit_t transaction_commit_function);
 
@@ -485,7 +485,7 @@ int libdbo_backend_handle_set_transaction_commit(libdbo_backend_handle_t* backen
  * Set the transaction rollback function of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] transaction_rollback_function a libdbo_backend_handle_transaction_rollback_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_transaction_rollback(libdbo_backend_handle_t* backend_handle, libdbo_backend_handle_transaction_rollback_t transaction_rollback_function);
 
@@ -493,14 +493,14 @@ int libdbo_backend_handle_set_transaction_rollback(libdbo_backend_handle_t* back
  * Set the backend specific data of a database backend handle.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
  * \param[in] data a void pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_set_data(libdbo_backend_handle_t* backend_handle, void* data);
 
 /**
  * Check if the database backend handle is not empty.
  * \param[in] backend_handle a libdbo_backend_handle_t pointer.
- * \return DB_ERROR_* if empty, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* if empty, otherwise LIBDBO_OK.
  */
 int libdbo_backend_handle_not_empty(const libdbo_backend_handle_t* backend_handle);
 
@@ -548,7 +548,7 @@ const libdbo_backend_handle_t* libdbo_backend_handle(const libdbo_backend_t* bac
  * Set the name of a database backend.
  * \param[in] backend a libdbo_backend_t pointer.
  * \param[in] name a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_set_name(libdbo_backend_t* backend, const char* name);
 
@@ -557,28 +557,28 @@ int libdbo_backend_set_name(libdbo_backend_t* backend, const char* name);
  * ownership of the database backend handle.
  * \param[in] backend a libdbo_backend_t pointer.
  * \param[in] handle a libdbo_backend_handle_t.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_set_handle(libdbo_backend_t* backend, libdbo_backend_handle_t* handle);
 
 /**
  * Check if a database backend is not empty.
  * \param[in] backend a libdbo_backend_t pointer.
- * \return DB_ERROR_* if empty, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* if empty, otherwise LIBDBO_OK.
  */
 int libdbo_backend_not_empty(const libdbo_backend_t* backend);
 
 /**
  * Initiate the backend of a database backend.
  * \param[in] backend a libdbo_backend_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_initialize(const libdbo_backend_t* backend);
 
 /**
  * Shutdown the backend of a database backend.
  * \param[in] backend a libdbo_backend_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_shutdown(const libdbo_backend_t* backend);
 
@@ -587,14 +587,14 @@ int libdbo_backend_shutdown(const libdbo_backend_t* backend);
  * configuration is given by `configuration_list`.
  * \param[in] backend a libdbo_backend_t pointer.
  * \param[in] configuration_list a libdbo_configuration_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_connect(const libdbo_backend_t* backend, const libdbo_configuration_list_t* configuration_list);
 
 /**
  * Disconnect from the database in a database backend.
  * \param[in] backend a libdbo_backend_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_disconnect(const libdbo_backend_t* backend);
 
@@ -606,7 +606,7 @@ int libdbo_backend_disconnect(const libdbo_backend_t* backend);
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
  * \param[in] value_set a libdbo_value_set_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_create(const libdbo_backend_t* backend, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set);
 
@@ -628,7 +628,7 @@ libdbo_result_list_t* libdbo_backend_read(const libdbo_backend_t* backend, const
  * \param[in] object_field_list a libdbo_object_field_list_t pointer.
  * \param[in] value_set a libdbo_value_set_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_update(const libdbo_backend_t* backend, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set, const libdbo_clause_list_t* clause_list);
 
@@ -637,7 +637,7 @@ int libdbo_backend_update(const libdbo_backend_t* backend, const libdbo_object_t
  * \param[in] backend a libdbo_backend_t pointer.
  * \param[in] object a libdbo_object_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_delete(const libdbo_backend_t* backend, const libdbo_object_t* object, const libdbo_clause_list_t* clause_list);
 
@@ -648,28 +648,28 @@ int libdbo_backend_delete(const libdbo_backend_t* backend, const libdbo_object_t
  * \param[in] join_list a libdbo_join_list_t pointer.
  * \param[in] clause_list a libdbo_clause_list_t pointer.
  * \param[out] count a size_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_count(const libdbo_backend_t* backend, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list, size_t* count);
 
 /**
  * Begin a transaction for a database connection.
  * \param[in] backend a libdbo_backend_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_transaction_begin(const libdbo_backend_t* backend);
 
 /**
  * Commit a transaction for a database connection.
  * \param[in] backend a libdbo_backend_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_transaction_commit(const libdbo_backend_t* backend);
 
 /**
  * Roll back a transaction for a database connection.
  * \param[in] backend a libdbo_backend_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_transaction_rollback(const libdbo_backend_t* backend);
 
@@ -688,7 +688,7 @@ libdbo_backend_t* libdbo_backend_factory_get_backend(const char* name);
 
 /**
  * Shutdown the database backends created by the factory.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_factory_shutdown(void);
 
@@ -728,7 +728,7 @@ void libdbo_backend_meta_data_free(libdbo_backend_meta_data_t* backend_meta_data
  * Copy a database backend meta data.
  * \param[in] backend_meta_data a libdbo_backend_meta_data_t pointer.
  * \param[in] from_backend_meta_data a libdbo_backend_meta_data_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_meta_data_copy(libdbo_backend_meta_data_t* backend_meta_data, const libdbo_backend_meta_data_t* from_backend_meta_data);
 
@@ -751,7 +751,7 @@ const libdbo_value_t* libdbo_backend_meta_data_value(const libdbo_backend_meta_d
  * Set the name of a database backend meta data.
  * \param[in] backend_meta_data a libdbo_backend_meta_data_t pointer.
  * \param[in] name a character pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_meta_data_set_name(libdbo_backend_meta_data_t* backend_meta_data, const char* name);
 
@@ -760,14 +760,14 @@ int libdbo_backend_meta_data_set_name(libdbo_backend_meta_data_t* backend_meta_d
  * ownership of the database value.
  * \param[in] backend_meta_data a libdbo_backend_meta_data_t pointer.
  * \param[in] value a libdbo_value_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_meta_data_set_value(libdbo_backend_meta_data_t* backend_meta_data, libdbo_value_t* value);
 
 /**
  * Check if the database meta data is not empty.
  * \param[in] backend_meta_data a libdbo_backend_meta_data_t pointer.
- * \return DB_ERROR_* if empty, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* if empty, otherwise LIBDBO_OK.
  */
 int libdbo_backend_meta_data_not_empty(const libdbo_backend_meta_data_t* backend_meta_data);
 
@@ -807,7 +807,7 @@ void libdbo_backend_meta_data_list_free(libdbo_backend_meta_data_list_t* backend
  * Copy a database backend meta data list.
  * \param[in] backend_meta_data_list a libdbo_backend_meta_data_list_t pointer.
  * \param[in] from_backend_meta_data_list a libdbo_backend_meta_data_list_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_meta_data_list_copy(libdbo_backend_meta_data_list_t* backend_meta_data_list, const libdbo_backend_meta_data_list_t* from_backend_meta_data_list);
 
@@ -816,7 +816,7 @@ int libdbo_backend_meta_data_list_copy(libdbo_backend_meta_data_list_t* backend_
  * takes over the ownership of the database backend meta data.
  * \param[in] backend_meta_data_list a libdbo_backend_meta_data_list_t pointer.
  * \param[in] backend_meta_data a libdbo_backend_meta_data_t pointer.
- * \return DB_ERROR_* on failure, otherwise DB_OK.
+ * \return LIBDBO_ERROR_* on failure, otherwise LIBDBO_OK.
  */
 int libdbo_backend_meta_data_list_add(libdbo_backend_meta_data_list_t* backend_meta_data_list, libdbo_backend_meta_data_t* backend_meta_data);
 

@@ -2,9 +2,9 @@
 {
   "name": "users",
   "fields": [
-    { "name": "id", "type": "DB_TYPE_PRIMARY_KEY" },
-    { "name": "group_id", "type": "DB_TYPE_ANY", "foreign": "groups", "foreign_name": "id" },
-    { "name": "name", "type": "DB_TYPE_TEXT", "unique": 1 }
+    { "name": "id", "type": "LIBDBO_TYPE_PRIMARY_KEY" },
+    { "name": "group_id", "type": "LIBDBO_TYPE_ANY", "foreign": "groups", "foreign_name": "id" },
+    { "name": "name", "type": "LIBDBO_TYPE_TEXT", "unique": 1 }
   ],
   "association": [
     { "name": "id", "foreign": "user_group_link", "foreign_name": "user_id" }
@@ -13,8 +13,8 @@
 {
   "name": "groups",
   "fields": [
-    { "name": "id", "type": "DB_TYPE_PRIMARY_KEY" },
-    { "name": "name", "type": "DB_TYPE_TEXT", "unique": 1 }
+    { "name": "id", "type": "LIBDBO_TYPE_PRIMARY_KEY" },
+    { "name": "name", "type": "LIBDBO_TYPE_TEXT", "unique": 1 }
   ],
   "association": [
     { "name": "id", "foreign": "users", "foreign_name": "group_id" },
@@ -24,18 +24,18 @@
 {
   "name": "user_group_link",
   "fields": [
-    { "name": "id", "type": "DB_TYPE_PRIMARY_KEY" },
-    { "name": "user_id", "type": "DB_TYPE_ANY", "foreign": "users", "foreign_name": "id" },
-    { "name": "group_id", "type": "DB_TYPE_ANY", "foreign": "groups", "foreign_name": "id" }
+    { "name": "id", "type": "LIBDBO_TYPE_PRIMARY_KEY" },
+    { "name": "user_id", "type": "LIBDBO_TYPE_ANY", "foreign": "users", "foreign_name": "id" },
+    { "name": "group_id", "type": "LIBDBO_TYPE_ANY", "foreign": "groups", "foreign_name": "id" }
   ]
 },
 {
   "name": "users_rev",
   "fields": [
-    { "name": "id", "type": "DB_TYPE_PRIMARY_KEY" },
-    { "name": "rev", "type": "DB_TYPE_REVISION" },
-    { "name": "group_id", "type": "DB_TYPE_ANY", "foreign": "groups_rev", "foreign_name": "id" },
-    { "name": "name", "type": "DB_TYPE_TEXT", "unique": 1 }
+    { "name": "id", "type": "LIBDBO_TYPE_PRIMARY_KEY" },
+    { "name": "rev", "type": "LIBDBO_TYPE_REVISION" },
+    { "name": "group_id", "type": "LIBDBO_TYPE_ANY", "foreign": "groups_rev", "foreign_name": "id" },
+    { "name": "name", "type": "LIBDBO_TYPE_TEXT", "unique": 1 }
   ],
   "association": [
     { "name": "id", "foreign": "user_group_link_rev", "foreign_name": "user_id" }
@@ -44,9 +44,9 @@
 {
   "name": "groups_rev",
   "fields": [
-    { "name": "id", "type": "DB_TYPE_PRIMARY_KEY" },
-    { "name": "rev", "type": "DB_TYPE_REVISION" },
-    { "name": "name", "type": "DB_TYPE_TEXT", "unique": 1 }
+    { "name": "id", "type": "LIBDBO_TYPE_PRIMARY_KEY" },
+    { "name": "rev", "type": "LIBDBO_TYPE_REVISION" },
+    { "name": "name", "type": "LIBDBO_TYPE_TEXT", "unique": 1 }
   ],
   "association": [
     { "name": "id", "foreign": "users_rev", "foreign_name": "group_id" },
@@ -56,10 +56,10 @@
 {
   "name": "user_group_link_rev",
   "fields": [
-    { "name": "id", "type": "DB_TYPE_PRIMARY_KEY" },
-    { "name": "rev", "type": "DB_TYPE_REVISION" },
-    { "name": "user_id", "type": "DB_TYPE_ANY", "foreign": "users_rev", "foreign_name": "id" },
-    { "name": "group_id", "type": "DB_TYPE_ANY", "foreign": "groups_rev", "foreign_name": "id" }
+    { "name": "id", "type": "LIBDBO_TYPE_PRIMARY_KEY" },
+    { "name": "rev", "type": "LIBDBO_TYPE_REVISION" },
+    { "name": "user_id", "type": "LIBDBO_TYPE_ANY", "foreign": "users_rev", "foreign_name": "id" },
+    { "name": "group_id", "type": "LIBDBO_TYPE_ANY", "foreign": "groups_rev", "foreign_name": "id" }
   ]
 }
 ]

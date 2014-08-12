@@ -76,46 +76,46 @@ typedef enum {
     /**
      * No value, empty, not set.
      */
-    DB_TYPE_EMPTY,
+    LIBDBO_TYPE_EMPTY,
     /**
      * This will make the value a primary key / ID that can be any type.
      */
-    DB_TYPE_PRIMARY_KEY,
+    LIBDBO_TYPE_PRIMARY_KEY,
     /**
      * A libdbo_type_int32_t.
      */
-    DB_TYPE_INT32,
+    LIBDBO_TYPE_INT32,
     /**
      * A libdbo_type_uint32_t.
      */
-    DB_TYPE_UINT32,
+    LIBDBO_TYPE_UINT32,
     /**
      * A libdbo_type_int64_t.
      */
-    DB_TYPE_INT64,
+    LIBDBO_TYPE_INT64,
     /**
      * A libdbo_type_uint64_t.
      */
-    DB_TYPE_UINT64,
+    LIBDBO_TYPE_UINT64,
     /**
      * A null terminated character string.
      */
-    DB_TYPE_TEXT,
+    LIBDBO_TYPE_TEXT,
     /**
      * A enumerate value that can be represented as an integer or string.
      */
-    DB_TYPE_ENUM,
+    LIBDBO_TYPE_ENUM,
     /**
      * This can be any type, primarily used for ID fields.
      */
-    DB_TYPE_ANY,
+    LIBDBO_TYPE_ANY,
     /**
      * This is a special revision type that can be used to track revisions of
      * objects and only do changes against the current revision and in so will
      * fail if someone else has changed the object. The revision type can be
      * any type.
      */
-    DB_TYPE_REVISION
+    LIBDBO_TYPE_REVISION
 } libdbo_type_t;
 
 /** \} */

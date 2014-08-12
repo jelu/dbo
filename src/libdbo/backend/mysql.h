@@ -50,16 +50,16 @@
 /**
  * Default connection timeout for MySQL.
  */
-#define DB_BACKEND_MYSQL_DEFAULT_TIMEOUT 30
+#define LIBDBO_BACKEND_MYSQL_DEFAULT_TIMEOUT 30
 /**
  * Minimal allocation size when fetching varchar, text or blobs.
  */
-#define DB_BACKEND_MYSQL_STRING_MIN_SIZE 64
+#define LIBDBO_BACKEND_MYSQL_STRING_MIN_SIZE 64
 /**
  * Maximum allocation size when fetching varchar, text or blobs. If the value in
  * the database is larger then this then the fetch will fail.
  */
-#define DB_BACKEND_MYSQL_STRING_MAX_SIZE 4096
+#define LIBDBO_BACKEND_MYSQL_STRING_MAX_SIZE 4096
 
 #ifdef __cplusplus
 extern "C" {
