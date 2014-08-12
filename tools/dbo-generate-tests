@@ -87,24 +87,24 @@ open(SOURCE, '>:encoding(UTF-8)', 'test_'.$name.'.c') or die;
 
 #include "CUnit/Basic.h"
 
-#include "db_configuration.h"
-#include "db_connection.h"
+#include "libdbo_configuration.h"
+#include "libdbo_connection.h"
 #include "', $name, '.h"
 
 #include <string.h>
 
-static db_configuration_list_t* configuration_list = NULL;
-static db_configuration_t* configuration = NULL;
-static db_connection_t* connection = NULL;
+static libdbo_configuration_list_t* configuration_list = NULL;
+static libdbo_configuration_t* configuration = NULL;
+static libdbo_connection_t* connection = NULL;
 
 static ', $name, '_t* object = NULL;
 static ', $name, '_list_t* object_list = NULL;
-static db_value_t id = DB_VALUE_EMPTY;
-static db_clause_list_t* clause_list = NULL;
+static libdbo_value_t id = DB_VALUE_EMPTY;
+static libdbo_clause_list_t* clause_list = NULL;
 
-static int db_sqlite = 0;
-static int db_couchdb = 0;
-static int db_mysql = 0;
+static int libdbo_sqlite = 0;
+static int libdbo_couchdb = 0;
+static int libdbo_mysql = 0;
 
 #if defined(HAVE_SQLITE3)
 int test_', $name, '_init_suite_sqlite(void) {
@@ -121,29 +121,29 @@ int test_', $name, '_init_suite_sqlite(void) {
     /*
      * Setup the configuration for the connection
      */
-    if (!(configuration_list = db_configuration_list_new())) {
+    if (!(configuration_list = libdbo_configuration_list_new())) {
         return 1;
     }
-    if (!(configuration = db_configuration_new())
-        || db_configuration_set_name(configuration, "backend")
-        || db_configuration_set_value(configuration, "sqlite")
-        || db_configuration_list_add(configuration_list, configuration))
+    if (!(configuration = libdbo_configuration_new())
+        || libdbo_configuration_set_name(configuration, "backend")
+        || libdbo_configuration_set_value(configuration, "sqlite")
+        || libdbo_configuration_list_add(configuration_list, configuration))
     {
-        db_configuration_free(configuration);
+        libdbo_configuration_free(configuration);
         configuration = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
     configuration = NULL;
-    if (!(configuration = db_configuration_new())
-        || db_configuration_set_name(configuration, "file")
-        || db_configuration_set_value(configuration, "test.db")
-        || db_configuration_list_add(configuration_list, configuration))
+    if (!(configuration = libdbo_configuration_new())
+        || libdbo_configuration_set_name(configuration, "file")
+        || libdbo_configuration_set_value(configuration, "test.db")
+        || libdbo_configuration_list_add(configuration_list, configuration))
     {
-        db_configuration_free(configuration);
+        libdbo_configuration_free(configuration);
         configuration = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
@@ -152,28 +152,28 @@ int test_', $name, '_init_suite_sqlite(void) {
     /*
      * Connect to the database
      */
-    if (!(connection = db_connection_new())
-        || db_connection_set_configuration_list(connection, configuration_list))
+    if (!(connection = libdbo_connection_new())
+        || libdbo_connection_set_configuration_list(connection, configuration_list))
     {
-        db_connection_free(connection);
+        libdbo_connection_free(connection);
         connection = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
     configuration_list = NULL;
 
-    if (db_connection_setup(connection)
-        || db_connection_connect(connection))
+    if (libdbo_connection_setup(connection)
+        || libdbo_connection_connect(connection))
     {
-        db_connection_free(connection);
+        libdbo_connection_free(connection);
         connection = NULL;
         return 1;
     }
 
-    db_sqlite = 1;
-    db_couchdb = 0;
-    db_mysql = 0;
+    libdbo_sqlite = 1;
+    libdbo_couchdb = 0;
+    libdbo_mysql = 0;
 
     return 0;
 }
@@ -194,29 +194,29 @@ int test_', $name, '_init_suite_couchdb(void) {
     /*
      * Setup the configuration for the connection
      */
-    if (!(configuration_list = db_configuration_list_new())) {
+    if (!(configuration_list = libdbo_configuration_list_new())) {
         return 1;
     }
-    if (!(configuration = db_configuration_new())
-        || db_configuration_set_name(configuration, "backend")
-        || db_configuration_set_value(configuration, "couchdb")
-        || db_configuration_list_add(configuration_list, configuration))
+    if (!(configuration = libdbo_configuration_new())
+        || libdbo_configuration_set_name(configuration, "backend")
+        || libdbo_configuration_set_value(configuration, "couchdb")
+        || libdbo_configuration_list_add(configuration_list, configuration))
     {
-        db_configuration_free(configuration);
+        libdbo_configuration_free(configuration);
         configuration = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
     configuration = NULL;
-    if (!(configuration = db_configuration_new())
-        || db_configuration_set_name(configuration, "url")
-        || db_configuration_set_value(configuration, "http://127.0.0.1:5984/opendnssec")
-        || db_configuration_list_add(configuration_list, configuration))
+    if (!(configuration = libdbo_configuration_new())
+        || libdbo_configuration_set_name(configuration, "url")
+        || libdbo_configuration_set_value(configuration, "http://127.0.0.1:5984/opendnssec")
+        || libdbo_configuration_list_add(configuration_list, configuration))
     {
-        db_configuration_free(configuration);
+        libdbo_configuration_free(configuration);
         configuration = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
@@ -225,28 +225,28 @@ int test_', $name, '_init_suite_couchdb(void) {
     /*
      * Connect to the database
      */
-    if (!(connection = db_connection_new())
-        || db_connection_set_configuration_list(connection, configuration_list))
+    if (!(connection = libdbo_connection_new())
+        || libdbo_connection_set_configuration_list(connection, configuration_list))
     {
-        db_connection_free(connection);
+        libdbo_connection_free(connection);
         connection = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
     configuration_list = NULL;
 
-    if (db_connection_setup(connection)
-        || db_connection_connect(connection))
+    if (libdbo_connection_setup(connection)
+        || libdbo_connection_connect(connection))
     {
-        db_connection_free(connection);
+        libdbo_connection_free(connection);
         connection = NULL;
         return 1;
     }
 
-    db_sqlite = 0;
-    db_couchdb = 1;
-    db_mysql = 0;
+    libdbo_sqlite = 0;
+    libdbo_couchdb = 1;
+    libdbo_mysql = 0;
 
     return 0;
 }
@@ -267,77 +267,77 @@ int test_', $name, '_init_suite_mysql(void) {
     /*
      * Setup the configuration for the connection
      */
-    if (!(configuration_list = db_configuration_list_new())) {
+    if (!(configuration_list = libdbo_configuration_list_new())) {
         return 1;
     }
-    if (!(configuration = db_configuration_new())
-        || db_configuration_set_name(configuration, "backend")
-        || db_configuration_set_value(configuration, "mysql")
-        || db_configuration_list_add(configuration_list, configuration))
+    if (!(configuration = libdbo_configuration_new())
+        || libdbo_configuration_set_name(configuration, "backend")
+        || libdbo_configuration_set_value(configuration, "mysql")
+        || libdbo_configuration_list_add(configuration_list, configuration))
     {
-        db_configuration_free(configuration);
+        libdbo_configuration_free(configuration);
         configuration = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
     configuration = NULL;
-    if (!(configuration = db_configuration_new())
-        || db_configuration_set_name(configuration, "host")
-        || db_configuration_set_value(configuration, TEST_MYSQL_HOST)
-        || db_configuration_list_add(configuration_list, configuration))
+    if (!(configuration = libdbo_configuration_new())
+        || libdbo_configuration_set_name(configuration, "host")
+        || libdbo_configuration_set_value(configuration, TEST_MYSQL_HOST)
+        || libdbo_configuration_list_add(configuration_list, configuration))
     {
-        db_configuration_free(configuration);
+        libdbo_configuration_free(configuration);
         configuration = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
     configuration = NULL;
-    if (!(configuration = db_configuration_new())
-        || db_configuration_set_name(configuration, "port")
-        || db_configuration_set_value(configuration, TEST_MYSQL_PORT_TXT)
-        || db_configuration_list_add(configuration_list, configuration))
+    if (!(configuration = libdbo_configuration_new())
+        || libdbo_configuration_set_name(configuration, "port")
+        || libdbo_configuration_set_value(configuration, TEST_MYSQL_PORT_TXT)
+        || libdbo_configuration_list_add(configuration_list, configuration))
     {
-        db_configuration_free(configuration);
+        libdbo_configuration_free(configuration);
         configuration = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
     configuration = NULL;
-    if (!(configuration = db_configuration_new())
-        || db_configuration_set_name(configuration, "user")
-        || db_configuration_set_value(configuration, TEST_MYSQL_USER)
-        || db_configuration_list_add(configuration_list, configuration))
+    if (!(configuration = libdbo_configuration_new())
+        || libdbo_configuration_set_name(configuration, "user")
+        || libdbo_configuration_set_value(configuration, TEST_MYSQL_USER)
+        || libdbo_configuration_list_add(configuration_list, configuration))
     {
-        db_configuration_free(configuration);
+        libdbo_configuration_free(configuration);
         configuration = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
     configuration = NULL;
-    if (!(configuration = db_configuration_new())
-        || db_configuration_set_name(configuration, "pass")
-        || db_configuration_set_value(configuration, TEST_MYSQL_PASS)
-        || db_configuration_list_add(configuration_list, configuration))
+    if (!(configuration = libdbo_configuration_new())
+        || libdbo_configuration_set_name(configuration, "pass")
+        || libdbo_configuration_set_value(configuration, TEST_MYSQL_PASS)
+        || libdbo_configuration_list_add(configuration_list, configuration))
     {
-        db_configuration_free(configuration);
+        libdbo_configuration_free(configuration);
         configuration = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
     configuration = NULL;
-    if (!(configuration = db_configuration_new())
-        || db_configuration_set_name(configuration, "db")
-        || db_configuration_set_value(configuration, TEST_MYSQL_DB)
-        || db_configuration_list_add(configuration_list, configuration))
+    if (!(configuration = libdbo_configuration_new())
+        || libdbo_configuration_set_name(configuration, "db")
+        || libdbo_configuration_set_value(configuration, TEST_MYSQL_DB)
+        || libdbo_configuration_list_add(configuration_list, configuration))
     {
-        db_configuration_free(configuration);
+        libdbo_configuration_free(configuration);
         configuration = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
@@ -346,42 +346,42 @@ int test_', $name, '_init_suite_mysql(void) {
     /*
      * Connect to the database
      */
-    if (!(connection = db_connection_new())
-        || db_connection_set_configuration_list(connection, configuration_list))
+    if (!(connection = libdbo_connection_new())
+        || libdbo_connection_set_configuration_list(connection, configuration_list))
     {
-        db_connection_free(connection);
+        libdbo_connection_free(connection);
         connection = NULL;
-        db_configuration_list_free(configuration_list);
+        libdbo_configuration_list_free(configuration_list);
         configuration_list = NULL;
         return 1;
     }
     configuration_list = NULL;
 
-    if (db_connection_setup(connection)
-        || db_connection_connect(connection))
+    if (libdbo_connection_setup(connection)
+        || libdbo_connection_connect(connection))
     {
-        db_connection_free(connection);
+        libdbo_connection_free(connection);
         connection = NULL;
         return 1;
     }
 
-    db_sqlite = 0;
-    db_couchdb = 0;
-    db_mysql = 1;
+    libdbo_sqlite = 0;
+    libdbo_couchdb = 0;
+    libdbo_mysql = 1;
 
     return 0;
 }
 #endif
 
 static int test_', $name, '_clean_suite(void) {
-    db_connection_free(connection);
+    libdbo_connection_free(connection);
     connection = NULL;
-    db_configuration_free(configuration);
+    libdbo_configuration_free(configuration);
     configuration = NULL;
-    db_configuration_list_free(configuration_list);
+    libdbo_configuration_list_free(configuration_list);
     configuration_list = NULL;
-    db_value_reset(&id);
-    db_clause_list_free(clause_list);
+    libdbo_value_reset(&id);
+    libdbo_clause_list_free(clause_list);
     clause_list = NULL;
     return 0;
 }
@@ -397,7 +397,7 @@ foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-print SOURCE '    db_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
@@ -405,18 +405,18 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
     if ($field->{type} eq 'DB_TYPE_TEXT') {
-print SOURCE '    CU_ASSERT(!db_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 1");
+print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 1");
 ';
         next;
     }
-print SOURCE '    if (db_sqlite) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+print SOURCE '    if (libdbo_sqlite) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_couchdb) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+    if (libdbo_couchdb) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_mysql) {
-        CU_ASSERT(!db_value_from_uint64(&', $field->{name}, ', 1));
+    if (libdbo_mysql) {
+        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 1));
     }
 ';
 }
@@ -450,7 +450,7 @@ foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-print SOURCE '    db_value_reset(&', $field->{name}, ');
+print SOURCE '    libdbo_value_reset(&', $field->{name}, ');
 ';
 }
 print SOURCE '}
@@ -467,7 +467,7 @@ print SOURCE '    int ret;
 ';
         $ret = 1;
     }
-print SOURCE '    db_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
@@ -475,18 +475,18 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
     if ($field->{type} eq 'DB_TYPE_TEXT') {
-print SOURCE '    CU_ASSERT(!db_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 1");
+print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 1");
 ';
         next;
     }
-print SOURCE '    if (db_sqlite) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+print SOURCE '    if (libdbo_sqlite) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_couchdb) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+    if (libdbo_couchdb) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_mysql) {
-        CU_ASSERT(!db_value_from_uint64(&', $field->{name}, ', 1));
+    if (libdbo_mysql) {
+        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 1));
     }
 ';
 }
@@ -495,7 +495,7 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
     if ($field->{foreign}) {
-print SOURCE '    CU_ASSERT(!db_value_cmp(', $name, '_', $field->{name}, '(object), &', $field->{name}, ', &ret));
+print SOURCE '    CU_ASSERT(!libdbo_value_cmp(', $name, '_', $field->{name}, '(object), &', $field->{name}, ', &ret));
     CU_ASSERT(!ret);
 ';
         next;
@@ -526,7 +526,7 @@ foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-print SOURCE '    db_value_reset(&', $field->{name}, ');
+print SOURCE '    libdbo_value_reset(&', $field->{name}, ');
 ';
 }
 print SOURCE '}
@@ -544,14 +544,14 @@ foreach my $field (@{$object->{fields}}) {
     }
 
 print SOURCE '
-    CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = db_clause_list_new()));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = libdbo_clause_list_new()));
     CU_ASSERT_PTR_NOT_NULL(', $name, '_', $field->{name}, '_clause(clause_list, ', $name, '_', $field->{name}, '(object)));
     CU_ASSERT(!', $name, '_list_get_by_clauses(object_list, clause_list));
     CU_ASSERT_PTR_NOT_NULL(', $name, '_list_next(object_list));
     CU_ASSERT_PTR_NOT_NULL((new_list = ', $name, '_list_new_get_by_clauses(connection, clause_list)));
     CU_ASSERT_PTR_NOT_NULL(', $name, '_list_next(new_list));
     ', $name, '_list_free(new_list);
-    db_clause_list_free(clause_list);
+    libdbo_clause_list_free(clause_list);
     clause_list = NULL;
 ';
 }
@@ -569,11 +569,11 @@ foreach my $field (@{$object->{fields}}) {
     }
 
 print SOURCE '
-    CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = db_clause_list_new()));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((clause_list = libdbo_clause_list_new()));
     CU_ASSERT_PTR_NOT_NULL(', $name, '_', $field->{name}, '_clause(clause_list, ', $name, '_', $field->{name}, '(object)));
     CU_ASSERT(!', $name, '_count(object, clause_list, &count));
     CU_ASSERT(count == 1);
-    db_clause_list_free(clause_list);
+    libdbo_clause_list_free(clause_list);
     clause_list = NULL;
 ';
 }
@@ -586,7 +586,7 @@ static void test_', $name, '_list(void) {
 
     CU_ASSERT_FATAL(!', $name, '_list_get(object_list));
     CU_ASSERT_PTR_NOT_NULL_FATAL((item = ', $name, '_list_next(object_list)));
-    CU_ASSERT_FATAL(!db_value_copy(&id, ', $name, '_id(item)));
+    CU_ASSERT_FATAL(!libdbo_value_copy(&id, ', $name, '_id(item)));
     CU_ASSERT_PTR_NOT_NULL_FATAL((item = ', $name, '_list_begin(object_list)));
 
     CU_ASSERT_FATAL(!', $name, '_list_get(object_list));
@@ -658,7 +658,7 @@ print SOURCE '    int ret;
 ';
         $ret = 1;
     }
-print SOURCE '    db_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
@@ -666,18 +666,18 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
     if ($field->{type} eq 'DB_TYPE_TEXT') {
-print SOURCE '    CU_ASSERT(!db_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 1");
+print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 1");
 ';
         next;
     }
-print SOURCE '    if (db_sqlite) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+print SOURCE '    if (libdbo_sqlite) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_couchdb) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+    if (libdbo_couchdb) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_mysql) {
-        CU_ASSERT(!db_value_from_uint64(&', $field->{name}, ', 1));
+    if (libdbo_mysql) {
+        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 1));
     }
 ';
 }
@@ -686,7 +686,7 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
     if ($field->{foreign}) {
-print SOURCE '    CU_ASSERT(!db_value_cmp(', $name, '_', $field->{name}, '(object), &', $field->{name}, ', &ret));
+print SOURCE '    CU_ASSERT(!libdbo_value_cmp(', $name, '_', $field->{name}, '(object), &', $field->{name}, ', &ret));
     CU_ASSERT(!ret);
 ';
         next;
@@ -717,7 +717,7 @@ foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-print SOURCE '    db_value_reset(&', $field->{name}, ');
+print SOURCE '    libdbo_value_reset(&', $field->{name}, ');
 ';
 }
 print SOURCE '}
@@ -751,7 +751,7 @@ print SOURCE '    int ret;
 ';
         $ret = 1;
     }
-print SOURCE '    db_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
@@ -759,18 +759,18 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
     if ($field->{type} eq 'DB_TYPE_TEXT') {
-print SOURCE '    CU_ASSERT(!db_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 1");
+print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 1");
 ';
         next;
     }
-print SOURCE '    if (db_sqlite) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+print SOURCE '    if (libdbo_sqlite) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_couchdb) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+    if (libdbo_couchdb) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_mysql) {
-        CU_ASSERT(!db_value_from_uint64(&', $field->{name}, ', 1));
+    if (libdbo_mysql) {
+        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 1));
     }
 ';
 }
@@ -779,7 +779,7 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
     if ($field->{foreign}) {
-print SOURCE '    CU_ASSERT(!db_value_cmp(', $name, '_', $field->{name}, '(object), &', $field->{name}, ', &ret));
+print SOURCE '    CU_ASSERT(!libdbo_value_cmp(', $name, '_', $field->{name}, '(object), &', $field->{name}, ', &ret));
     CU_ASSERT(!ret);
 ';
         next;
@@ -810,7 +810,7 @@ foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-print SOURCE '    db_value_reset(&', $field->{name}, ');
+print SOURCE '    libdbo_value_reset(&', $field->{name}, ');
 ';
 }
 print SOURCE '}
@@ -823,7 +823,7 @@ foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-print SOURCE '    db_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
@@ -831,18 +831,18 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
     if ($field->{type} eq 'DB_TYPE_TEXT') {
-print SOURCE '    CU_ASSERT(!db_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 2");
+print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 2");
 ';
         next;
     }
-print SOURCE '    if (db_sqlite) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+print SOURCE '    if (libdbo_sqlite) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_couchdb) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+    if (libdbo_couchdb) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_mysql) {
-        CU_ASSERT(!db_value_from_uint64(&', $field->{name}, ', 1));
+    if (libdbo_mysql) {
+        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 1));
     }
 ';
 }
@@ -877,7 +877,7 @@ foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-print SOURCE '    db_value_reset(&', $field->{name}, ');
+print SOURCE '    libdbo_value_reset(&', $field->{name}, ');
 ';
 }
 print SOURCE '}
@@ -906,7 +906,7 @@ print SOURCE '    int ret;
 ';
         $ret = 1;
     }
-print SOURCE '    db_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
@@ -914,18 +914,18 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
     if ($field->{type} eq 'DB_TYPE_TEXT') {
-print SOURCE '    CU_ASSERT(!db_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 2");
+print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 2");
 ';
         next;
     }
-print SOURCE '    if (db_sqlite) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+print SOURCE '    if (libdbo_sqlite) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_couchdb) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+    if (libdbo_couchdb) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_mysql) {
-        CU_ASSERT(!db_value_from_uint64(&', $field->{name}, ', 1));
+    if (libdbo_mysql) {
+        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 1));
     }
 ';
 }
@@ -934,7 +934,7 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
     if ($field->{foreign}) {
-print SOURCE '    CU_ASSERT(!db_value_cmp(', $name, '_', $field->{name}, '(object), &', $field->{name}, ', &ret));
+print SOURCE '    CU_ASSERT(!libdbo_value_cmp(', $name, '_', $field->{name}, '(object), &', $field->{name}, ', &ret));
     CU_ASSERT(!ret);
 ';
         next;
@@ -965,7 +965,7 @@ foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-print SOURCE '    db_value_reset(&', $field->{name}, ');
+print SOURCE '    libdbo_value_reset(&', $field->{name}, ');
 ';
 }
 print SOURCE '}
@@ -1006,7 +1006,7 @@ print SOURCE '    int ret;
 ';
         $ret = 1;
     }
-print SOURCE '    db_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
+print SOURCE '    libdbo_value_t ', $field->{name}, ' = DB_VALUE_EMPTY;
 ';
 }
 foreach my $field (@{$object->{fields}}) {
@@ -1014,18 +1014,18 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
     if ($field->{type} eq 'DB_TYPE_TEXT') {
-print SOURCE '    CU_ASSERT(!db_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 2");
+print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $field->{name}, ' 2");
 ';
         next;
     }
-print SOURCE '    if (db_sqlite) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+print SOURCE '    if (libdbo_sqlite) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_couchdb) {
-        CU_ASSERT(!db_value_from_int32(&', $field->{name}, ', 1));
+    if (libdbo_couchdb) {
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
     }
-    if (db_mysql) {
-        CU_ASSERT(!db_value_from_uint64(&', $field->{name}, ', 1));
+    if (libdbo_mysql) {
+        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 1));
     }
 ';
 }
@@ -1034,7 +1034,7 @@ foreach my $field (@{$object->{fields}}) {
         next;
     }
     if ($field->{foreign}) {
-print SOURCE '    CU_ASSERT(!db_value_cmp(', $name, '_', $field->{name}, '(object), &', $field->{name}, ', &ret));
+print SOURCE '    CU_ASSERT(!libdbo_value_cmp(', $name, '_', $field->{name}, '(object), &', $field->{name}, ', &ret));
     CU_ASSERT(!ret);
 ';
         next;
@@ -1065,7 +1065,7 @@ foreach my $field (@{$object->{fields}}) {
     if (!$field->{foreign}) {
         next;
     }
-print SOURCE '    db_value_reset(&', $field->{name}, ');
+print SOURCE '    libdbo_value_reset(&', $field->{name}, ');
 ';
 }
 print SOURCE '}

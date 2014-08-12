@@ -25,7 +25,7 @@
  *
  */
 
-#include "db_mm.h"
+#include "libdbo_mm.h"
 
 #include "CUnit/Basic.h"
 
@@ -39,29 +39,29 @@ int clean_suite_mm(void) {
     return 0;
 }
 
-void test_db_mm_init(void) {
-    db_mm_init();
+void test_libdbo_mm_init(void) {
+    libdbo_mm_init();
 }
 
-void test_db_mm(void) {
-    db_mm_t mm = DB_MM_T_STATIC_NEW(128);
+void test_libdbo_mm(void) {
+    libdbo_mm_t mm = DB_MM_T_STATIC_NEW(128);
     void* ptr;
 
-    CU_ASSERT_PTR_NOT_NULL_FATAL((ptr = db_mm_new0(&mm)));
-    db_mm_delete(&mm, ptr);
-    CU_PASS("db_mm_delete");
+    CU_ASSERT_PTR_NOT_NULL_FATAL((ptr = libdbo_mm_new0(&mm)));
+    libdbo_mm_delete(&mm, ptr);
+    CU_PASS("libdbo_mm_delete");
 
-    db_mm_release(&mm);
-    CU_PASS("db_mm_release");
+    libdbo_mm_release(&mm);
+    CU_PASS("libdbo_mm_release");
 }
 
-void test_db_mm_extern(void) {
-    db_mm_t mm = DB_MM_T_STATIC_NEW(128);
+void test_libdbo_mm_extern(void) {
+    libdbo_mm_t mm = DB_MM_T_STATIC_NEW(128);
     void* ptr;
 
-    CU_ASSERT_FATAL(!db_mm_set_malloc(&malloc));
-    CU_ASSERT_FATAL(!db_mm_set_free(&free));
-    CU_ASSERT_PTR_NOT_NULL_FATAL((ptr = db_mm_new0(&mm)));
-    db_mm_delete(&mm, ptr);
-    CU_PASS("db_mm_delete");
+    CU_ASSERT_FATAL(!libdbo_mm_set_malloc(&malloc));
+    CU_ASSERT_FATAL(!libdbo_mm_set_free(&free));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((ptr = libdbo_mm_new0(&mm)));
+    libdbo_mm_delete(&mm, ptr);
+    CU_PASS("libdbo_mm_delete");
 }

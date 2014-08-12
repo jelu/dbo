@@ -33,10 +33,10 @@
  * All rights reserved.
  */
 
-#include "db_backend_sqlite.h"
+#include "libdbo_backend_sqlite.h"
 
-#include "db_error.h"
-#include "db_mm.h"
+#include "libdbo_error.h"
+#include "libdbo_mm.h"
 
 #include <stdlib.h>
 #include <sqlite3.h>
@@ -47,7 +47,7 @@
 #include <pthread.h>
 #include <errno.h>
 
-static int db_backend_sqlite_transaction_rollback(void*);
+static int libdbo_backend_sqlite_transaction_rollback(void*);
 
 /**
  * Keep track of if we have initialized the SQLite backend.
@@ -69,33 +69,33 @@ static pthread_cond_t __sqlite_cond = PTHREAD_COND_INITIALIZER;
 /**
  * The SQLite database backend specific data.
  */
-typedef struct db_backend_sqlite {
+typedef struct libdbo_backend_sqlite {
     sqlite3* db;
     int transaction;
     int timeout;
     int time;
     long usleep;
-} db_backend_sqlite_t;
+} libdbo_backend_sqlite_t;
 
-static db_mm_t __sqlite_alloc = DB_MM_T_STATIC_NEW(sizeof(db_backend_sqlite_t));
+static libdbo_mm_t __sqlite_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_backend_sqlite_t));
 
 /**
  * The SQLite database backend specific data for walking a result.
  */
-typedef struct db_backend_sqlite_statement {
-    db_backend_sqlite_t* backend_sqlite;
+typedef struct libdbo_backend_sqlite_statement {
+    libdbo_backend_sqlite_t* backend_sqlite;
     sqlite3_stmt* statement;
     int fields;
-    const db_object_t* object;
-} db_backend_sqlite_statement_t;
+    const libdbo_object_t* object;
+} libdbo_backend_sqlite_statement_t;
 
-static db_mm_t __sqlite_statement_alloc = DB_MM_T_STATIC_NEW(sizeof(db_backend_sqlite_statement_t));
+static libdbo_mm_t __sqlite_statement_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_backend_sqlite_statement_t));
 
 /**
  * The SQLite bust handler that is used to wait for database access.
  */
 static int __db_backend_sqlite_busy_handler(void *data, int retry) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
     struct timespec busy_ts;
     int rc;
     (void)retry;
@@ -104,10 +104,10 @@ static int __db_backend_sqlite_busy_handler(void *data, int retry) {
         return 0;
     }
 
-    /*ods_log_deeebug("db_backend_sqlite_busy_handler: Database busy, waiting...");*/
+    /*ods_log_deeebug("libdbo_backend_sqlite_busy_handler: Database busy, waiting...");*/
 
     if (pthread_mutex_lock(&__sqlite_mutex)) {
-        /*ods_log_error("db_backend_sqlite_busy_handler: Mutex error");*/
+        /*ods_log_error("libdbo_backend_sqlite_busy_handler: Mutex error");*/
         return 0;
     }
     if (clock_gettime(CLOCK_REALTIME, &busy_ts)) {
@@ -124,7 +124,7 @@ static int __db_backend_sqlite_busy_handler(void *data, int retry) {
     rc = pthread_cond_timedwait(&__sqlite_cond, &__sqlite_mutex, &busy_ts);
     if (rc == ETIMEDOUT) {
         if (time(NULL) < (backend_sqlite->time + backend_sqlite->timeout)) {
-            /*ods_log_deeebug("db_backend_sqlite_busy_handler: Woke up, checking database...");*/
+            /*ods_log_deeebug("libdbo_backend_sqlite_busy_handler: Woke up, checking database...");*/
             pthread_mutex_unlock(&__sqlite_mutex);
             return 1;
         }
@@ -132,12 +132,12 @@ static int __db_backend_sqlite_busy_handler(void *data, int retry) {
         return 0;
     }
     else if (rc) {
-        /*ods_log_error("db_backend_sqlite_busy_handler: pthread_cond_timedwait() error %d", rc);*/
+        /*ods_log_error("libdbo_backend_sqlite_busy_handler: pthread_cond_timedwait() error %d", rc);*/
         pthread_mutex_unlock(&__sqlite_mutex);
         return 0;
     }
 
-    /*ods_log_deeebug("db_backend_sqlite_busy_handler: Woke up, checking database...");*/
+    /*ods_log_deeebug("libdbo_backend_sqlite_busy_handler: Woke up, checking database...");*/
     pthread_mutex_unlock(&__sqlite_mutex);
     return 1;
 }
@@ -145,7 +145,7 @@ static int __db_backend_sqlite_busy_handler(void *data, int retry) {
 /**
  * SQLite prepare function.
  */
-static inline int __db_backend_sqlite_prepare(db_backend_sqlite_t* backend_sqlite, sqlite3_stmt** statement, const char* sql, size_t size) {
+static inline int __db_backend_sqlite_prepare(libdbo_backend_sqlite_t* backend_sqlite, sqlite3_stmt** statement, const char* sql, size_t size) {
     int ret;
 
     if (!backend_sqlite) {
@@ -187,7 +187,7 @@ static inline int __db_backend_sqlite_prepare(db_backend_sqlite_t* backend_sqlit
 /**
  * SQLite step function.
  */
-static inline int __db_backend_sqlite_step(db_backend_sqlite_t* backend_sqlite, sqlite3_stmt* statement) {
+static inline int __db_backend_sqlite_step(libdbo_backend_sqlite_t* backend_sqlite, sqlite3_stmt* statement) {
     /*
     struct timespec busy_ts;
     int rc, ret, been_busy = 0;
@@ -205,11 +205,11 @@ static inline int __db_backend_sqlite_step(db_backend_sqlite_t* backend_sqlite, 
     ret = sqlite3_step(statement);
     /*
     if (ret == SQLITE_BUSY) {
-        ods_log_deeebug("db_backend_sqlite_step: Database busy, waiting...");
+        ods_log_deeebug("libdbo_backend_sqlite_step: Database busy, waiting...");
     }
     while (ret == SQLITE_BUSY) {
         if (pthread_mutex_lock(&__sqlite_mutex)) {
-            ods_log_error("db_backend_sqlite_step: Mutex error");
+            ods_log_error("libdbo_backend_sqlite_step: Mutex error");
             return ret;
         }
         if (clock_gettime(CLOCK_REALTIME, &busy_ts)) {
@@ -225,17 +225,17 @@ static inline int __db_backend_sqlite_step(db_backend_sqlite_t* backend_sqlite, 
             return ret;
         }
         else if (rc) {
-            ods_log_error("db_backend_sqlite_step: pthread_cond_timedwait() error %d", rc);
+            ods_log_error("libdbo_backend_sqlite_step: pthread_cond_timedwait() error %d", rc);
             pthread_mutex_unlock(&__sqlite_mutex);
             return ret;
         }
 
-        ods_log_deeebug("db_backend_sqlite_step: Woke up, checking database...");
+        ods_log_deeebug("libdbo_backend_sqlite_step: Woke up, checking database...");
         ret = sqlite3_step(statement);
         pthread_mutex_unlock(&__sqlite_mutex);
     }
     if (been_busy) {
-        ods_log_deeebug("db_backend_sqlite_step: Got lock or failed/timed out");
+        ods_log_deeebug("libdbo_backend_sqlite_step: Got lock or failed/timed out");
     }
     */
 
@@ -256,8 +256,8 @@ static inline int __db_backend_sqlite_finalize(sqlite3_stmt* statement) {
     return ret;
 }
 
-static int db_backend_sqlite_initialize(void* data) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
+static int libdbo_backend_sqlite_initialize(void* data) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
 
     if (!backend_sqlite) {
         return DB_ERROR_UNKNOWN;
@@ -273,8 +273,8 @@ static int db_backend_sqlite_initialize(void* data) {
     return DB_OK;
 }
 
-static int db_backend_sqlite_shutdown(void* data) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
+static int libdbo_backend_sqlite_shutdown(void* data) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
 
     if (!backend_sqlite) {
         return DB_ERROR_UNKNOWN;
@@ -290,11 +290,11 @@ static int db_backend_sqlite_shutdown(void* data) {
     return DB_OK;
 }
 
-static int db_backend_sqlite_connect(void* data, const db_configuration_list_t* configuration_list) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
-    const db_configuration_t* file;
-    const db_configuration_t* timeout;
-    const db_configuration_t* usleep;
+static int libdbo_backend_sqlite_connect(void* data, const libdbo_configuration_list_t* configuration_list) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
+    const libdbo_configuration_t* file;
+    const libdbo_configuration_t* timeout;
+    const libdbo_configuration_t* usleep;
     int ret;
 
     if (!__sqlite3_initialized) {
@@ -310,28 +310,28 @@ static int db_backend_sqlite_connect(void* data, const db_configuration_list_t* 
         return DB_ERROR_UNKNOWN;
     }
 
-    if (!(file = db_configuration_list_find(configuration_list, "file"))) {
+    if (!(file = libdbo_configuration_list_find(configuration_list, "file"))) {
         return DB_ERROR_UNKNOWN;
     }
 
     backend_sqlite->timeout = DB_BACKEND_SQLITE_DEFAULT_TIMEOUT;
-    if ((timeout = db_configuration_list_find(configuration_list, "timeout"))) {
-        backend_sqlite->timeout = atoi(db_configuration_value(timeout));
+    if ((timeout = libdbo_configuration_list_find(configuration_list, "timeout"))) {
+        backend_sqlite->timeout = atoi(libdbo_configuration_value(timeout));
         if (backend_sqlite->timeout < 1) {
             backend_sqlite->timeout = DB_BACKEND_SQLITE_DEFAULT_TIMEOUT;
         }
     }
 
     backend_sqlite->usleep = DB_BACKEND_SQLITE_DEFAULT_USLEEP;
-    if ((usleep = db_configuration_list_find(configuration_list, "usleep"))) {
-        backend_sqlite->usleep = atoi(db_configuration_value(usleep));
+    if ((usleep = libdbo_configuration_list_find(configuration_list, "usleep"))) {
+        backend_sqlite->usleep = atoi(libdbo_configuration_value(usleep));
         if (backend_sqlite->usleep < 1) {
             backend_sqlite->usleep = DB_BACKEND_SQLITE_DEFAULT_TIMEOUT;
         }
     }
 
     ret = sqlite3_open_v2(
-        db_configuration_value(file),
+        libdbo_configuration_value(file),
         &(backend_sqlite->db),
         SQLITE_OPEN_READWRITE
         | SQLITE_OPEN_FULLMUTEX,
@@ -341,7 +341,7 @@ static int db_backend_sqlite_connect(void* data, const db_configuration_list_t* 
     }
 
     if ((ret = sqlite3_busy_handler(backend_sqlite->db, __db_backend_sqlite_busy_handler, backend_sqlite)) != SQLITE_OK) {
-        /*ods_log_error("db_backend_sqlite: sqlite3_busy_handler() error %d", ret);*/
+        /*ods_log_error("libdbo_backend_sqlite: sqlite3_busy_handler() error %d", ret);*/
         sqlite3_close(backend_sqlite->db);
         backend_sqlite->db = NULL;
         return DB_ERROR_UNKNOWN;
@@ -350,8 +350,8 @@ static int db_backend_sqlite_connect(void* data, const db_configuration_list_t* 
     return DB_OK;
 }
 
-static int db_backend_sqlite_disconnect(void* data) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
+static int libdbo_backend_sqlite_disconnect(void* data) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
     int ret;
 
     if (!__sqlite3_initialized) {
@@ -365,7 +365,7 @@ static int db_backend_sqlite_disconnect(void* data) {
     }
 
     if (backend_sqlite->transaction) {
-        db_backend_sqlite_transaction_rollback(backend_sqlite);
+        libdbo_backend_sqlite_transaction_rollback(backend_sqlite);
     }
     ret = sqlite3_close(backend_sqlite->db);
     if (ret != SQLITE_OK) {
@@ -378,14 +378,14 @@ static int db_backend_sqlite_disconnect(void* data) {
 /**
  * Build the clause/WHERE SQL and append it to `sqlp`, how much that is left in
  * the buffer pointed by `sqlp` is specified by `left`.
- * \param[in] object a db_object_t pointer.
- * \param[in] clause_list a db_clause_list_t pointer.
+ * \param[in] object a libdbo_object_t pointer.
+ * \param[in] clause_list a libdbo_clause_list_t pointer.
  * \param[in] sqlp a character pointer pointer.
  * \param[in] left an integer pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_clause_list_t* clause_list, char** sqlp, int* left) {
-    const db_clause_t* clause;
+static int __db_backend_sqlite_build_clause(const libdbo_object_t* object, const libdbo_clause_list_t* clause_list, char** sqlp, int* left) {
+    const libdbo_clause_t* clause;
     int first, ret;
 
     if (!clause_list) {
@@ -404,14 +404,14 @@ static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_
         return DB_ERROR_UNKNOWN;
     }
 
-    clause = db_clause_list_begin(clause_list);
+    clause = libdbo_clause_list_begin(clause_list);
     first = 1;
     while (clause) {
         if (first) {
             first = 0;
         }
         else {
-            switch (db_clause_operator(clause)) {
+            switch (libdbo_clause_operator(clause)) {
             case DB_CLAUSE_OPERATOR_AND:
                 if ((ret = snprintf(*sqlp, *left, " AND")) >= *left) {
                     return DB_ERROR_UNKNOWN;
@@ -431,11 +431,11 @@ static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_
             *left -= ret;
         }
 
-        switch (db_clause_type(clause)) {
+        switch (libdbo_clause_type(clause)) {
         case DB_CLAUSE_EQUAL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s = ?",
-                (db_clause_table(clause) ? db_clause_table(clause) : db_object_table(object)),
-                db_clause_field(clause))) >= *left)
+                (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
+                libdbo_clause_field(clause))) >= *left)
             {
                 return DB_ERROR_UNKNOWN;
             }
@@ -443,8 +443,8 @@ static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_
 
         case DB_CLAUSE_NOT_EQUAL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s != ?",
-                (db_clause_table(clause) ? db_clause_table(clause) : db_object_table(object)),
-                db_clause_field(clause))) >= *left)
+                (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
+                libdbo_clause_field(clause))) >= *left)
             {
                 return DB_ERROR_UNKNOWN;
             }
@@ -452,8 +452,8 @@ static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_
 
         case DB_CLAUSE_LESS_THEN:
             if ((ret = snprintf(*sqlp, *left, " %s.%s < ?",
-                (db_clause_table(clause) ? db_clause_table(clause) : db_object_table(object)),
-                db_clause_field(clause))) >= *left)
+                (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
+                libdbo_clause_field(clause))) >= *left)
             {
                 return DB_ERROR_UNKNOWN;
             }
@@ -461,8 +461,8 @@ static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_
 
         case DB_CLAUSE_LESS_OR_EQUAL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s <= ?",
-                (db_clause_table(clause) ? db_clause_table(clause) : db_object_table(object)),
-                db_clause_field(clause))) >= *left)
+                (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
+                libdbo_clause_field(clause))) >= *left)
             {
                 return DB_ERROR_UNKNOWN;
             }
@@ -470,8 +470,8 @@ static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_
 
         case DB_CLAUSE_GREATER_OR_EQUAL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s >= ?",
-                (db_clause_table(clause) ? db_clause_table(clause) : db_object_table(object)),
-                db_clause_field(clause))) >= *left)
+                (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
+                libdbo_clause_field(clause))) >= *left)
             {
                 return DB_ERROR_UNKNOWN;
             }
@@ -479,8 +479,8 @@ static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_
 
         case DB_CLAUSE_GREATER_THEN:
             if ((ret = snprintf(*sqlp, *left, " %s.%s > ?",
-                (db_clause_table(clause) ? db_clause_table(clause) : db_object_table(object)),
-                db_clause_field(clause))) >= *left)
+                (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
+                libdbo_clause_field(clause))) >= *left)
             {
                 return DB_ERROR_UNKNOWN;
             }
@@ -488,8 +488,8 @@ static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_
 
         case DB_CLAUSE_IS_NULL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s IS NULL",
-                (db_clause_table(clause) ? db_clause_table(clause) : db_object_table(object)),
-                db_clause_field(clause))) >= *left)
+                (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
+                libdbo_clause_field(clause))) >= *left)
             {
                 return DB_ERROR_UNKNOWN;
             }
@@ -497,8 +497,8 @@ static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_
 
         case DB_CLAUSE_IS_NOT_NULL:
             if ((ret = snprintf(*sqlp, *left, " %s.%s IS NOT NULL",
-                (db_clause_table(clause) ? db_clause_table(clause) : db_object_table(object)),
-                db_clause_field(clause))) >= *left)
+                (libdbo_clause_table(clause) ? libdbo_clause_table(clause) : libdbo_object_table(object)),
+                libdbo_clause_field(clause))) >= *left)
             {
                 return DB_ERROR_UNKNOWN;
             }
@@ -510,7 +510,7 @@ static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_
             }
             *sqlp += ret;
             *left -= ret;
-            if (__db_backend_sqlite_build_clause(object, db_clause_list(clause), sqlp, left)) {
+            if (__db_backend_sqlite_build_clause(object, libdbo_clause_list(clause), sqlp, left)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(*sqlp, *left, " )")) >= *left) {
@@ -524,7 +524,7 @@ static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_
         *sqlp += ret;
         *left -= ret;
 
-        clause = db_clause_next(clause);
+        clause = libdbo_clause_next(clause);
     }
     return DB_OK;
 }
@@ -533,19 +533,19 @@ static int __db_backend_sqlite_build_clause(const db_object_t* object, const db_
  * Bind values from the clause list to the SQLite statement, `bind` contains the
  * position of the bind value.
  * \param[in] statement a sqlite3_stmt pointer.
- * \param[in] clause_list a db_clause_list_t pointer.
+ * \param[in] clause_list a libdbo_clause_list_t pointer.
  * \param[in] bind an integer pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-static int __db_backend_sqlite_bind_clause(sqlite3_stmt* statement, const db_clause_list_t* clause_list, int* bind) {
-    const db_clause_t* clause;
+static int __db_backend_sqlite_bind_clause(sqlite3_stmt* statement, const libdbo_clause_list_t* clause_list, int* bind) {
+    const libdbo_clause_t* clause;
     int ret;
     int to_int;
     sqlite3_int64 to_int64;
-    db_type_int32_t int32;
-    db_type_uint32_t uint32;
-    db_type_int64_t int64;
-    db_type_uint64_t uint64;
+    libdbo_type_int32_t int32;
+    libdbo_type_uint32_t uint32;
+    libdbo_type_int64_t int64;
+    libdbo_type_uint64_t uint64;
 
     if (!statement) {
         return DB_ERROR_UNKNOWN;
@@ -560,19 +560,19 @@ static int __db_backend_sqlite_bind_clause(sqlite3_stmt* statement, const db_cla
         return DB_ERROR_UNKNOWN;
     }
 
-    clause = db_clause_list_begin(clause_list);
+    clause = libdbo_clause_list_begin(clause_list);
     while (clause) {
-        switch (db_clause_type(clause)) {
+        switch (libdbo_clause_type(clause)) {
         case DB_CLAUSE_EQUAL:
         case DB_CLAUSE_NOT_EQUAL:
         case DB_CLAUSE_LESS_THEN:
         case DB_CLAUSE_LESS_OR_EQUAL:
         case DB_CLAUSE_GREATER_OR_EQUAL:
         case DB_CLAUSE_GREATER_THEN:
-            switch (db_value_type(db_clause_value(clause))) {
+            switch (libdbo_value_type(libdbo_clause_value(clause))) {
             case DB_TYPE_PRIMARY_KEY:
             case DB_TYPE_INT32:
-                if (db_value_to_int32(db_clause_value(clause), &int32)) {
+                if (libdbo_value_to_int32(libdbo_clause_value(clause), &int32)) {
                     return DB_ERROR_UNKNOWN;
                 }
                 to_int = int32;
@@ -583,7 +583,7 @@ static int __db_backend_sqlite_bind_clause(sqlite3_stmt* statement, const db_cla
                 break;
 
             case DB_TYPE_UINT32:
-                if (db_value_to_uint32(db_clause_value(clause), &uint32)) {
+                if (libdbo_value_to_uint32(libdbo_clause_value(clause), &uint32)) {
                     return DB_ERROR_UNKNOWN;
                 }
                 to_int = uint32;
@@ -594,7 +594,7 @@ static int __db_backend_sqlite_bind_clause(sqlite3_stmt* statement, const db_cla
                 break;
 
             case DB_TYPE_INT64:
-                if (db_value_to_int64(db_clause_value(clause), &int64)) {
+                if (libdbo_value_to_int64(libdbo_clause_value(clause), &int64)) {
                     return DB_ERROR_UNKNOWN;
                 }
                 to_int64 = int64;
@@ -605,7 +605,7 @@ static int __db_backend_sqlite_bind_clause(sqlite3_stmt* statement, const db_cla
                 break;
 
             case DB_TYPE_UINT64:
-                if (db_value_to_uint64(db_clause_value(clause), &uint64)) {
+                if (libdbo_value_to_uint64(libdbo_clause_value(clause), &uint64)) {
                     return DB_ERROR_UNKNOWN;
                 }
                 to_int64 = uint64;
@@ -616,14 +616,14 @@ static int __db_backend_sqlite_bind_clause(sqlite3_stmt* statement, const db_cla
                 break;
 
             case DB_TYPE_TEXT:
-                ret = sqlite3_bind_text(statement, (*bind)++, db_value_text(db_clause_value(clause)), -1, SQLITE_TRANSIENT);
+                ret = sqlite3_bind_text(statement, (*bind)++, libdbo_value_text(libdbo_clause_value(clause)), -1, SQLITE_TRANSIENT);
                 if (ret != SQLITE_OK) {
                     return DB_ERROR_UNKNOWN;
                 }
                 break;
 
             case DB_TYPE_ENUM:
-                if (db_value_enum_value(db_clause_value(clause), &to_int)) {
+                if (libdbo_value_enum_value(libdbo_clause_value(clause), &to_int)) {
                     return DB_ERROR_UNKNOWN;
                 }
                 ret = sqlite3_bind_int(statement, (*bind)++, to_int);
@@ -642,7 +642,7 @@ static int __db_backend_sqlite_bind_clause(sqlite3_stmt* statement, const db_cla
             break;
 
         case DB_CLAUSE_NESTED:
-            if (__db_backend_sqlite_bind_clause(statement, db_clause_list(clause), bind)) {
+            if (__db_backend_sqlite_bind_clause(statement, libdbo_clause_list(clause), bind)) {
                 return DB_ERROR_UNKNOWN;
             }
             break;
@@ -650,24 +650,24 @@ static int __db_backend_sqlite_bind_clause(sqlite3_stmt* statement, const db_cla
         default:
             return DB_ERROR_UNKNOWN;
         }
-        clause = db_clause_next(clause);
+        clause = libdbo_clause_next(clause);
     }
     return DB_OK;
 }
 
-static db_result_t* db_backend_sqlite_next(void* data, int finish) {
-    db_backend_sqlite_statement_t* statement = (db_backend_sqlite_statement_t*)data;
+static libdbo_result_t* libdbo_backend_sqlite_next(void* data, int finish) {
+    libdbo_backend_sqlite_statement_t* statement = (libdbo_backend_sqlite_statement_t*)data;
     int ret;
     int bind;
-    db_result_t* result = NULL;
-    db_value_set_t* value_set = NULL;
-    const db_object_field_t* object_field;
+    libdbo_result_t* result = NULL;
+    libdbo_value_set_t* value_set = NULL;
+    const libdbo_object_field_t* object_field;
     int from_int;
     sqlite3_int64 from_int64;
-    db_type_int32_t int32;
-    db_type_uint32_t uint32;
-    db_type_int64_t int64;
-    db_type_uint64_t uint64;
+    libdbo_type_int32_t int32;
+    libdbo_type_uint32_t uint32;
+    libdbo_type_int64_t int64;
+    libdbo_type_uint64_t uint64;
     const char* text;
 
     if (!statement) {
@@ -682,7 +682,7 @@ static db_result_t* db_backend_sqlite_next(void* data, int finish) {
 
     if (finish) {
         __db_backend_sqlite_finalize(statement->statement);
-        db_mm_delete(&__sqlite_statement_alloc, statement);
+        libdbo_mm_delete(&__sqlite_statement_alloc, statement);
         return NULL;
     }
 
@@ -690,27 +690,27 @@ static db_result_t* db_backend_sqlite_next(void* data, int finish) {
         return NULL;
     }
 
-    if (!(result = db_result_new())
-        || !(value_set = db_value_set_new(statement->fields))
-        || db_result_set_value_set(result, value_set))
+    if (!(result = libdbo_result_new())
+        || !(value_set = libdbo_value_set_new(statement->fields))
+        || libdbo_result_set_value_set(result, value_set))
     {
-        db_result_free(result);
-        db_value_set_free(value_set);
+        libdbo_result_free(result);
+        libdbo_value_set_free(value_set);
         return NULL;
     }
-    object_field = db_object_field_list_begin(db_object_object_field_list(statement->object));
+    object_field = libdbo_object_field_list_begin(libdbo_object_object_field_list(statement->object));
     bind = 0;
     while (object_field) {
-        switch (db_object_field_type(object_field)) {
+        switch (libdbo_object_field_type(object_field)) {
         case DB_TYPE_PRIMARY_KEY:
             from_int = sqlite3_column_int(statement->statement, bind);
             int32 = from_int;
             ret = sqlite3_errcode(statement->backend_sqlite->db);
             if ((ret != SQLITE_OK && ret != SQLITE_ROW && ret != SQLITE_DONE)
-                || db_value_from_int32(db_value_set_get(value_set, bind), int32)
-                || db_value_set_primary_key(db_value_set_get(value_set, bind)))
+                || libdbo_value_from_int32(libdbo_value_set_get(value_set, bind), int32)
+                || libdbo_value_set_primary_key(libdbo_value_set_get(value_set, bind)))
             {
-                db_result_free(result);
+                libdbo_result_free(result);
                 return NULL;
             }
             break;
@@ -725,9 +725,9 @@ static db_result_t* db_backend_sqlite_next(void* data, int finish) {
             int32 = from_int;
             ret = sqlite3_errcode(statement->backend_sqlite->db);
             if ((ret != SQLITE_OK && ret != SQLITE_ROW && ret != SQLITE_DONE)
-                || db_value_from_int32(db_value_set_get(value_set, bind), int32))
+                || libdbo_value_from_int32(libdbo_value_set_get(value_set, bind), int32))
             {
-                db_result_free(result);
+                libdbo_result_free(result);
                 return NULL;
             }
             break;
@@ -737,9 +737,9 @@ static db_result_t* db_backend_sqlite_next(void* data, int finish) {
             uint32 = from_int;
             ret = sqlite3_errcode(statement->backend_sqlite->db);
             if ((ret != SQLITE_OK && ret != SQLITE_ROW && ret != SQLITE_DONE)
-                || db_value_from_uint32(db_value_set_get(value_set, bind), uint32))
+                || libdbo_value_from_uint32(libdbo_value_set_get(value_set, bind), uint32))
             {
-                db_result_free(result);
+                libdbo_result_free(result);
                 return NULL;
             }
             break;
@@ -749,9 +749,9 @@ static db_result_t* db_backend_sqlite_next(void* data, int finish) {
             int64 = from_int64;
             ret = sqlite3_errcode(statement->backend_sqlite->db);
             if ((ret != SQLITE_OK && ret != SQLITE_ROW && ret != SQLITE_DONE)
-                || db_value_from_int64(db_value_set_get(value_set, bind), int64))
+                || libdbo_value_from_int64(libdbo_value_set_get(value_set, bind), int64))
             {
-                db_result_free(result);
+                libdbo_result_free(result);
                 return NULL;
             }
             break;
@@ -761,9 +761,9 @@ static db_result_t* db_backend_sqlite_next(void* data, int finish) {
             uint64 = from_int64;
             ret = sqlite3_errcode(statement->backend_sqlite->db);
             if ((ret != SQLITE_OK && ret != SQLITE_ROW && ret != SQLITE_DONE)
-                || db_value_from_uint64(db_value_set_get(value_set, bind), uint64))
+                || libdbo_value_from_uint64(libdbo_value_set_get(value_set, bind), uint64))
             {
-                db_result_free(result);
+                libdbo_result_free(result);
                 return NULL;
             }
             break;
@@ -773,9 +773,9 @@ static db_result_t* db_backend_sqlite_next(void* data, int finish) {
             ret = sqlite3_errcode(statement->backend_sqlite->db);
             if (!text
                 || (ret != SQLITE_OK && ret != SQLITE_ROW && ret != SQLITE_DONE)
-                || db_value_from_text(db_value_set_get(value_set, bind), text))
+                || libdbo_value_from_text(libdbo_value_set_get(value_set, bind), text))
             {
-                db_result_free(result);
+                libdbo_result_free(result);
                 return NULL;
             }
             break;
@@ -788,9 +788,9 @@ static db_result_t* db_backend_sqlite_next(void* data, int finish) {
                 int64 = from_int64;
                 ret = sqlite3_errcode(statement->backend_sqlite->db);
                 if ((ret != SQLITE_OK && ret != SQLITE_ROW && ret != SQLITE_DONE)
-                    || db_value_from_int64(db_value_set_get(value_set, bind), int64))
+                    || libdbo_value_from_int64(libdbo_value_set_get(value_set, bind), int64))
                 {
-                    db_result_free(result);
+                    libdbo_result_free(result);
                     return NULL;
                 }
                 break;
@@ -800,34 +800,34 @@ static db_result_t* db_backend_sqlite_next(void* data, int finish) {
                 ret = sqlite3_errcode(statement->backend_sqlite->db);
                 if (!text
                     || (ret != SQLITE_OK && ret != SQLITE_ROW && ret != SQLITE_DONE)
-                    || db_value_from_text(db_value_set_get(value_set, bind), text))
+                    || libdbo_value_from_text(libdbo_value_set_get(value_set, bind), text))
                 {
-                    db_result_free(result);
+                    libdbo_result_free(result);
                     return NULL;
                 }
                 break;
 
             default:
-                db_result_free(result);
+                libdbo_result_free(result);
                 return NULL;
             }
             break;
 
         default:
-            db_result_free(result);
+            libdbo_result_free(result);
             return NULL;
         }
-        object_field = db_object_field_next(object_field);
+        object_field = libdbo_object_field_next(object_field);
         bind++;
     }
     return result;
 }
 
-static int db_backend_sqlite_create(void* data, const db_object_t* object, const db_object_field_list_t* object_field_list, const db_value_set_t* value_set) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
-    const db_object_field_t* object_field;
-    const db_object_field_t* revision_field = NULL;
-    const db_value_t* value;
+static int libdbo_backend_sqlite_create(void* data, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
+    const libdbo_object_field_t* object_field;
+    const libdbo_object_field_t* revision_field = NULL;
+    const libdbo_value_t* value;
     char sql[4*1024];
     char* sqlp;
     int ret, left, bind, first;
@@ -835,10 +835,10 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
     size_t value_pos;
     int to_int;
     sqlite3_int64 to_int64;
-    db_type_int32_t int32;
-    db_type_uint32_t uint32;
-    db_type_int64_t int64;
-    db_type_uint64_t uint64;
+    libdbo_type_int32_t int32;
+    libdbo_type_uint32_t uint32;
+    libdbo_type_int64_t int64;
+    libdbo_type_uint64_t uint64;
 
     if (!__sqlite3_initialized) {
         return DB_ERROR_UNKNOWN;
@@ -859,9 +859,9 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
     /*
      * Check if the object has a revision field and keep it for later use.
      */
-    object_field = db_object_field_list_begin(db_object_object_field_list(object));
+    object_field = libdbo_object_field_list_begin(libdbo_object_object_field_list(object));
     while (object_field) {
-        if (db_object_field_type(object_field) == DB_TYPE_REVISION) {
+        if (libdbo_object_field_type(object_field) == DB_TYPE_REVISION) {
             if (revision_field) {
                 /*
                  * We do not support multiple revision fields.
@@ -871,24 +871,24 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
 
             revision_field = object_field;
         }
-        object_field = db_object_field_next(object_field);
+        object_field = libdbo_object_field_next(object_field);
     }
 
     left = sizeof(sql);
     sqlp = sql;
 
-    if (!db_object_field_list_begin(object_field_list) && !revision_field) {
+    if (!libdbo_object_field_list_begin(object_field_list) && !revision_field) {
         /*
          * Special case when tables has no fields except maybe a primary key.
          */
-        if ((ret = snprintf(sqlp, left, "INSERT INTO %s DEFAULT VALUES", db_object_table(object))) >= left) {
+        if ((ret = snprintf(sqlp, left, "INSERT INTO %s DEFAULT VALUES", libdbo_object_table(object))) >= left) {
             return DB_ERROR_UNKNOWN;
         }
         sqlp += ret;
         left -= ret;
     }
     else {
-        if ((ret = snprintf(sqlp, left, "INSERT INTO %s (", db_object_table(object))) >= left) {
+        if ((ret = snprintf(sqlp, left, "INSERT INTO %s (", libdbo_object_table(object))) >= left) {
             return DB_ERROR_UNKNOWN;
         }
         sqlp += ret;
@@ -897,24 +897,24 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
         /*
          * Add the fields from the given object_field_list.
          */
-        object_field = db_object_field_list_begin(object_field_list);
+        object_field = libdbo_object_field_list_begin(object_field_list);
         first = 1;
         while (object_field) {
             if (first) {
-                if ((ret = snprintf(sqlp, left, " %s", db_object_field_name(object_field))) >= left) {
+                if ((ret = snprintf(sqlp, left, " %s", libdbo_object_field_name(object_field))) >= left) {
                     return DB_ERROR_UNKNOWN;
                 }
                 first = 0;
             }
             else {
-                if ((ret = snprintf(sqlp, left, ", %s", db_object_field_name(object_field))) >= left) {
+                if ((ret = snprintf(sqlp, left, ", %s", libdbo_object_field_name(object_field))) >= left) {
                     return DB_ERROR_UNKNOWN;
                 }
             }
             sqlp += ret;
             left -= ret;
 
-            object_field = db_object_field_next(object_field);
+            object_field = libdbo_object_field_next(object_field);
         }
 
         /*
@@ -922,13 +922,13 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
          */
         if (revision_field) {
             if (first) {
-                if ((ret = snprintf(sqlp, left, " %s", db_object_field_name(revision_field))) >= left) {
+                if ((ret = snprintf(sqlp, left, " %s", libdbo_object_field_name(revision_field))) >= left) {
                     return DB_ERROR_UNKNOWN;
                 }
                 first = 0;
             }
             else {
-                if ((ret = snprintf(sqlp, left, ", %s", db_object_field_name(revision_field))) >= left) {
+                if ((ret = snprintf(sqlp, left, ", %s", libdbo_object_field_name(revision_field))) >= left) {
                     return DB_ERROR_UNKNOWN;
                 }
             }
@@ -945,7 +945,7 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
         /*
          * Mark all the fields for binding from the object_field_list.
          */
-        object_field = db_object_field_list_begin(object_field_list);
+        object_field = libdbo_object_field_list_begin(object_field_list);
         first = 1;
         while (object_field) {
             if (first) {
@@ -962,7 +962,7 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
             sqlp += ret;
             left -= ret;
 
-            object_field = db_object_field_next(object_field);
+            object_field = libdbo_object_field_next(object_field);
         }
 
         /*
@@ -1002,15 +1002,15 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
      * Bind all the values from value_set.
      */
     bind = 1;
-    for (value_pos = 0; value_pos < db_value_set_size(value_set); value_pos++) {
-        if (!(value = db_value_set_at(value_set, value_pos))) {
+    for (value_pos = 0; value_pos < libdbo_value_set_size(value_set); value_pos++) {
+        if (!(value = libdbo_value_set_at(value_set, value_pos))) {
             __db_backend_sqlite_finalize(statement);
             return DB_ERROR_UNKNOWN;
         }
 
-        switch (db_value_type(value)) {
+        switch (libdbo_value_type(value)) {
         case DB_TYPE_INT32:
-            if (db_value_to_int32(value, &int32)) {
+            if (libdbo_value_to_int32(value, &int32)) {
                 __db_backend_sqlite_finalize(statement);
                 return DB_ERROR_UNKNOWN;
             }
@@ -1023,7 +1023,7 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
             break;
 
         case DB_TYPE_UINT32:
-            if (db_value_to_uint32(value, &uint32)) {
+            if (libdbo_value_to_uint32(value, &uint32)) {
                 __db_backend_sqlite_finalize(statement);
                 return DB_ERROR_UNKNOWN;
             }
@@ -1036,7 +1036,7 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
             break;
 
         case DB_TYPE_INT64:
-            if (db_value_to_int64(value, &int64)) {
+            if (libdbo_value_to_int64(value, &int64)) {
                 __db_backend_sqlite_finalize(statement);
                 return DB_ERROR_UNKNOWN;
             }
@@ -1049,7 +1049,7 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
             break;
 
         case DB_TYPE_UINT64:
-            if (db_value_to_uint64(value, &uint64)) {
+            if (libdbo_value_to_uint64(value, &uint64)) {
                 __db_backend_sqlite_finalize(statement);
                 return DB_ERROR_UNKNOWN;
             }
@@ -1062,7 +1062,7 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
             break;
 
         case DB_TYPE_TEXT:
-            ret = sqlite3_bind_text(statement, bind++, db_value_text(value), -1, SQLITE_TRANSIENT);
+            ret = sqlite3_bind_text(statement, bind++, libdbo_value_text(value), -1, SQLITE_TRANSIENT);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
                 return DB_ERROR_UNKNOWN;
@@ -1070,7 +1070,7 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
             break;
 
         case DB_TYPE_ENUM:
-            if (db_value_enum_value(value, &to_int)) {
+            if (libdbo_value_enum_value(value, &to_int)) {
                 __db_backend_sqlite_finalize(statement);
                 return DB_ERROR_UNKNOWN;
             }
@@ -1110,15 +1110,15 @@ static int db_backend_sqlite_create(void* data, const db_object_t* object, const
     return DB_OK;
 }
 
-static db_result_list_t* db_backend_sqlite_read(void* data, const db_object_t* object, const db_join_list_t* join_list, const db_clause_list_t* clause_list) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
-    const db_object_field_t* object_field;
-    const db_join_t* join;
+static libdbo_result_list_t* libdbo_backend_sqlite_read(void* data, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
+    const libdbo_object_field_t* object_field;
+    const libdbo_join_t* join;
     char sql[4*1024];
     char* sqlp;
     int ret, left, first, fields, bind;
-    db_result_list_t* result_list;
-    db_backend_sqlite_statement_t* statement;
+    libdbo_result_list_t* result_list;
+    libdbo_backend_sqlite_statement_t* statement;
 
     if (!__sqlite3_initialized) {
         return NULL;
@@ -1139,54 +1139,54 @@ static db_result_list_t* db_backend_sqlite_read(void* data, const db_object_t* o
     sqlp += ret;
     left -= ret;
 
-    object_field = db_object_field_list_begin(db_object_object_field_list(object));
+    object_field = libdbo_object_field_list_begin(libdbo_object_object_field_list(object));
     first = 1;
     fields = 0;
     while (object_field) {
         if (first) {
-            if ((ret = snprintf(sqlp, left, " %s.%s", db_object_table(object), db_object_field_name(object_field))) >= left) {
+            if ((ret = snprintf(sqlp, left, " %s.%s", libdbo_object_table(object), libdbo_object_field_name(object_field))) >= left) {
                 return NULL;
             }
             first = 0;
         }
         else {
-            if ((ret = snprintf(sqlp, left, ", %s.%s", db_object_table(object), db_object_field_name(object_field))) >= left) {
+            if ((ret = snprintf(sqlp, left, ", %s.%s", libdbo_object_table(object), libdbo_object_field_name(object_field))) >= left) {
                 return NULL;
             }
         }
         sqlp += ret;
         left -= ret;
 
-        object_field = db_object_field_next(object_field);
+        object_field = libdbo_object_field_next(object_field);
         fields++;
     }
 
-    if ((ret = snprintf(sqlp, left, " FROM %s", db_object_table(object))) >= left) {
+    if ((ret = snprintf(sqlp, left, " FROM %s", libdbo_object_table(object))) >= left) {
         return NULL;
     }
     sqlp += ret;
     left -= ret;
 
     if (join_list) {
-        join = db_join_list_begin(join_list);
+        join = libdbo_join_list_begin(join_list);
         while (join) {
             if ((ret = snprintf(sqlp, left, " INNER JOIN %s ON %s.%s = %s.%s",
-                db_join_to_table(join),
-                db_join_to_table(join),
-                db_join_to_field(join),
-                db_join_from_table(join),
-                db_join_from_field(join))) >= left)
+                libdbo_join_to_table(join),
+                libdbo_join_to_table(join),
+                libdbo_join_to_field(join),
+                libdbo_join_from_table(join),
+                libdbo_join_from_field(join))) >= left)
             {
                 return NULL;
             }
             sqlp += ret;
             left -= ret;
-            join = db_join_next(join);
+            join = libdbo_join_next(join);
         }
     }
 
     if (clause_list) {
-        if (db_clause_list_begin(clause_list)) {
+        if (libdbo_clause_list_begin(clause_list)) {
             if ((ret = snprintf(sqlp, left, " WHERE")) >= left) {
                 return NULL;
             }
@@ -1198,7 +1198,7 @@ static db_result_list_t* db_backend_sqlite_read(void* data, const db_object_t* o
         }
     }
 
-    statement = db_mm_new0(&__sqlite_statement_alloc);
+    statement = libdbo_mm_new0(&__sqlite_statement_alloc);
     if (!statement) {
         return NULL;
     }
@@ -1208,7 +1208,7 @@ static db_result_list_t* db_backend_sqlite_read(void* data, const db_object_t* o
     statement->statement = NULL;
 
     if (__db_backend_sqlite_prepare(backend_sqlite, &(statement->statement), sql, sizeof(sql))) {
-        db_mm_delete(&__sqlite_statement_alloc, statement);
+        libdbo_mm_delete(&__sqlite_statement_alloc, statement);
         return NULL;
     }
 
@@ -1216,30 +1216,30 @@ static db_result_list_t* db_backend_sqlite_read(void* data, const db_object_t* o
         bind = 1;
         if (__db_backend_sqlite_bind_clause(statement->statement, clause_list, &bind)) {
             __db_backend_sqlite_finalize(statement->statement);
-            db_mm_delete(&__sqlite_statement_alloc, statement);
+            libdbo_mm_delete(&__sqlite_statement_alloc, statement);
             return NULL;
         }
     }
 
-    if (!(result_list = db_result_list_new())
-        || db_result_list_set_next(result_list, db_backend_sqlite_next, statement, 0))
+    if (!(result_list = libdbo_result_list_new())
+        || libdbo_result_list_set_next(result_list, libdbo_backend_sqlite_next, statement, 0))
     {
-        db_result_list_free(result_list);
+        libdbo_result_list_free(result_list);
         __db_backend_sqlite_finalize(statement->statement);
-        db_mm_delete(&__sqlite_statement_alloc, statement);
+        libdbo_mm_delete(&__sqlite_statement_alloc, statement);
         return NULL;
     }
     return result_list;
 }
 
-static int db_backend_sqlite_update(void* data, const db_object_t* object, const db_object_field_list_t* object_field_list, const db_value_set_t* value_set, const db_clause_list_t* clause_list) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
-    const db_object_field_t* object_field;
-    const db_object_field_t* revision_field = NULL;
-    const db_clause_t* clause;
-    const db_clause_t* revision_clause = NULL;
+static int libdbo_backend_sqlite_update(void* data, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set, const libdbo_clause_list_t* clause_list) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
+    const libdbo_object_field_t* object_field;
+    const libdbo_object_field_t* revision_field = NULL;
+    const libdbo_clause_t* clause;
+    const libdbo_clause_t* revision_clause = NULL;
     sqlite3_int64 revision_number = -1;
-    const db_value_t* value;
+    const libdbo_value_t* value;
     char sql[4*1024];
     char* sqlp;
     int ret, left, bind, first;
@@ -1247,10 +1247,10 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
     size_t value_pos;
     int to_int;
     sqlite3_int64 to_int64;
-    db_type_int32_t int32;
-    db_type_uint32_t uint32;
-    db_type_int64_t int64;
-    db_type_uint64_t uint64;
+    libdbo_type_int32_t int32;
+    libdbo_type_uint32_t uint32;
+    libdbo_type_int64_t int64;
+    libdbo_type_uint64_t uint64;
 
     if (!__sqlite3_initialized) {
         return DB_ERROR_UNKNOWN;
@@ -1271,9 +1271,9 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
     /*
      * Check if the object has a revision field and keep it for later use.
      */
-    object_field = db_object_field_list_begin(db_object_object_field_list(object));
+    object_field = libdbo_object_field_list_begin(libdbo_object_object_field_list(object));
     while (object_field) {
-        if (db_object_field_type(object_field) == DB_TYPE_REVISION) {
+        if (libdbo_object_field_type(object_field) == DB_TYPE_REVISION) {
             if (revision_field) {
                 /*
                  * We do not support multiple revision fields.
@@ -1283,48 +1283,48 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
 
             revision_field = object_field;
         }
-        object_field = db_object_field_next(object_field);
+        object_field = libdbo_object_field_next(object_field);
     }
     if (revision_field) {
         /*
          * If we have a revision field we should also have it in the clause,
          * find it and get the value for later use or return error if not found.
          */
-        clause = db_clause_list_begin(clause_list);
+        clause = libdbo_clause_list_begin(clause_list);
         while (clause) {
-            if (!strcmp(db_clause_field(clause), db_object_field_name(revision_field))) {
+            if (!strcmp(libdbo_clause_field(clause), libdbo_object_field_name(revision_field))) {
                 revision_clause = clause;
                 break;
             }
-            clause = db_clause_next(clause);
+            clause = libdbo_clause_next(clause);
         }
         if (!revision_clause) {
             return DB_ERROR_UNKNOWN;
         }
-        switch (db_value_type(db_clause_value(revision_clause))) {
+        switch (libdbo_value_type(libdbo_clause_value(revision_clause))) {
         case DB_TYPE_INT32:
-            if (db_value_to_int32(db_clause_value(revision_clause), &int32)) {
+            if (libdbo_value_to_int32(libdbo_clause_value(revision_clause), &int32)) {
                 return DB_ERROR_UNKNOWN;
             }
             revision_number = int32;
             break;
 
         case DB_TYPE_UINT32:
-            if (db_value_to_uint32(db_clause_value(revision_clause), &uint32)) {
+            if (libdbo_value_to_uint32(libdbo_clause_value(revision_clause), &uint32)) {
                 return DB_ERROR_UNKNOWN;
             }
             revision_number = uint32;
             break;
 
         case DB_TYPE_INT64:
-            if (db_value_to_int64(db_clause_value(revision_clause), &int64)) {
+            if (libdbo_value_to_int64(libdbo_clause_value(revision_clause), &int64)) {
                 return DB_ERROR_UNKNOWN;
             }
             revision_number = int64;
             break;
 
         case DB_TYPE_UINT64:
-            if (db_value_to_uint64(db_clause_value(revision_clause), &uint64)) {
+            if (libdbo_value_to_uint64(libdbo_clause_value(revision_clause), &uint64)) {
                 return DB_ERROR_UNKNOWN;
             }
             revision_number = uint64;
@@ -1338,7 +1338,7 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
     left = sizeof(sql);
     sqlp = sql;
 
-    if ((ret = snprintf(sqlp, left, "UPDATE %s SET", db_object_table(object))) >= left) {
+    if ((ret = snprintf(sqlp, left, "UPDATE %s SET", libdbo_object_table(object))) >= left) {
         return DB_ERROR_UNKNOWN;
     }
     sqlp += ret;
@@ -1347,24 +1347,24 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
     /*
      * Build the update SQL from the object_field_list.
      */
-    object_field = db_object_field_list_begin(object_field_list);
+    object_field = libdbo_object_field_list_begin(object_field_list);
     first = 1;
     while (object_field) {
         if (first) {
-            if ((ret = snprintf(sqlp, left, " %s = ?", db_object_field_name(object_field))) >= left) {
+            if ((ret = snprintf(sqlp, left, " %s = ?", libdbo_object_field_name(object_field))) >= left) {
                 return DB_ERROR_UNKNOWN;
             }
             first = 0;
         }
         else {
-            if ((ret = snprintf(sqlp, left, ", %s = ?", db_object_field_name(object_field))) >= left) {
+            if ((ret = snprintf(sqlp, left, ", %s = ?", libdbo_object_field_name(object_field))) >= left) {
                 return DB_ERROR_UNKNOWN;
             }
         }
         sqlp += ret;
         left -= ret;
 
-        object_field = db_object_field_next(object_field);
+        object_field = libdbo_object_field_next(object_field);
     }
 
     /*
@@ -1372,13 +1372,13 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
      */
     if (revision_field) {
         if (first) {
-            if ((ret = snprintf(sqlp, left, " %s = ?", db_object_field_name(revision_field))) >= left) {
+            if ((ret = snprintf(sqlp, left, " %s = ?", libdbo_object_field_name(revision_field))) >= left) {
                 return DB_ERROR_UNKNOWN;
             }
             first = 0;
         }
         else {
-            if ((ret = snprintf(sqlp, left, ", %s = ?", db_object_field_name(revision_field))) >= left) {
+            if ((ret = snprintf(sqlp, left, ", %s = ?", libdbo_object_field_name(revision_field))) >= left) {
                 return DB_ERROR_UNKNOWN;
             }
         }
@@ -1390,7 +1390,7 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
      * Build the clauses.
      */
     if (clause_list) {
-        if (db_clause_list_begin(clause_list)) {
+        if (libdbo_clause_list_begin(clause_list)) {
             if ((ret = snprintf(sqlp, left, " WHERE")) >= left) {
                 return DB_ERROR_UNKNOWN;
             }
@@ -1413,15 +1413,15 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
      * Bind all the values from value_set.
      */
     bind = 1;
-    for (value_pos = 0; value_pos < db_value_set_size(value_set); value_pos++) {
-        if (!(value = db_value_set_at(value_set, value_pos))) {
+    for (value_pos = 0; value_pos < libdbo_value_set_size(value_set); value_pos++) {
+        if (!(value = libdbo_value_set_at(value_set, value_pos))) {
             __db_backend_sqlite_finalize(statement);
             return DB_ERROR_UNKNOWN;
         }
 
-        switch (db_value_type(value)) {
+        switch (libdbo_value_type(value)) {
         case DB_TYPE_INT32:
-            if (db_value_to_int32(value, &int32)) {
+            if (libdbo_value_to_int32(value, &int32)) {
                 __db_backend_sqlite_finalize(statement);
                 return DB_ERROR_UNKNOWN;
             }
@@ -1434,7 +1434,7 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
             break;
 
         case DB_TYPE_UINT32:
-            if (db_value_to_uint32(value, &uint32)) {
+            if (libdbo_value_to_uint32(value, &uint32)) {
                 __db_backend_sqlite_finalize(statement);
                 return DB_ERROR_UNKNOWN;
             }
@@ -1447,7 +1447,7 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
             break;
 
         case DB_TYPE_INT64:
-            if (db_value_to_int64(value, &int64)) {
+            if (libdbo_value_to_int64(value, &int64)) {
                 __db_backend_sqlite_finalize(statement);
                 return DB_ERROR_UNKNOWN;
             }
@@ -1460,7 +1460,7 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
             break;
 
         case DB_TYPE_UINT64:
-            if (db_value_to_uint64(value, &uint64)) {
+            if (libdbo_value_to_uint64(value, &uint64)) {
                 __db_backend_sqlite_finalize(statement);
                 return DB_ERROR_UNKNOWN;
             }
@@ -1473,7 +1473,7 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
             break;
 
         case DB_TYPE_TEXT:
-            ret = sqlite3_bind_text(statement, bind++, db_value_text(value), -1, SQLITE_TRANSIENT);
+            ret = sqlite3_bind_text(statement, bind++, libdbo_value_text(value), -1, SQLITE_TRANSIENT);
             if (ret != SQLITE_OK) {
                 __db_backend_sqlite_finalize(statement);
                 return DB_ERROR_UNKNOWN;
@@ -1481,7 +1481,7 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
             break;
 
         case DB_TYPE_ENUM:
-            if (db_value_enum_value(value, &to_int)) {
+            if (libdbo_value_enum_value(value, &to_int)) {
                 __db_backend_sqlite_finalize(statement);
                 return DB_ERROR_UNKNOWN;
             }
@@ -1541,15 +1541,15 @@ static int db_backend_sqlite_update(void* data, const db_object_t* object, const
     return DB_OK;
 }
 
-static int db_backend_sqlite_delete(void* data, const db_object_t* object, const db_clause_list_t* clause_list) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
+static int libdbo_backend_sqlite_delete(void* data, const libdbo_object_t* object, const libdbo_clause_list_t* clause_list) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
     char sql[4*1024];
     char* sqlp;
     int ret, left, bind;
     sqlite3_stmt* statement = NULL;
-    const db_object_field_t* revision_field = NULL;
-    const db_object_field_t* object_field;
-    const db_clause_t* clause;
+    const libdbo_object_field_t* revision_field = NULL;
+    const libdbo_object_field_t* object_field;
+    const libdbo_clause_t* clause;
 
     if (!__sqlite3_initialized) {
         return DB_ERROR_UNKNOWN;
@@ -1564,9 +1564,9 @@ static int db_backend_sqlite_delete(void* data, const db_object_t* object, const
     /*
      * Check if the object has a revision field and keep it for later use.
      */
-    object_field = db_object_field_list_begin(db_object_object_field_list(object));
+    object_field = libdbo_object_field_list_begin(libdbo_object_object_field_list(object));
     while (object_field) {
-        if (db_object_field_type(object_field) == DB_TYPE_REVISION) {
+        if (libdbo_object_field_type(object_field) == DB_TYPE_REVISION) {
             if (revision_field) {
                 /*
                  * We do not support multiple revision fields.
@@ -1576,19 +1576,19 @@ static int db_backend_sqlite_delete(void* data, const db_object_t* object, const
 
             revision_field = object_field;
         }
-        object_field = db_object_field_next(object_field);
+        object_field = libdbo_object_field_next(object_field);
     }
     if (revision_field) {
         /*
          * If we have a revision field we should also have it in the clause,
          * find it or return error if not found.
          */
-        clause = db_clause_list_begin(clause_list);
+        clause = libdbo_clause_list_begin(clause_list);
         while (clause) {
-            if (!strcmp(db_clause_field(clause), db_object_field_name(revision_field))) {
+            if (!strcmp(libdbo_clause_field(clause), libdbo_object_field_name(revision_field))) {
                 break;
             }
-            clause = db_clause_next(clause);
+            clause = libdbo_clause_next(clause);
         }
         if (!clause) {
             return DB_ERROR_UNKNOWN;
@@ -1598,14 +1598,14 @@ static int db_backend_sqlite_delete(void* data, const db_object_t* object, const
     left = sizeof(sql);
     sqlp = sql;
 
-    if ((ret = snprintf(sqlp, left, "DELETE FROM %s", db_object_table(object))) >= left) {
+    if ((ret = snprintf(sqlp, left, "DELETE FROM %s", libdbo_object_table(object))) >= left) {
         return DB_ERROR_UNKNOWN;
     }
     sqlp += ret;
     left -= ret;
 
     if (clause_list) {
-        if (db_clause_list_begin(clause_list)) {
+        if (libdbo_clause_list_begin(clause_list)) {
             if ((ret = snprintf(sqlp, left, " WHERE")) >= left) {
                 return DB_ERROR_UNKNOWN;
             }
@@ -1648,9 +1648,9 @@ static int db_backend_sqlite_delete(void* data, const db_object_t* object, const
     return DB_OK;
 }
 
-static int db_backend_sqlite_count(void* data, const db_object_t* object, const db_join_list_t* join_list, const db_clause_list_t* clause_list, size_t* count) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
-    const db_join_t* join;
+static int libdbo_backend_sqlite_count(void* data, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list, size_t* count) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
+    const libdbo_join_t* join;
     char sql[4*1024];
     char* sqlp;
     int ret, left, bind;
@@ -1679,32 +1679,32 @@ static int db_backend_sqlite_count(void* data, const db_object_t* object, const 
     sqlp += ret;
     left -= ret;
 
-    if ((ret = snprintf(sqlp, left, " FROM %s", db_object_table(object))) >= left) {
+    if ((ret = snprintf(sqlp, left, " FROM %s", libdbo_object_table(object))) >= left) {
         return DB_ERROR_UNKNOWN;
     }
     sqlp += ret;
     left -= ret;
 
     if (join_list) {
-        join = db_join_list_begin(join_list);
+        join = libdbo_join_list_begin(join_list);
         while (join) {
             if ((ret = snprintf(sqlp, left, " INNER JOIN %s ON %s.%s = %s.%s",
-                db_join_to_table(join),
-                db_join_to_table(join),
-                db_join_to_field(join),
-                db_join_from_table(join),
-                db_join_from_field(join))) >= left)
+                libdbo_join_to_table(join),
+                libdbo_join_to_table(join),
+                libdbo_join_to_field(join),
+                libdbo_join_from_table(join),
+                libdbo_join_from_field(join))) >= left)
             {
                 return DB_ERROR_UNKNOWN;
             }
             sqlp += ret;
             left -= ret;
-            join = db_join_next(join);
+            join = libdbo_join_next(join);
         }
     }
 
     if (clause_list) {
-        if (db_clause_list_begin(clause_list)) {
+        if (libdbo_clause_list_begin(clause_list)) {
             if ((ret = snprintf(sqlp, left, " WHERE")) >= left) {
                 return DB_ERROR_UNKNOWN;
             }
@@ -1746,19 +1746,19 @@ static int db_backend_sqlite_count(void* data, const db_object_t* object, const 
     return DB_OK;
 }
 
-static void db_backend_sqlite_free(void* data) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
+static void libdbo_backend_sqlite_free(void* data) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
 
     if (backend_sqlite) {
         if (backend_sqlite->db) {
-            (void)db_backend_sqlite_disconnect(backend_sqlite);
+            (void)libdbo_backend_sqlite_disconnect(backend_sqlite);
         }
-        db_mm_delete(&__sqlite_alloc, backend_sqlite);
+        libdbo_mm_delete(&__sqlite_alloc, backend_sqlite);
     }
 }
 
-static int db_backend_sqlite_transaction_begin(void* data) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
+static int libdbo_backend_sqlite_transaction_begin(void* data) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
     static const char* sql = "BEGIN TRANSACTION";
     sqlite3_stmt* statement = NULL;
 
@@ -1786,8 +1786,8 @@ static int db_backend_sqlite_transaction_begin(void* data) {
     return DB_OK;
 }
 
-static int db_backend_sqlite_transaction_commit(void* data) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
+static int libdbo_backend_sqlite_transaction_commit(void* data) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
     static const char* sql = "COMMIT TRANSACTION";
     sqlite3_stmt* statement = NULL;
 
@@ -1815,8 +1815,8 @@ static int db_backend_sqlite_transaction_commit(void* data) {
     return DB_OK;
 }
 
-static int db_backend_sqlite_transaction_rollback(void* data) {
-    db_backend_sqlite_t* backend_sqlite = (db_backend_sqlite_t*)data;
+static int libdbo_backend_sqlite_transaction_rollback(void* data) {
+    libdbo_backend_sqlite_t* backend_sqlite = (libdbo_backend_sqlite_t*)data;
     static const char* sql = "ROLLBACK TRANSACTION";
     sqlite3_stmt* statement = NULL;
 
@@ -1844,29 +1844,29 @@ static int db_backend_sqlite_transaction_rollback(void* data) {
     return DB_OK;
 }
 
-db_backend_handle_t* db_backend_sqlite_new_handle(void) {
-    db_backend_handle_t* backend_handle = NULL;
-    db_backend_sqlite_t* backend_sqlite =
-        (db_backend_sqlite_t*)db_mm_new0(&__sqlite_alloc);
+libdbo_backend_handle_t* libdbo_backend_sqlite_new_handle(void) {
+    libdbo_backend_handle_t* backend_handle = NULL;
+    libdbo_backend_sqlite_t* backend_sqlite =
+        (libdbo_backend_sqlite_t*)libdbo_mm_new0(&__sqlite_alloc);
 
-    if (backend_sqlite && (backend_handle = db_backend_handle_new())) {
-        if (db_backend_handle_set_data(backend_handle, (void*)backend_sqlite)
-            || db_backend_handle_set_initialize(backend_handle, db_backend_sqlite_initialize)
-            || db_backend_handle_set_shutdown(backend_handle, db_backend_sqlite_shutdown)
-            || db_backend_handle_set_connect(backend_handle, db_backend_sqlite_connect)
-            || db_backend_handle_set_disconnect(backend_handle, db_backend_sqlite_disconnect)
-            || db_backend_handle_set_create(backend_handle, db_backend_sqlite_create)
-            || db_backend_handle_set_read(backend_handle, db_backend_sqlite_read)
-            || db_backend_handle_set_update(backend_handle, db_backend_sqlite_update)
-            || db_backend_handle_set_delete(backend_handle, db_backend_sqlite_delete)
-            || db_backend_handle_set_count(backend_handle, db_backend_sqlite_count)
-            || db_backend_handle_set_free(backend_handle, db_backend_sqlite_free)
-            || db_backend_handle_set_transaction_begin(backend_handle, db_backend_sqlite_transaction_begin)
-            || db_backend_handle_set_transaction_commit(backend_handle, db_backend_sqlite_transaction_commit)
-            || db_backend_handle_set_transaction_rollback(backend_handle, db_backend_sqlite_transaction_rollback))
+    if (backend_sqlite && (backend_handle = libdbo_backend_handle_new())) {
+        if (libdbo_backend_handle_set_data(backend_handle, (void*)backend_sqlite)
+            || libdbo_backend_handle_set_initialize(backend_handle, libdbo_backend_sqlite_initialize)
+            || libdbo_backend_handle_set_shutdown(backend_handle, libdbo_backend_sqlite_shutdown)
+            || libdbo_backend_handle_set_connect(backend_handle, libdbo_backend_sqlite_connect)
+            || libdbo_backend_handle_set_disconnect(backend_handle, libdbo_backend_sqlite_disconnect)
+            || libdbo_backend_handle_set_create(backend_handle, libdbo_backend_sqlite_create)
+            || libdbo_backend_handle_set_read(backend_handle, libdbo_backend_sqlite_read)
+            || libdbo_backend_handle_set_update(backend_handle, libdbo_backend_sqlite_update)
+            || libdbo_backend_handle_set_delete(backend_handle, libdbo_backend_sqlite_delete)
+            || libdbo_backend_handle_set_count(backend_handle, libdbo_backend_sqlite_count)
+            || libdbo_backend_handle_set_free(backend_handle, libdbo_backend_sqlite_free)
+            || libdbo_backend_handle_set_transaction_begin(backend_handle, libdbo_backend_sqlite_transaction_begin)
+            || libdbo_backend_handle_set_transaction_commit(backend_handle, libdbo_backend_sqlite_transaction_commit)
+            || libdbo_backend_handle_set_transaction_rollback(backend_handle, libdbo_backend_sqlite_transaction_rollback))
         {
-            db_backend_handle_free(backend_handle);
-            db_mm_delete(&__sqlite_alloc, backend_sqlite);
+            libdbo_backend_handle_free(backend_handle);
+            libdbo_mm_delete(&__sqlite_alloc, backend_sqlite);
             return NULL;
         }
     }

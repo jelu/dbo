@@ -33,18 +33,18 @@
  * All rights reserved.
  */
 
-/** \file db_backend_couchdb.h */
-/** \defgroup db_backend_couchdb db_backend_couchdb
+/** \file libdbo_backend_couchdb.h */
+/** \defgroup libdbo_backend_couchdb libdbo_backend_couchdb
  * Database Backend CouchDB.
  * These are the functions for creating a CouchDB backend handle.
  */
 
-#ifndef libdbo_db_backend_couchdb_h
-#define libdbo_db_backend_couchdb_h
+#ifndef libdbo_backend_couchdb_h
+#define libdbo_backend_couchdb_h
 
-#include "db_backend.h"
+#include "libdbo_backend.h"
 
-/** \addtogroup db_backend_couchdb */
+/** \addtogroup libdbo_backend_couchdb */
 /** \{ */
 
 #ifdef __cplusplus
@@ -53,9 +53,9 @@ extern "C" {
 
 /**
  * Create a new database backend handle for CouchDB.
- * \return a db_backend_handle_t pointer or NULL on error.
+ * \return a libdbo_backend_handle_t pointer or NULL on error.
  */
-db_backend_handle_t* db_backend_couchdb_new_handle(void);
+libdbo_backend_handle_t* libdbo_backend_couchdb_new_handle(void);
 
 /** \} */
 

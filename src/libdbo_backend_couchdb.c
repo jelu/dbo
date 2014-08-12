@@ -33,10 +33,10 @@
  * All rights reserved.
  */
 
-#include "db_backend_couchdb.h"
-#include "db_error.h"
+#include "libdbo_backend_couchdb.h"
+#include "libdbo_error.h"
 
-#include "db_mm.h"
+#include "libdbo_mm.h"
 
 #include <curl/curl.h>
 #include <stdlib.h>
@@ -60,7 +60,7 @@ static int __couchdb_initialized = 0;
 /**
  * The CouchDB database backend specific data.
  */
-typedef struct db_backend_couchdb {
+typedef struct libdbo_backend_couchdb {
     char* url;
     CURL* curl;
     char* buffer;
@@ -68,22 +68,22 @@ typedef struct db_backend_couchdb {
     char* write;
     size_t write_length;
     size_t write_position;
-} db_backend_couchdb_t;
+} libdbo_backend_couchdb_t;
 
-static db_mm_t __couchdb_alloc = DB_MM_T_STATIC_NEW(sizeof(db_backend_couchdb_t));
+static libdbo_mm_t __couchdb_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_backend_couchdb_t));
 
 /*
-typedef struct db_backend_couchdb_query {
-    db_backend_couchdb_t* backend_couchdb;
+typedef struct libdbo_backend_couchdb_query {
+    libdbo_backend_couchdb_t* backend_couchdb;
     int fields;
-    const db_object_t* object;
-} db_backend_couchdb_query_t;
+    const libdbo_object_t* object;
+} libdbo_backend_couchdb_query_t;
 
-static db_mm_t __couchdb_query_alloc = DB_MM_T_STATIC_NEW(sizeof(db_backend_couchdb_query_t));
+static libdbo_mm_t __couchdb_query_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_backend_couchdb_query_t));
 */
 
-static int db_backend_couchdb_initialize(void* data) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)data;
+static int libdbo_backend_couchdb_initialize(void* data) {
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)data;
 
     if (!backend_couchdb) {
         return DB_ERROR_UNKNOWN;
@@ -98,8 +98,8 @@ static int db_backend_couchdb_initialize(void* data) {
     return DB_OK;
 }
 
-static int db_backend_couchdb_shutdown(void* data) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)data;
+static int libdbo_backend_couchdb_shutdown(void* data) {
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)data;
 
     if (!backend_couchdb) {
         return DB_ERROR_UNKNOWN;
@@ -121,7 +121,7 @@ static int db_backend_couchdb_shutdown(void* data) {
  * \return a size_t.
  */
 static size_t __db_backend_couchdb_write_response(void* ptr, size_t size, size_t nmemb, void* userdata) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)userdata;
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)userdata;
 
     if(backend_couchdb->buffer_position + size * nmemb >= REQUEST_BUFFER_SIZE - 1) {
         return 0;
@@ -142,7 +142,7 @@ static size_t __db_backend_couchdb_write_response(void* ptr, size_t size, size_t
  * \return a size_t.
  */
 static size_t __db_backend_couchdb_read_request(void* ptr, size_t size, size_t nmemb, void* userdata) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)userdata;
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)userdata;
     size_t write = 0;
 
     if ((backend_couchdb->write_length - backend_couchdb->write_position) > (size * nmemb)) {
@@ -162,13 +162,13 @@ static size_t __db_backend_couchdb_read_request(void* ptr, size_t size, size_t n
 /**
  * Make a request to CouchDB. The URL is specified by `request_url`, the request
  * type by `request_type` and the JSON data by `root`.
- * \param[in] backend_couchdb a db_backend_couchdb_t pointer.
+ * \param[in] backend_couchdb a libdbo_backend_couchdb_t pointer.
  * \param[in] request_url a character pointer.
  * \param[in] request_type an integer.
  * \param[in] root a json_t pointer.
  * \return a long with the HTTP response code or zero on error.
  */
-static long __db_backend_couchdb_request(db_backend_couchdb_t* backend_couchdb, const char* request_url, int request_type, json_t* root) {
+static long __db_backend_couchdb_request(libdbo_backend_couchdb_t* backend_couchdb, const char* request_url, int request_type, json_t* root) {
     CURLcode status;
     long code;
     char url[1024];
@@ -338,9 +338,9 @@ static long __db_backend_couchdb_request(db_backend_couchdb_t* backend_couchdb, 
     return code;
 }
 
-static int db_backend_couchdb_connect(void* data, const db_configuration_list_t* configuration_list) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)data;
-    const db_configuration_t* url;
+static int libdbo_backend_couchdb_connect(void* data, const libdbo_configuration_list_t* configuration_list) {
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)data;
+    const libdbo_configuration_t* url;
 
     if (!__couchdb_initialized) {
         return DB_ERROR_UNKNOWN;
@@ -361,21 +361,21 @@ static int db_backend_couchdb_connect(void* data, const db_configuration_list_t*
         }
     }
 
-    if (!(url = db_configuration_list_find(configuration_list, "url"))) {
+    if (!(url = libdbo_configuration_list_find(configuration_list, "url"))) {
         return DB_ERROR_UNKNOWN;
     }
     if (backend_couchdb->url) {
         free(backend_couchdb->url);
     }
-    if (!(backend_couchdb->url = strdup(db_configuration_value(url)))) {
+    if (!(backend_couchdb->url = strdup(libdbo_configuration_value(url)))) {
         return DB_ERROR_UNKNOWN;
     }
 
     return DB_OK;
 }
 
-static int db_backend_couchdb_disconnect(void* data) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)data;
+static int libdbo_backend_couchdb_disconnect(void* data) {
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)data;
 
     if (!__couchdb_initialized) {
         return DB_ERROR_UNKNOWN;
@@ -392,16 +392,16 @@ static int db_backend_couchdb_disconnect(void* data) {
     return DB_OK;
 }
 
-static int db_backend_couchdb_create(void* data, const db_object_t* object, const db_object_field_list_t* object_field_list, const db_value_set_t* value_set) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)data;
+static int libdbo_backend_couchdb_create(void* data, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set) {
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)data;
     json_t* root;
     json_t* json_value;
-    const db_object_field_t* object_field;
-    const db_value_t* value;
-    db_type_int32_t int32;
-    db_type_uint32_t uint32;
-    db_type_int64_t int64;
-    db_type_uint64_t uint64;
+    const libdbo_object_field_t* object_field;
+    const libdbo_value_t* value;
+    libdbo_type_int32_t int32;
+    libdbo_type_uint32_t uint32;
+    libdbo_type_int64_t int64;
+    libdbo_type_uint64_t uint64;
     size_t value_pos;
     long code;
     char string[1024];
@@ -429,17 +429,17 @@ static int db_backend_couchdb_create(void* data, const db_object_t* object, cons
         return DB_ERROR_UNKNOWN;
     }
 
-    object_field = db_object_field_list_begin(object_field_list);
+    object_field = libdbo_object_field_list_begin(object_field_list);
     value_pos = 0;
     while (object_field) {
-        if (!(value = db_value_set_at(value_set, value_pos))) {
+        if (!(value = libdbo_value_set_at(value_set, value_pos))) {
             json_decref(root);
             return DB_ERROR_UNKNOWN;
         }
 
-        switch (db_value_type(value)) {
+        switch (libdbo_value_type(value)) {
         case DB_TYPE_INT32:
-            if (db_value_to_int32(value, &int32)) {
+            if (libdbo_value_to_int32(value, &int32)) {
                 json_decref(root);
                 return DB_ERROR_UNKNOWN;
             }
@@ -450,7 +450,7 @@ static int db_backend_couchdb_create(void* data, const db_object_t* object, cons
             break;
 
         case DB_TYPE_UINT32:
-            if (db_value_to_uint32(value, &uint32)) {
+            if (libdbo_value_to_uint32(value, &uint32)) {
                 json_decref(root);
                 return DB_ERROR_UNKNOWN;
             }
@@ -462,7 +462,7 @@ static int db_backend_couchdb_create(void* data, const db_object_t* object, cons
 
 #ifdef JSON_INTEGER_IS_LONG_LONG
         case DB_TYPE_INT64:
-            if (db_value_to_int64(value, &int64)) {
+            if (libdbo_value_to_int64(value, &int64)) {
                 json_decref(root);
                 return DB_ERROR_UNKNOWN;
             }
@@ -473,7 +473,7 @@ static int db_backend_couchdb_create(void* data, const db_object_t* object, cons
             break;
 
         case DB_TYPE_UINT64:
-            if (db_value_to_uint64(value, &uint64)) {
+            if (libdbo_value_to_uint64(value, &uint64)) {
                 json_decref(root);
                 return DB_ERROR_UNKNOWN;
             }
@@ -485,14 +485,14 @@ static int db_backend_couchdb_create(void* data, const db_object_t* object, cons
 #endif
 
         case DB_TYPE_TEXT:
-            if (!(json_value = json_string(db_value_text(value)))) {
+            if (!(json_value = json_string(libdbo_value_text(value)))) {
                 json_decref(root);
                 return DB_ERROR_UNKNOWN;
             }
             break;
 
         case DB_TYPE_ENUM:
-            if (db_value_enum_value(value, &int32)) {
+            if (libdbo_value_enum_value(value, &int32)) {
                 json_decref(root);
                 return DB_ERROR_UNKNOWN;
             }
@@ -510,7 +510,7 @@ static int db_backend_couchdb_create(void* data, const db_object_t* object, cons
         left = sizeof(string);
         stringp = string;
 
-        if ((ret = snprintf(stringp, left, "%s_%s", db_object_table(object), db_object_field_name(object_field))) >= left) {
+        if ((ret = snprintf(stringp, left, "%s_%s", libdbo_object_table(object), libdbo_object_field_name(object_field))) >= left) {
             json_decref(json_value);
             json_decref(root);
             return DB_ERROR_UNKNOWN;
@@ -522,10 +522,10 @@ static int db_backend_couchdb_create(void* data, const db_object_t* object, cons
             return DB_ERROR_UNKNOWN;
         }
 
-        object_field = db_object_field_next(object_field);
+        object_field = libdbo_object_field_next(object_field);
     }
 
-    if (!(json_value = json_string(db_object_table(object)))) {
+    if (!(json_value = json_string(libdbo_object_table(object)))) {
         json_decref(root);
         return DB_ERROR_UNKNOWN;
     }
@@ -546,23 +546,23 @@ static int db_backend_couchdb_create(void* data, const db_object_t* object, cons
 
 /**
  * Covert a JSON object to a database result.
- * \param[in] object a db_object_t pointer.
+ * \param[in] object a libdbo_object_t pointer.
  * \param[in] json_object a json_t pointer.
- * \return a db_result_t pointer or NULL on error.
+ * \return a libdbo_result_t pointer or NULL on error.
  */
-static db_result_t* __db_backend_couchdb_result_from_json_object(const db_object_t* object, json_t* json_object) {
+static libdbo_result_t* __db_backend_couchdb_result_from_json_object(const libdbo_object_t* object, json_t* json_object) {
     size_t size, i;
-    db_result_t* result;
-    db_value_set_t* value_set = NULL;
+    libdbo_result_t* result;
+    libdbo_value_set_t* value_set = NULL;
     void *json_iter;
     json_t *json_value = NULL;
-    const db_object_field_t* object_field;
+    const libdbo_object_field_t* object_field;
     char key[1024];
     char* keyp;
     int ret, left;
-    db_backend_meta_data_list_t* backend_meta_data_list = NULL;
-    db_backend_meta_data_t* backend_meta_data = NULL;
-    db_value_t* value = NULL;
+    libdbo_backend_meta_data_list_t* backend_meta_data_list = NULL;
+    libdbo_backend_meta_data_t* backend_meta_data = NULL;
+    libdbo_value_t* value = NULL;
 
     if (!object) {
         return NULL;
@@ -587,64 +587,64 @@ static db_result_t* __db_backend_couchdb_result_from_json_object(const db_object
         json_iter = json_object_iter_next(json_object, json_iter);
     }
 
-    if (!(result = db_result_new())
-        || !(value_set = db_value_set_new(size))
-        || db_result_set_value_set(result, value_set))
+    if (!(result = libdbo_result_new())
+        || !(value_set = libdbo_value_set_new(size))
+        || libdbo_result_set_value_set(result, value_set))
     {
-        db_result_free(result);
-        db_value_set_free(value_set);
+        libdbo_result_free(result);
+        libdbo_value_set_free(value_set);
         return NULL;
     }
 
-    if (!(value = db_value_new())
+    if (!(value = libdbo_value_new())
         || !(json_value = json_object_get(json_object, "_rev"))
         || !json_is_string(json_value)
-        || db_value_from_text(value, json_string_value(json_value))
-        || !(backend_meta_data = db_backend_meta_data_new())
-        || db_backend_meta_data_set_name(backend_meta_data, "rev")
-        || db_backend_meta_data_set_value(backend_meta_data, value))
+        || libdbo_value_from_text(value, json_string_value(json_value))
+        || !(backend_meta_data = libdbo_backend_meta_data_new())
+        || libdbo_backend_meta_data_set_name(backend_meta_data, "rev")
+        || libdbo_backend_meta_data_set_value(backend_meta_data, value))
     {
-        db_value_free(value);
-        db_backend_meta_data_free(backend_meta_data);
-        db_result_free(result);
+        libdbo_value_free(value);
+        libdbo_backend_meta_data_free(backend_meta_data);
+        libdbo_result_free(result);
         return NULL;
     }
     value = NULL;
 
-    if (!(backend_meta_data_list = db_backend_meta_data_list_new())
-        || db_backend_meta_data_list_add(backend_meta_data_list, backend_meta_data))
+    if (!(backend_meta_data_list = libdbo_backend_meta_data_list_new())
+        || libdbo_backend_meta_data_list_add(backend_meta_data_list, backend_meta_data))
     {
-        db_backend_meta_data_free(backend_meta_data);
-        db_backend_meta_data_list_free(backend_meta_data_list);
-        db_result_free(result);
+        libdbo_backend_meta_data_free(backend_meta_data);
+        libdbo_backend_meta_data_list_free(backend_meta_data_list);
+        libdbo_result_free(result);
         return NULL;
     }
     backend_meta_data = NULL;
 
-    if (db_result_set_backend_meta_data_list(result, backend_meta_data_list)) {
-        db_backend_meta_data_list_free(backend_meta_data_list);
-        db_result_free(result);
+    if (libdbo_result_set_backend_meta_data_list(result, backend_meta_data_list)) {
+        libdbo_backend_meta_data_list_free(backend_meta_data_list);
+        libdbo_result_free(result);
         return NULL;
     }
     backend_meta_data_list = NULL;
 
     i = 0;
-    object_field = db_object_field_list_begin(db_object_object_field_list(object));
+    object_field = libdbo_object_field_list_begin(libdbo_object_object_field_list(object));
     while (object_field) {
         if (i == size) {
-            db_result_free(result);
+            libdbo_result_free(result);
             return NULL;
         }
 
-        if (db_object_field_type(object_field) == DB_TYPE_PRIMARY_KEY) {
+        if (libdbo_object_field_type(object_field) == DB_TYPE_PRIMARY_KEY) {
             json_value = json_object_get(json_object, "_id");
         }
         else {
             left = sizeof(key);
             keyp = key;
 
-            if ((ret = snprintf(keyp, left, "%s_%s", db_object_table(object), db_object_field_name(object_field))) >= left) {
-                db_result_free(result);
+            if ((ret = snprintf(keyp, left, "%s_%s", libdbo_object_table(object), libdbo_object_field_name(object_field))) >= left) {
+                libdbo_result_free(result);
                 return NULL;
             }
             keyp += ret;
@@ -653,26 +653,26 @@ static db_result_t* __db_backend_couchdb_result_from_json_object(const db_object
             json_value = json_object_get(json_object, key);
         }
         if (!json_value) {
-            db_result_free(result);
+            libdbo_result_free(result);
             return NULL;
         }
 
-        switch (db_object_field_type(object_field)) {
+        switch (libdbo_object_field_type(object_field)) {
         case DB_TYPE_PRIMARY_KEY:
             if (!json_is_string(json_value)
-                || db_value_from_text(db_value_set_get(value_set, i), json_string_value(json_value))
-                || db_value_set_primary_key(db_value_set_get(value_set, i)))
+                || libdbo_value_from_text(libdbo_value_set_get(value_set, i), json_string_value(json_value))
+                || libdbo_value_set_primary_key(libdbo_value_set_get(value_set, i)))
             {
-                db_result_free(result);
+                libdbo_result_free(result);
                 return NULL;
             }
             break;
 
         case DB_TYPE_TEXT:
             if (!json_is_string(json_value)
-                || db_value_from_text(db_value_set_get(value_set, i), json_string_value(json_value)))
+                || libdbo_value_from_text(libdbo_value_set_get(value_set, i), json_string_value(json_value)))
             {
-                db_result_free(result);
+                libdbo_result_free(result);
                 return NULL;
             }
             break;
@@ -688,22 +688,22 @@ static db_result_t* __db_backend_couchdb_result_from_json_object(const db_object
         case DB_TYPE_UINT64:
             if (!json_is_number(json_value)
 #ifdef JSON_INTEGER_IS_LONG_LONG
-                || db_value_from_int64(db_value_set_get(value_set, i), json_integer_value(json_value)))
+                || libdbo_value_from_int64(libdbo_value_set_get(value_set, i), json_integer_value(json_value)))
 #else
-                || db_value_from_int32(db_value_set_get(value_set, i), json_integer_value(json_value)))
+                || libdbo_value_from_int32(libdbo_value_set_get(value_set, i), json_integer_value(json_value)))
 #endif
             {
-                db_result_free(result);
+                libdbo_result_free(result);
                 return NULL;
             }
             break;
 
         default:
-            db_result_free(result);
+            libdbo_result_free(result);
             return NULL;
         }
 
-        object_field = db_object_field_next(object_field);
+        object_field = libdbo_object_field_next(object_field);
         i++;
     }
 
@@ -714,19 +714,19 @@ static db_result_t* __db_backend_couchdb_result_from_json_object(const db_object
  * Store the response from a CouchDB request into a database result list
  * specified by `result_list`. If the response comes from a CouchDB view then
  * `view` must be non-zero.
- * \param[in] backend_couchdb a db_backend_couchdb_t pointer.
- * \param[in] object a db_object_t pointer.
- * \param[in] result_list a db_result_list_t pointer.
+ * \param[in] backend_couchdb a libdbo_backend_couchdb_t pointer.
+ * \param[in] object a libdbo_object_t pointer.
+ * \param[in] result_list a libdbo_result_list_t pointer.
  * \param[in] view an integer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-static int __db_backend_couchdb_store_result(db_backend_couchdb_t* backend_couchdb, const db_object_t* object, db_result_list_t* result_list, int view) {
+static int __db_backend_couchdb_store_result(libdbo_backend_couchdb_t* backend_couchdb, const libdbo_object_t* object, libdbo_result_list_t* result_list, int view) {
     json_t *root;
     json_t *rows;
     json_t *entry;
     json_error_t error;
     size_t i;
-    db_result_t* result;
+    libdbo_result_t* result;
 
     if (!(root = json_loads(backend_couchdb->buffer, 0, &error))) {
         fprintf(stderr, "error: on line %d: %s\n", error.line, error.text);
@@ -765,9 +765,9 @@ static int __db_backend_couchdb_store_result(db_backend_couchdb_t* backend_couch
             return DB_ERROR_UNKNOWN;
         }
 
-        if (db_result_list_add(result_list, result)) {
+        if (libdbo_result_list_add(result_list, result)) {
             json_decref(root);
-            db_result_free(result);
+            libdbo_result_free(result);
             return DB_ERROR_UNKNOWN;
         }
     }
@@ -792,9 +792,9 @@ static int __db_backend_couchdb_store_result(db_backend_couchdb_t* backend_couch
                 return DB_ERROR_UNKNOWN;
             }
 
-            if (db_result_list_add(result_list, result)) {
+            if (libdbo_result_list_add(result_list, result)) {
                 json_decref(root);
-                db_result_free(result);
+                libdbo_result_free(result);
                 return DB_ERROR_UNKNOWN;
             }
         }
@@ -811,19 +811,19 @@ static int __db_backend_couchdb_store_result(db_backend_couchdb_t* backend_couch
  * Build parts of a map function from the database clause list specified by
  * `clause_list`, append the result to `stringp`. How much that is left in the
  * buffer pointed by `stringp` is specified by `left`.
- * \param[in] object a db_object_t pointer.
- * \param[in] clause_list a db_clause_list_t pointer.
+ * \param[in] object a libdbo_object_t pointer.
+ * \param[in] clause_list a libdbo_clause_list_t pointer.
  * \param[in] stringp a character pointer pointer.
  * \param[in] left an integer pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-static int __db_backend_couchdb_build_map_function(const db_object_t* object, const db_clause_list_t* clause_list, char** stringp, int* left) {
-    const db_clause_t* clause;
+static int __db_backend_couchdb_build_map_function(const libdbo_object_t* object, const libdbo_clause_list_t* clause_list, char** stringp, int* left) {
+    const libdbo_clause_t* clause;
     int ret;
-    db_type_int32_t int32;
-    db_type_uint32_t uint32;
-    db_type_int64_t int64;
-    db_type_uint64_t uint64;
+    libdbo_type_int32_t int32;
+    libdbo_type_uint32_t uint32;
+    libdbo_type_int64_t int64;
+    libdbo_type_uint64_t uint64;
     const char* text;
 
     if (!clause_list) {
@@ -842,9 +842,9 @@ static int __db_backend_couchdb_build_map_function(const db_object_t* object, co
         return DB_ERROR_UNKNOWN;
     }
 
-    clause = db_clause_list_begin(clause_list);
+    clause = libdbo_clause_list_begin(clause_list);
     while (clause) {
-        switch (db_clause_operator(clause)) {
+        switch (libdbo_clause_operator(clause)) {
         case DB_CLAUSE_OPERATOR_AND:
             if ((ret = snprintf(*stringp, *left, " &&")) >= *left) {
                 return DB_ERROR_UNKNOWN;
@@ -863,13 +863,13 @@ static int __db_backend_couchdb_build_map_function(const db_object_t* object, co
         *stringp += ret;
         *left -= ret;
 
-        if ((ret = snprintf(*stringp, *left, " doc.%s_%s", db_object_table(object), db_clause_field(clause))) >= *left) {
+        if ((ret = snprintf(*stringp, *left, " doc.%s_%s", libdbo_object_table(object), libdbo_clause_field(clause))) >= *left) {
             return DB_ERROR_UNKNOWN;
         }
         *stringp += ret;
         *left -= ret;
 
-        switch (db_clause_type(clause)) {
+        switch (libdbo_clause_type(clause)) {
         case DB_CLAUSE_EQUAL:
             if ((ret = snprintf(*stringp, *left, " == ")) >= *left) {
                 return DB_ERROR_UNKNOWN;
@@ -912,7 +912,7 @@ static int __db_backend_couchdb_build_map_function(const db_object_t* object, co
             }
             *stringp += ret;
             *left -= ret;
-            clause = db_clause_next(clause);
+            clause = libdbo_clause_next(clause);
             continue;
             break;
 
@@ -922,7 +922,7 @@ static int __db_backend_couchdb_build_map_function(const db_object_t* object, co
             }
             *stringp += ret;
             *left -= ret;
-            clause = db_clause_next(clause);
+            clause = libdbo_clause_next(clause);
             continue;
             break;
 
@@ -932,7 +932,7 @@ static int __db_backend_couchdb_build_map_function(const db_object_t* object, co
             }
             *stringp += ret;
             *left -= ret;
-            if (__db_backend_couchdb_build_map_function(object, db_clause_list(clause), stringp, left)) {
+            if (__db_backend_couchdb_build_map_function(object, libdbo_clause_list(clause), stringp, left)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(*stringp, *left, " )")) >= *left) {
@@ -940,7 +940,7 @@ static int __db_backend_couchdb_build_map_function(const db_object_t* object, co
             }
             *stringp += ret;
             *left -= ret;
-            clause = db_clause_next(clause);
+            clause = libdbo_clause_next(clause);
             continue;
             break;
 
@@ -950,9 +950,9 @@ static int __db_backend_couchdb_build_map_function(const db_object_t* object, co
         *stringp += ret;
         *left -= ret;
 
-        switch (db_value_type(db_clause_value(clause))) {
+        switch (libdbo_value_type(libdbo_clause_value(clause))) {
         case DB_TYPE_INT32:
-            if (db_value_to_int32(db_clause_value(clause), &int32)) {
+            if (libdbo_value_to_int32(libdbo_clause_value(clause), &int32)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(*stringp, *left, "%d", int32)) >= *left) {
@@ -961,7 +961,7 @@ static int __db_backend_couchdb_build_map_function(const db_object_t* object, co
             break;
 
         case DB_TYPE_UINT32:
-            if (db_value_to_uint32(db_clause_value(clause), &uint32)) {
+            if (libdbo_value_to_uint32(libdbo_clause_value(clause), &uint32)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(*stringp, *left, "%u", uint32)) >= *left) {
@@ -970,7 +970,7 @@ static int __db_backend_couchdb_build_map_function(const db_object_t* object, co
             break;
 
         case DB_TYPE_INT64:
-            if (db_value_to_int64(db_clause_value(clause), &int64)) {
+            if (libdbo_value_to_int64(libdbo_clause_value(clause), &int64)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(*stringp, *left, "%ld", int64)) >= *left) {
@@ -979,7 +979,7 @@ static int __db_backend_couchdb_build_map_function(const db_object_t* object, co
             break;
 
         case DB_TYPE_UINT64:
-            if (db_value_to_uint64(db_clause_value(clause), &uint64)) {
+            if (libdbo_value_to_uint64(libdbo_clause_value(clause), &uint64)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(*stringp, *left, "%lu", uint64)) >= *left) {
@@ -988,7 +988,7 @@ static int __db_backend_couchdb_build_map_function(const db_object_t* object, co
             break;
 
         case DB_TYPE_TEXT:
-            text = db_value_text(db_clause_value(clause));
+            text = libdbo_value_text(libdbo_clause_value(clause));
             if (!text) {
                 return DB_ERROR_UNKNOWN;
             }
@@ -1026,23 +1026,23 @@ static int __db_backend_couchdb_build_map_function(const db_object_t* object, co
         *stringp += ret;
         *left -= ret;
 
-        clause = db_clause_next(clause);
+        clause = libdbo_clause_next(clause);
     }
     return DB_OK;
 }
 
-static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* object, const db_join_list_t* join_list, const db_clause_list_t* clause_list) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)data;
+static libdbo_result_list_t* libdbo_backend_couchdb_read(void* data, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list) {
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)data;
     long code;
-    db_result_list_t* result_list;
+    libdbo_result_list_t* result_list;
     char string[4096];
     char* stringp;
     int ret, left, only_ids, have_clauses;
-    const db_clause_t* clause;
-    db_type_int32_t int32;
-    db_type_uint32_t uint32;
-    db_type_int64_t int64;
-    db_type_uint64_t uint64;
+    const libdbo_clause_t* clause;
+    libdbo_type_int32_t int32;
+    libdbo_type_uint32_t uint32;
+    libdbo_type_int64_t int64;
+    libdbo_type_uint64_t uint64;
     unsigned char hash[SHA256_DIGEST_LENGTH];
     char hash_string[(SHA256_DIGEST_LENGTH*2)+1];
     SHA256_CTX sha256;
@@ -1062,7 +1062,7 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
          * Joins is not supported by this backend, check if there are any and
          * return error if so.
          */
-        if (db_join_list_begin(join_list)) {
+        if (libdbo_join_list_begin(join_list)) {
             return NULL;
         }
     }
@@ -1070,90 +1070,90 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
     only_ids = 0;
     have_clauses = 0;
     if (clause_list) {
-        clause = db_clause_list_begin(clause_list);
+        clause = libdbo_clause_list_begin(clause_list);
         only_ids = 1;
         while (clause) {
-            if (db_clause_table(clause)) {
+            if (libdbo_clause_table(clause)) {
                 /*
                  * This backend only supports clauses on the objects table.
                  */
-                if (strcmp(db_clause_table(clause), db_object_table(object))) {
+                if (strcmp(libdbo_clause_table(clause), libdbo_object_table(object))) {
                     return NULL;
                 }
             }
 
-            if (strcmp(db_clause_field(clause), db_object_primary_key_name(object))) {
+            if (strcmp(libdbo_clause_field(clause), libdbo_object_primary_key_name(object))) {
                 only_ids = 0;
                 have_clauses = 1;
             }
-            clause = db_clause_next(clause);
+            clause = libdbo_clause_next(clause);
         }
     }
 
-    if (!(result_list = db_result_list_new())) {
+    if (!(result_list = libdbo_result_list_new())) {
         return NULL;
     }
 
     if (only_ids) {
-        clause = db_clause_list_begin(clause_list);
+        clause = libdbo_clause_list_begin(clause_list);
         while (clause) {
             left = sizeof(string);
             stringp = string;
 
-            switch (db_value_type(db_clause_value(clause))) {
+            switch (libdbo_value_type(libdbo_clause_value(clause))) {
             case DB_TYPE_INT32:
-                if (db_value_to_int32(db_clause_value(clause), &int32)) {
-                    db_result_list_free(result_list);
+                if (libdbo_value_to_int32(libdbo_clause_value(clause), &int32)) {
+                    libdbo_result_list_free(result_list);
                     return NULL;
                 }
                 if ((ret = snprintf(stringp, left, "/%d", int32)) >= left) {
-                    db_result_list_free(result_list);
+                    libdbo_result_list_free(result_list);
                     return NULL;
                 }
                 break;
 
             case DB_TYPE_UINT32:
-                if (db_value_to_uint32(db_clause_value(clause), &uint32)) {
-                    db_result_list_free(result_list);
+                if (libdbo_value_to_uint32(libdbo_clause_value(clause), &uint32)) {
+                    libdbo_result_list_free(result_list);
                     return NULL;
                 }
                 if ((ret = snprintf(stringp, left, "/%u", uint32)) >= left) {
-                    db_result_list_free(result_list);
+                    libdbo_result_list_free(result_list);
                     return NULL;
                 }
                 break;
 
             case DB_TYPE_INT64:
-                if (db_value_to_int64(db_clause_value(clause), &int64)) {
-                    db_result_list_free(result_list);
+                if (libdbo_value_to_int64(libdbo_clause_value(clause), &int64)) {
+                    libdbo_result_list_free(result_list);
                     return NULL;
                 }
                 if ((ret = snprintf(stringp, left, "/%ld", int64)) >= left) {
-                    db_result_list_free(result_list);
+                    libdbo_result_list_free(result_list);
                     return NULL;
                 }
                 break;
 
             case DB_TYPE_UINT64:
-                if (db_value_to_uint64(db_clause_value(clause), &uint64)) {
-                    db_result_list_free(result_list);
+                if (libdbo_value_to_uint64(libdbo_clause_value(clause), &uint64)) {
+                    libdbo_result_list_free(result_list);
                     return NULL;
                 }
                 if ((ret = snprintf(stringp, left, "/%lu", uint64)) >= left) {
-                    db_result_list_free(result_list);
+                    libdbo_result_list_free(result_list);
                     return NULL;
                 }
                 break;
 
             case DB_TYPE_TEXT:
-                if ((ret = snprintf(stringp, left, "/%s", db_value_text(db_clause_value(clause)))) >= left) {
-                    db_result_list_free(result_list);
+                if ((ret = snprintf(stringp, left, "/%s", libdbo_value_text(libdbo_clause_value(clause)))) >= left) {
+                    libdbo_result_list_free(result_list);
                     return NULL;
                 }
                 break;
 
             default:
-                db_result_list_free(result_list);
+                libdbo_result_list_free(result_list);
                 return NULL;
             }
             stringp += ret;
@@ -1161,16 +1161,16 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
 
             code = __db_backend_couchdb_request(backend_couchdb, string, COUCHDB_REQUEST_GET, NULL);
             if (code != 200) {
-                db_result_list_free(result_list);
+                libdbo_result_list_free(result_list);
                 return NULL;
             }
 
             if (__db_backend_couchdb_store_result(backend_couchdb, object, result_list, 0)) {
-                db_result_list_free(result_list);
+                libdbo_result_list_free(result_list);
                 return NULL;
             }
 
-            clause = db_clause_next(clause);
+            clause = libdbo_clause_next(clause);
         }
     }
     else if (have_clauses) {
@@ -1182,20 +1182,20 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
         left = sizeof(string);
         stringp = string;
 
-        if ((ret = snprintf(stringp, left, "function(doc) { if (doc.type == \"%s\"", db_object_table(object))) >= left) {
-            db_result_list_free(result_list);
+        if ((ret = snprintf(stringp, left, "function(doc) { if (doc.type == \"%s\"", libdbo_object_table(object))) >= left) {
+            libdbo_result_list_free(result_list);
             return NULL;
         }
         stringp += ret;
         left -= ret;
 
         if (__db_backend_couchdb_build_map_function(object, clause_list, &stringp, &left)) {
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
 
         if ((ret = snprintf(stringp, left, ") { emit(doc._id, doc.test_name); } }")) >= left) {
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
         stringp += ret;
@@ -1219,7 +1219,7 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
             json_decref(view);
             json_decref(views);
             json_decref(root);
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
 
@@ -1228,7 +1228,7 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
             json_decref(view);
             json_decref(views);
             json_decref(root);
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
         json_decref(map);
@@ -1237,7 +1237,7 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
             json_decref(view);
             json_decref(views);
             json_decref(root);
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
         json_decref(view);
@@ -1245,7 +1245,7 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
         if (json_object_set(root, "views", views)) {
             json_decref(views);
             json_decref(root);
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
         json_decref(views);
@@ -1255,7 +1255,7 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
 
         if ((ret = snprintf(stringp, left, "/_design/%s", hash_string)) >= left) {
             json_decref(root);
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
         stringp += ret;
@@ -1264,7 +1264,7 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
         code = __db_backend_couchdb_request(backend_couchdb, string, COUCHDB_REQUEST_PUT, root);
         json_decref(root);
         if (code != 201 && code != 202 && code != 409) {
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
 
@@ -1272,7 +1272,7 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
         stringp = string;
 
         if ((ret = snprintf(stringp, left, "/_design/%s/_view/view?include_docs=true", hash_string)) >= left) {
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
         stringp += ret;
@@ -1280,12 +1280,12 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
 
         code = __db_backend_couchdb_request(backend_couchdb, string, COUCHDB_REQUEST_GET, NULL);
         if (code != 200) {
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
 
         if (__db_backend_couchdb_store_result(backend_couchdb, object, result_list, 1)) {
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
     }
@@ -1293,8 +1293,8 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
         left = sizeof(string);
         stringp = string;
 
-        if ((ret = snprintf(stringp, left, "/_design/application/_view/%s?include_docs=true", db_object_table(object))) >= left) {
-            db_result_list_free(result_list);
+        if ((ret = snprintf(stringp, left, "/_design/application/_view/%s?include_docs=true", libdbo_object_table(object))) >= left) {
+            libdbo_result_list_free(result_list);
             return NULL;
         }
         stringp += ret;
@@ -1302,12 +1302,12 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
 
         code = __db_backend_couchdb_request(backend_couchdb, string, COUCHDB_REQUEST_GET, NULL);
         if (code != 200) {
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
 
         if (__db_backend_couchdb_store_result(backend_couchdb, object, result_list, 1)) {
-            db_result_list_free(result_list);
+            libdbo_result_list_free(result_list);
             return NULL;
         }
     }
@@ -1315,22 +1315,22 @@ static db_result_list_t* db_backend_couchdb_read(void* data, const db_object_t* 
     return result_list;
 }
 
-static int db_backend_couchdb_update(void* data, const db_object_t* object, const db_object_field_list_t* object_field_list, const db_value_set_t* value_set, const db_clause_list_t* clause_list) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)data;
+static int libdbo_backend_couchdb_update(void* data, const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set, const libdbo_clause_list_t* clause_list) {
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)data;
     long code;
     char url[4096];
     char* urlp;
     int ret, left;
-    const db_clause_t* clause;
-    db_type_int32_t int32;
-    db_type_uint32_t uint32;
-    db_type_int64_t int64;
-    db_type_uint64_t uint64;
-    const db_backend_meta_data_t* rev;
+    const libdbo_clause_t* clause;
+    libdbo_type_int32_t int32;
+    libdbo_type_uint32_t uint32;
+    libdbo_type_int64_t int64;
+    libdbo_type_uint64_t uint64;
+    const libdbo_backend_meta_data_t* rev;
     json_t* root;
     json_t* json_value;
-    const db_object_field_t* object_field;
-    const db_value_t* value;
+    const libdbo_object_field_t* object_field;
+    const libdbo_value_t* value;
     size_t value_pos;
     char string[1024];
     char* stringp;
@@ -1355,20 +1355,20 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
      * We need the rev from the backend_meta_data_list in order to update
      * objects in CouchDB
      */
-    if (!db_object_backend_meta_data_list(object)) {
+    if (!libdbo_object_backend_meta_data_list(object)) {
         return DB_ERROR_UNKNOWN;
     }
-    if (!(rev = db_backend_meta_data_list_find(db_object_backend_meta_data_list(object), "rev"))) {
+    if (!(rev = libdbo_backend_meta_data_list_find(libdbo_object_backend_meta_data_list(object), "rev"))) {
         return DB_ERROR_UNKNOWN;
     }
 
-    clause = db_clause_list_begin(clause_list);
+    clause = libdbo_clause_list_begin(clause_list);
     while (clause) {
-        if (db_clause_table(clause)) {
+        if (libdbo_clause_table(clause)) {
             /*
              * This backend only supports clauses on the objects table.
              */
-            if (strcmp(db_clause_table(clause), db_object_table(object))) {
+            if (strcmp(libdbo_clause_table(clause), libdbo_object_table(object))) {
                 return DB_ERROR_UNKNOWN;
             }
         }
@@ -1376,20 +1376,20 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
         /*
          * Only support updating by id
          */
-        if (strcmp(db_clause_field(clause), db_object_primary_key_name(object))) {
+        if (strcmp(libdbo_clause_field(clause), libdbo_object_primary_key_name(object))) {
             return DB_ERROR_UNKNOWN;
         }
-        clause = db_clause_next(clause);
+        clause = libdbo_clause_next(clause);
     }
 
-    clause = db_clause_list_begin(clause_list);
+    clause = libdbo_clause_list_begin(clause_list);
     while (clause) {
         left = sizeof(url);
         urlp = url;
 
-        switch (db_value_type(db_clause_value(clause))) {
+        switch (libdbo_value_type(libdbo_clause_value(clause))) {
         case DB_TYPE_INT32:
-            if (db_value_to_int32(db_clause_value(clause), &int32)) {
+            if (libdbo_value_to_int32(libdbo_clause_value(clause), &int32)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(urlp, left, "/%d", int32)) >= left) {
@@ -1398,7 +1398,7 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
             break;
 
         case DB_TYPE_UINT32:
-            if (db_value_to_uint32(db_clause_value(clause), &uint32)) {
+            if (libdbo_value_to_uint32(libdbo_clause_value(clause), &uint32)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(urlp, left, "/%u", uint32)) >= left) {
@@ -1407,7 +1407,7 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
             break;
 
         case DB_TYPE_INT64:
-            if (db_value_to_int64(db_clause_value(clause), &int64)) {
+            if (libdbo_value_to_int64(libdbo_clause_value(clause), &int64)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(urlp, left, "/%ld", int64)) >= left) {
@@ -1416,7 +1416,7 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
             break;
 
         case DB_TYPE_UINT64:
-            if (db_value_to_uint64(db_clause_value(clause), &uint64)) {
+            if (libdbo_value_to_uint64(libdbo_clause_value(clause), &uint64)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(urlp, left, "/%lu", uint64)) >= left) {
@@ -1425,7 +1425,7 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
             break;
 
         case DB_TYPE_TEXT:
-            if ((ret = snprintf(urlp, left, "/%s", db_value_text(db_clause_value(clause)))) >= left) {
+            if ((ret = snprintf(urlp, left, "/%s", libdbo_value_text(libdbo_clause_value(clause)))) >= left) {
                 return DB_ERROR_UNKNOWN;
             }
             break;
@@ -1439,17 +1439,17 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
             return DB_ERROR_UNKNOWN;
         }
 
-        object_field = db_object_field_list_begin(object_field_list);
+        object_field = libdbo_object_field_list_begin(object_field_list);
         value_pos = 0;
         while (object_field) {
-            if (!(value = db_value_set_at(value_set, value_pos))) {
+            if (!(value = libdbo_value_set_at(value_set, value_pos))) {
                 json_decref(root);
                 return DB_ERROR_UNKNOWN;
             }
 
-            switch (db_value_type(value)) {
+            switch (libdbo_value_type(value)) {
             case DB_TYPE_INT32:
-                if (db_value_to_int32(value, &int32)) {
+                if (libdbo_value_to_int32(value, &int32)) {
                     json_decref(root);
                     return DB_ERROR_UNKNOWN;
                 }
@@ -1460,7 +1460,7 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
                 break;
 
             case DB_TYPE_UINT32:
-                if (db_value_to_uint32(value, &uint32)) {
+                if (libdbo_value_to_uint32(value, &uint32)) {
                     json_decref(root);
                     return DB_ERROR_UNKNOWN;
                 }
@@ -1472,7 +1472,7 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
 
 #ifdef JSON_INTEGER_IS_LONG_LONG
             case DB_TYPE_INT64:
-                if (db_value_to_int64(value, &int64)) {
+                if (libdbo_value_to_int64(value, &int64)) {
                     json_decref(root);
                     return DB_ERROR_UNKNOWN;
                 }
@@ -1483,7 +1483,7 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
                 break;
 
             case DB_TYPE_UINT64:
-                if (db_value_to_uint64(value, &uint64)) {
+                if (libdbo_value_to_uint64(value, &uint64)) {
                     json_decref(root);
                     return DB_ERROR_UNKNOWN;
                 }
@@ -1495,14 +1495,14 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
 #endif
 
             case DB_TYPE_TEXT:
-                if (!(json_value = json_string(db_value_text(value)))) {
+                if (!(json_value = json_string(libdbo_value_text(value)))) {
                     json_decref(root);
                     return DB_ERROR_UNKNOWN;
                 }
                 break;
 
             case DB_TYPE_ENUM:
-                if (db_value_enum_value(value, &int32)) {
+                if (libdbo_value_enum_value(value, &int32)) {
                     json_decref(root);
                     return DB_ERROR_UNKNOWN;
                 }
@@ -1520,7 +1520,7 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
             left = sizeof(string);
             stringp = string;
 
-            if ((ret = snprintf(stringp, left, "%s_%s", db_object_table(object), db_object_field_name(object_field))) >= left) {
+            if ((ret = snprintf(stringp, left, "%s_%s", libdbo_object_table(object), libdbo_object_field_name(object_field))) >= left) {
                 json_decref(json_value);
                 json_decref(root);
                 return DB_ERROR_UNKNOWN;
@@ -1532,10 +1532,10 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
                 return DB_ERROR_UNKNOWN;
             }
 
-            object_field = db_object_field_next(object_field);
+            object_field = libdbo_object_field_next(object_field);
         }
 
-        if (!(json_value = json_string(db_object_table(object)))) {
+        if (!(json_value = json_string(libdbo_object_table(object)))) {
             json_decref(root);
             return DB_ERROR_UNKNOWN;
         }
@@ -1545,7 +1545,7 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
             return DB_ERROR_UNKNOWN;
         }
 
-        if (!(json_value = json_string(db_value_text(db_backend_meta_data_value(rev))))) {
+        if (!(json_value = json_string(libdbo_value_text(libdbo_backend_meta_data_value(rev))))) {
             json_decref(root);
             return DB_ERROR_UNKNOWN;
         }
@@ -1561,23 +1561,23 @@ static int db_backend_couchdb_update(void* data, const db_object_t* object, cons
             return DB_ERROR_UNKNOWN;
         }
 
-        clause = db_clause_next(clause);
+        clause = libdbo_clause_next(clause);
     }
     return DB_OK;
 }
 
-static int db_backend_couchdb_delete(void* data, const db_object_t* object, const db_clause_list_t* clause_list) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)data;
+static int libdbo_backend_couchdb_delete(void* data, const libdbo_object_t* object, const libdbo_clause_list_t* clause_list) {
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)data;
     long code;
     char url[4096];
     char* urlp;
     int ret, left;
-    const db_clause_t* clause;
-    db_type_int32_t int32;
-    db_type_uint32_t uint32;
-    db_type_int64_t int64;
-    db_type_uint64_t uint64;
-    const db_backend_meta_data_t* rev;
+    const libdbo_clause_t* clause;
+    libdbo_type_int32_t int32;
+    libdbo_type_uint32_t uint32;
+    libdbo_type_int64_t int64;
+    libdbo_type_uint64_t uint64;
+    const libdbo_backend_meta_data_t* rev;
 
     if (!__couchdb_initialized) {
         return DB_ERROR_UNKNOWN;
@@ -1593,20 +1593,20 @@ static int db_backend_couchdb_delete(void* data, const db_object_t* object, cons
      * We need the rev from the backend_meta_data_list in order to delete
      * objects in CouchDB
      */
-    if (!db_object_backend_meta_data_list(object)) {
+    if (!libdbo_object_backend_meta_data_list(object)) {
         return DB_ERROR_UNKNOWN;
     }
-    if (!(rev = db_backend_meta_data_list_find(db_object_backend_meta_data_list(object), "rev"))) {
+    if (!(rev = libdbo_backend_meta_data_list_find(libdbo_object_backend_meta_data_list(object), "rev"))) {
         return DB_ERROR_UNKNOWN;
     }
 
-    clause = db_clause_list_begin(clause_list);
+    clause = libdbo_clause_list_begin(clause_list);
     while (clause) {
-        if (db_clause_table(clause)) {
+        if (libdbo_clause_table(clause)) {
             /*
              * This backend only supports clauses on the objects table.
              */
-            if (strcmp(db_clause_table(clause), db_object_table(object))) {
+            if (strcmp(libdbo_clause_table(clause), libdbo_object_table(object))) {
                 return DB_ERROR_UNKNOWN;
             }
         }
@@ -1614,20 +1614,20 @@ static int db_backend_couchdb_delete(void* data, const db_object_t* object, cons
         /*
          * Only support deleting by id
          */
-        if (strcmp(db_clause_field(clause), db_object_primary_key_name(object))) {
+        if (strcmp(libdbo_clause_field(clause), libdbo_object_primary_key_name(object))) {
             return DB_ERROR_UNKNOWN;
         }
-        clause = db_clause_next(clause);
+        clause = libdbo_clause_next(clause);
     }
 
-    clause = db_clause_list_begin(clause_list);
+    clause = libdbo_clause_list_begin(clause_list);
     while (clause) {
         left = sizeof(url);
         urlp = url;
 
-        switch (db_value_type(db_clause_value(clause))) {
+        switch (libdbo_value_type(libdbo_clause_value(clause))) {
         case DB_TYPE_INT32:
-            if (db_value_to_int32(db_clause_value(clause), &int32)) {
+            if (libdbo_value_to_int32(libdbo_clause_value(clause), &int32)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(urlp, left, "/%d", int32)) >= left) {
@@ -1636,7 +1636,7 @@ static int db_backend_couchdb_delete(void* data, const db_object_t* object, cons
             break;
 
         case DB_TYPE_UINT32:
-            if (db_value_to_uint32(db_clause_value(clause), &uint32)) {
+            if (libdbo_value_to_uint32(libdbo_clause_value(clause), &uint32)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(urlp, left, "/%u", uint32)) >= left) {
@@ -1645,7 +1645,7 @@ static int db_backend_couchdb_delete(void* data, const db_object_t* object, cons
             break;
 
         case DB_TYPE_INT64:
-            if (db_value_to_int64(db_clause_value(clause), &int64)) {
+            if (libdbo_value_to_int64(libdbo_clause_value(clause), &int64)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(urlp, left, "/%ld", int64)) >= left) {
@@ -1654,7 +1654,7 @@ static int db_backend_couchdb_delete(void* data, const db_object_t* object, cons
             break;
 
         case DB_TYPE_UINT64:
-            if (db_value_to_uint64(db_clause_value(clause), &uint64)) {
+            if (libdbo_value_to_uint64(libdbo_clause_value(clause), &uint64)) {
                 return DB_ERROR_UNKNOWN;
             }
             if ((ret = snprintf(urlp, left, "/%lu", uint64)) >= left) {
@@ -1663,7 +1663,7 @@ static int db_backend_couchdb_delete(void* data, const db_object_t* object, cons
             break;
 
         case DB_TYPE_TEXT:
-            if ((ret = snprintf(urlp, left, "/%s", db_value_text(db_clause_value(clause)))) >= left) {
+            if ((ret = snprintf(urlp, left, "/%s", libdbo_value_text(libdbo_clause_value(clause)))) >= left) {
                 return DB_ERROR_UNKNOWN;
             }
             break;
@@ -1674,7 +1674,7 @@ static int db_backend_couchdb_delete(void* data, const db_object_t* object, cons
         urlp += ret;
         left -= ret;
 
-        if ((ret = snprintf(urlp, left, "?rev=%s", db_value_text(db_backend_meta_data_value(rev)))) >= left) {
+        if ((ret = snprintf(urlp, left, "?rev=%s", libdbo_value_text(libdbo_backend_meta_data_value(rev)))) >= left) {
             return DB_ERROR_UNKNOWN;
         }
 
@@ -1683,34 +1683,34 @@ static int db_backend_couchdb_delete(void* data, const db_object_t* object, cons
             return DB_ERROR_UNKNOWN;
         }
 
-        clause = db_clause_next(clause);
+        clause = libdbo_clause_next(clause);
     }
     return DB_OK;
 }
 
-static int db_backend_couchdb_count(void* data, const db_object_t* object, const db_join_list_t* join_list, const db_clause_list_t* clause_list, size_t* count) {
+static int libdbo_backend_couchdb_count(void* data, const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list, size_t* count) {
     return DB_ERROR_UNKNOWN;
 }
 
-static void db_backend_couchdb_free(void* data) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)data;
+static void libdbo_backend_couchdb_free(void* data) {
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)data;
 
     if (backend_couchdb) {
         if (backend_couchdb->url) {
             free(backend_couchdb->url);
         }
         if (backend_couchdb->curl) {
-            db_backend_couchdb_disconnect(backend_couchdb);
+            libdbo_backend_couchdb_disconnect(backend_couchdb);
         }
         if (backend_couchdb->buffer) {
             free(backend_couchdb->buffer);
         }
-        db_mm_delete(&__couchdb_alloc, backend_couchdb);
+        libdbo_mm_delete(&__couchdb_alloc, backend_couchdb);
     }
 }
 
-static int db_backend_couchdb_transaction_begin(void* data) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)data;
+static int libdbo_backend_couchdb_transaction_begin(void* data) {
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)data;
 
     if (!__couchdb_initialized) {
         return DB_ERROR_UNKNOWN;
@@ -1722,8 +1722,8 @@ static int db_backend_couchdb_transaction_begin(void* data) {
     return DB_OK;
 }
 
-static int db_backend_couchdb_transaction_commit(void* data) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)data;
+static int libdbo_backend_couchdb_transaction_commit(void* data) {
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)data;
 
     if (!__couchdb_initialized) {
         return DB_ERROR_UNKNOWN;
@@ -1735,8 +1735,8 @@ static int db_backend_couchdb_transaction_commit(void* data) {
     return DB_OK;
 }
 
-static int db_backend_couchdb_transaction_rollback(void* data) {
-    db_backend_couchdb_t* backend_couchdb = (db_backend_couchdb_t*)data;
+static int libdbo_backend_couchdb_transaction_rollback(void* data) {
+    libdbo_backend_couchdb_t* backend_couchdb = (libdbo_backend_couchdb_t*)data;
 
     if (!__couchdb_initialized) {
         return DB_ERROR_UNKNOWN;
@@ -1748,29 +1748,29 @@ static int db_backend_couchdb_transaction_rollback(void* data) {
     return DB_OK;
 }
 
-db_backend_handle_t* db_backend_couchdb_new_handle(void) {
-    db_backend_handle_t* backend_handle = NULL;
-    db_backend_couchdb_t* backend_couchdb =
-        (db_backend_couchdb_t*)db_mm_new0(&__couchdb_alloc);
+libdbo_backend_handle_t* libdbo_backend_couchdb_new_handle(void) {
+    libdbo_backend_handle_t* backend_handle = NULL;
+    libdbo_backend_couchdb_t* backend_couchdb =
+        (libdbo_backend_couchdb_t*)libdbo_mm_new0(&__couchdb_alloc);
 
-    if (backend_couchdb && (backend_handle = db_backend_handle_new())) {
-        if (db_backend_handle_set_data(backend_handle, (void*)backend_couchdb)
-            || db_backend_handle_set_initialize(backend_handle, db_backend_couchdb_initialize)
-            || db_backend_handle_set_shutdown(backend_handle, db_backend_couchdb_shutdown)
-            || db_backend_handle_set_connect(backend_handle, db_backend_couchdb_connect)
-            || db_backend_handle_set_disconnect(backend_handle, db_backend_couchdb_disconnect)
-            || db_backend_handle_set_create(backend_handle, db_backend_couchdb_create)
-            || db_backend_handle_set_read(backend_handle, db_backend_couchdb_read)
-            || db_backend_handle_set_update(backend_handle, db_backend_couchdb_update)
-            || db_backend_handle_set_delete(backend_handle, db_backend_couchdb_delete)
-            || db_backend_handle_set_count(backend_handle, db_backend_couchdb_count)
-            || db_backend_handle_set_free(backend_handle, db_backend_couchdb_free)
-            || db_backend_handle_set_transaction_begin(backend_handle, db_backend_couchdb_transaction_begin)
-            || db_backend_handle_set_transaction_commit(backend_handle, db_backend_couchdb_transaction_commit)
-            || db_backend_handle_set_transaction_rollback(backend_handle, db_backend_couchdb_transaction_rollback))
+    if (backend_couchdb && (backend_handle = libdbo_backend_handle_new())) {
+        if (libdbo_backend_handle_set_data(backend_handle, (void*)backend_couchdb)
+            || libdbo_backend_handle_set_initialize(backend_handle, libdbo_backend_couchdb_initialize)
+            || libdbo_backend_handle_set_shutdown(backend_handle, libdbo_backend_couchdb_shutdown)
+            || libdbo_backend_handle_set_connect(backend_handle, libdbo_backend_couchdb_connect)
+            || libdbo_backend_handle_set_disconnect(backend_handle, libdbo_backend_couchdb_disconnect)
+            || libdbo_backend_handle_set_create(backend_handle, libdbo_backend_couchdb_create)
+            || libdbo_backend_handle_set_read(backend_handle, libdbo_backend_couchdb_read)
+            || libdbo_backend_handle_set_update(backend_handle, libdbo_backend_couchdb_update)
+            || libdbo_backend_handle_set_delete(backend_handle, libdbo_backend_couchdb_delete)
+            || libdbo_backend_handle_set_count(backend_handle, libdbo_backend_couchdb_count)
+            || libdbo_backend_handle_set_free(backend_handle, libdbo_backend_couchdb_free)
+            || libdbo_backend_handle_set_transaction_begin(backend_handle, libdbo_backend_couchdb_transaction_begin)
+            || libdbo_backend_handle_set_transaction_commit(backend_handle, libdbo_backend_couchdb_transaction_commit)
+            || libdbo_backend_handle_set_transaction_rollback(backend_handle, libdbo_backend_couchdb_transaction_rollback))
         {
-            db_backend_handle_free(backend_handle);
-            db_mm_delete(&__couchdb_alloc, backend_couchdb);
+            libdbo_backend_handle_free(backend_handle);
+            libdbo_mm_delete(&__couchdb_alloc, backend_couchdb);
             return NULL;
         }
     }

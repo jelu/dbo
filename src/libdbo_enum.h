@@ -25,7 +25,7 @@
  *
  */
 /*
- * Based on enforcer-ng/src/db/db_error.h header file from the OpenDNSSEC
+ * Based on enforcer-ng/src/db/db_enum.h header file from the OpenDNSSEC
  * project.
  *
  * Copyright (c) 2014 .SE (The Internet Infrastructure Foundation).
@@ -33,27 +33,44 @@
  * All rights reserved.
  */
 
-/** \file db_error.h */
-/** \defgroup db_error db_error
- * Database Error.
- * These are the various errors that the database layer can return.
+/** \file libdbo_enum.h */
+/** \defgroup libdbo_enum libdbo_enum
+ * Database Enum Type.
+ * Container for database enums.
  */
 
-#ifndef libdbo_db_error_h
-#define libdbo_db_error_h
+#ifndef libdbo_enum_h
+#define libdbo_enum_h
 
-/** \addtogroup db_object */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+struct libdbo_enum;
+#endif
+
+/** \addtogroup libdbo_enum */
 /** \{ */
 
 /**
- * A successful operation.
+ * A enumerate value, represented by a character string and integer.
+ * Used for converting database enumerate values from/to text and integer and is
+ * often given as a NULL terminated list.
  */
-#define DB_OK 0
-/**
- * A failed operation with an unknown error.
- */
-#define DB_ERROR_UNKNOWN 1
+typedef struct libdbo_enum libdbo_enum_t;
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+struct libdbo_enum {
+    const char* text;
+    int value;
+};
+#endif
 
 /** \} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

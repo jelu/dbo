@@ -25,56 +25,35 @@
  *
  */
 /*
- * Based on enforcer-ng/src/db/db_backend_mysql.h header file from the
- * OpenDNSSEC project.
+ * Based on enforcer-ng/src/db/db_error.h header file from the OpenDNSSEC
+ * project.
  *
  * Copyright (c) 2014 .SE (The Internet Infrastructure Foundation).
  * Copyright (c) 2014 OpenDNSSEC AB (svb)
  * All rights reserved.
  */
 
-/** \file db_backend_mysql.h */
-/** \defgroup db_backend_mysql db_backend_mysql
- * Database Backend MySQL.
- * These are the functions for creating a MySQL backend handle.
+/** \file libdbo_error.h */
+/** \defgroup libdbo_error libdbo_error
+ * Database Error.
+ * These are the various errors that the database layer can return.
  */
 
-#ifndef libdbo_db_backend_mysql_h
-#define libdbo_db_backend_mysql_h
+#ifndef libdbo_error_h
+#define libdbo_error_h
 
-#include "db_backend.h"
-
-/** \addtogroup db_backend_mysql */
+/** \addtogroup libdbo_object */
 /** \{ */
 
 /**
- * Default connection timeout for MySQL.
+ * A successful operation.
  */
-#define DB_BACKEND_MYSQL_DEFAULT_TIMEOUT 30
+#define DB_OK 0
 /**
- * Minimal allocation size when fetching varchar, text or blobs.
+ * A failed operation with an unknown error.
  */
-#define DB_BACKEND_MYSQL_STRING_MIN_SIZE 64
-/**
- * Maximum allocation size when fetching varchar, text or blobs. If the value in
- * the database is larger then this then the fetch will fail.
- */
-#define DB_BACKEND_MYSQL_STRING_MAX_SIZE 4096
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/**
- * Create a new database backend handle for MySQL.
- * \return a db_backend_handle_t pointer or NULL on error.
- */
-db_backend_handle_t* db_backend_mysql_new_handle(void);
+#define DB_ERROR_UNKNOWN 1
 
 /** \} */
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

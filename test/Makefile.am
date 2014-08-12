@@ -58,11 +58,11 @@ CLEANFILES = $(BUILT_SOURCES)
 
 if HAVE_SQLITE3
 BUILT_SOURCES += schema.sqlite
-CLEANFILES += db_schema_sqlite.c db_schema_sqlite.h
+CLEANFILES += libdbo_schema_sqlite.c libdbo_schema_sqlite.h
 endif
 if TEST_MYSQL
 BUILT_SOURCES += drop.mysql schema.mysql
-CLEANFILES += db_schema_mysql.c db_schema_mysql.h
+CLEANFILES += libdbo_schema_mysql.c libdbo_schema_mysql.h
 endif
 
 test_SOURCES = \

@@ -33,26 +33,26 @@
  * All rights reserved.
  */
 
-#include "db_join.h"
-#include "db_error.h"
+#include "libdbo_join.h"
+#include "libdbo_error.h"
 
-#include "db_mm.h"
+#include "libdbo_mm.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 /* DB JOIN */
 
-static db_mm_t __join_alloc = DB_MM_T_STATIC_NEW(sizeof(db_join_t));
+static libdbo_mm_t __join_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_join_t));
 
-db_join_t* db_join_new(void) {
-    db_join_t* join =
-        (db_join_t*)db_mm_new0(&__join_alloc);
+libdbo_join_t* libdbo_join_new(void) {
+    libdbo_join_t* join =
+        (libdbo_join_t*)libdbo_mm_new0(&__join_alloc);
 
     return join;
 }
 
-void db_join_free(db_join_t* join) {
+void libdbo_join_free(libdbo_join_t* join) {
     if (join) {
         if (join->from_table) {
             free(join->from_table);
@@ -66,11 +66,11 @@ void db_join_free(db_join_t* join) {
         if (join->to_field) {
             free(join->to_field);
         }
-        db_mm_delete(&__join_alloc, join);
+        libdbo_mm_delete(&__join_alloc, join);
     }
 }
 
-const char* db_join_from_table(const db_join_t* join) {
+const char* libdbo_join_from_table(const libdbo_join_t* join) {
     if (!join) {
         return NULL;
     }
@@ -78,7 +78,7 @@ const char* db_join_from_table(const db_join_t* join) {
     return join->from_table;
 }
 
-const char* db_join_from_field(const db_join_t* join) {
+const char* libdbo_join_from_field(const libdbo_join_t* join) {
     if (!join) {
         return NULL;
     }
@@ -86,7 +86,7 @@ const char* db_join_from_field(const db_join_t* join) {
     return join->from_field;
 }
 
-const char* db_join_to_table(const db_join_t* join) {
+const char* libdbo_join_to_table(const libdbo_join_t* join) {
     if (!join) {
         return NULL;
     }
@@ -94,7 +94,7 @@ const char* db_join_to_table(const db_join_t* join) {
     return join->to_table;
 }
 
-const char* db_join_to_field(const db_join_t* join) {
+const char* libdbo_join_to_field(const libdbo_join_t* join) {
     if (!join) {
         return NULL;
     }
@@ -102,7 +102,7 @@ const char* db_join_to_field(const db_join_t* join) {
     return join->to_field;
 }
 
-int db_join_set_from_table(db_join_t* join, const char* from_table) {
+int libdbo_join_set_from_table(libdbo_join_t* join, const char* from_table) {
     char* new_from_table;
 
     if (!join) {
@@ -120,7 +120,7 @@ int db_join_set_from_table(db_join_t* join, const char* from_table) {
     return DB_OK;
 }
 
-int db_join_set_from_field(db_join_t* join, const char* from_field) {
+int libdbo_join_set_from_field(libdbo_join_t* join, const char* from_field) {
     char* new_from_field;
 
     if (!join) {
@@ -138,7 +138,7 @@ int db_join_set_from_field(db_join_t* join, const char* from_field) {
     return DB_OK;
 }
 
-int db_join_set_to_table(db_join_t* join, const char* to_table) {
+int libdbo_join_set_to_table(libdbo_join_t* join, const char* to_table) {
     char* new_to_table;
 
     if (!join) {
@@ -156,7 +156,7 @@ int db_join_set_to_table(db_join_t* join, const char* to_table) {
     return DB_OK;
 }
 
-int db_join_set_to_field(db_join_t* join, const char* to_field) {
+int libdbo_join_set_to_field(libdbo_join_t* join, const char* to_field) {
     char* new_to_field;
 
     if (!join) {
@@ -174,7 +174,7 @@ int db_join_set_to_field(db_join_t* join, const char* to_field) {
     return DB_OK;
 }
 
-int db_join_not_empty(const db_join_t* join) {
+int libdbo_join_not_empty(const libdbo_join_t* join) {
     if (!join) {
         return DB_ERROR_UNKNOWN;
     }
@@ -193,7 +193,7 @@ int db_join_not_empty(const db_join_t* join) {
     return DB_OK;
 }
 
-const db_join_t* db_join_next(const db_join_t* join) {
+const libdbo_join_t* libdbo_join_next(const libdbo_join_t* join) {
     if (!join) {
         return NULL;
     }
@@ -203,39 +203,39 @@ const db_join_t* db_join_next(const db_join_t* join) {
 
 /* DB JOIN LIST */
 
-static db_mm_t __join_list_alloc = DB_MM_T_STATIC_NEW(sizeof(db_join_list_t));
+static libdbo_mm_t __join_list_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_join_list_t));
 
-db_join_list_t* db_join_list_new(void) {
-    db_join_list_t* join_list =
-        (db_join_list_t*)db_mm_new0(&__join_list_alloc);
+libdbo_join_list_t* libdbo_join_list_new(void) {
+    libdbo_join_list_t* join_list =
+        (libdbo_join_list_t*)libdbo_mm_new0(&__join_list_alloc);
 
     return join_list;
 }
 
-void db_join_list_free(db_join_list_t* join_list) {
+void libdbo_join_list_free(libdbo_join_list_t* join_list) {
     if (join_list) {
         if (join_list->begin) {
-            db_join_t* this = join_list->begin;
-            db_join_t* next = NULL;
+            libdbo_join_t* this = join_list->begin;
+            libdbo_join_t* next = NULL;
 
             while (this) {
                 next = this->next;
-                db_join_free(this);
+                libdbo_join_free(this);
                 this = next;
             }
         }
-        db_mm_delete(&__join_list_alloc, join_list);
+        libdbo_mm_delete(&__join_list_alloc, join_list);
     }
 }
 
-int db_join_list_add(db_join_list_t* join_list, db_join_t* join) {
+int libdbo_join_list_add(libdbo_join_list_t* join_list, libdbo_join_t* join) {
     if (!join_list) {
         return DB_ERROR_UNKNOWN;
     }
     if (!join) {
         return DB_ERROR_UNKNOWN;
     }
-    if (db_join_not_empty(join)) {
+    if (libdbo_join_not_empty(join)) {
         return DB_ERROR_UNKNOWN;
     }
     if (join->next) {
@@ -257,7 +257,7 @@ int db_join_list_add(db_join_list_t* join_list, db_join_t* join) {
     return DB_OK;
 }
 
-const db_join_t* db_join_list_begin(const db_join_list_t* join_list) {
+const libdbo_join_t* libdbo_join_list_begin(const libdbo_join_list_t* join_list) {
     if (!join_list) {
         return NULL;
     }

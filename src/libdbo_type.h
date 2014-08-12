@@ -33,16 +33,16 @@
  * All rights reserved.
  */
 
-/** \file db_type.h */
-/** \defgroup db_type db_type
+/** \file libdbo_type.h */
+/** \defgroup libdbo_type libdbo_type
  * Database Types.
  * These are the supported database values that can be used to retrieve or store
  * values in the backends. We also define our own 32/64bits types to use with
- * the database layer. \see db_value
+ * the database layer. \see libdbo_value
  */
 
-#ifndef libdbo_db_type_h
-#define libdbo_db_type_h
+#ifndef libdbo_type_h
+#define libdbo_type_h
 
 #include <stdint.h>
 
@@ -50,25 +50,25 @@
 extern "C" {
 #endif
 
-/** \addtogroup db_type */
+/** \addtogroup libdbo_type */
 /** \{ */
 
 /**
  * A signed 32bit integer.
  */
-typedef int32_t db_type_int32_t;
+typedef int32_t libdbo_type_int32_t;
 /**
  * An unsigned 32bit integer.
  */
-typedef uint32_t db_type_uint32_t;
+typedef uint32_t libdbo_type_uint32_t;
 /**
  * A signed 64bit integer.
  */
-typedef int64_t db_type_int64_t;
+typedef int64_t libdbo_type_int64_t;
 /**
  * An unsigned 64bit integer.
  */
-typedef uint64_t db_type_uint64_t;
+typedef uint64_t libdbo_type_uint64_t;
 /**
  * The type of a database value.
  */
@@ -82,19 +82,19 @@ typedef enum {
      */
     DB_TYPE_PRIMARY_KEY,
     /**
-     * A db_type_int32_t.
+     * A libdbo_type_int32_t.
      */
     DB_TYPE_INT32,
     /**
-     * A db_type_uint32_t.
+     * A libdbo_type_uint32_t.
      */
     DB_TYPE_UINT32,
     /**
-     * A db_type_int64_t.
+     * A libdbo_type_int64_t.
      */
     DB_TYPE_INT64,
     /**
-     * A db_type_uint64_t.
+     * A libdbo_type_uint64_t.
      */
     DB_TYPE_UINT64,
     /**
@@ -116,7 +116,7 @@ typedef enum {
      * any type.
      */
     DB_TYPE_REVISION
-} db_type_t;
+} libdbo_type_t;
 
 /** \} */
 

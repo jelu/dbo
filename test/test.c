@@ -46,11 +46,11 @@
 
 #include "CUnit/Basic.h"
 
-#include "db_backend.h"
-#include "db_mm.h"
+#include "libdbo_backend.h"
+#include "libdbo_mm.h"
 
-void test_db_backend_factory_shutdown(void) {
-    CU_ASSERT_FATAL(!db_backend_factory_shutdown());
+void test_libdbo_backend_factory_shutdown(void) {
+    CU_ASSERT_FATAL(!libdbo_backend_factory_shutdown());
 }
 
 int main(void) {
@@ -66,8 +66,8 @@ int main(void) {
         return CU_get_error();
     }
 
-    if (!CU_add_test(pSuite, "test of db_mm_init", test_db_mm_init)
-        || !CU_add_test(pSuite, "test of db_mm", test_db_mm))
+    if (!CU_add_test(pSuite, "test of libdbo_mm_init", test_libdbo_mm_init)
+        || !CU_add_test(pSuite, "test of libdbo_mm", test_libdbo_mm))
     {
         CU_cleanup_registry();
         return CU_get_error();
@@ -79,25 +79,25 @@ int main(void) {
         return CU_get_error();
     }
 
-    if (!CU_add_test(pSuite, "test of db_backend_handle", test_class_db_backend_handle)
-        || !CU_add_test(pSuite, "test of db_backend", test_class_db_backend)
-        || !CU_add_test(pSuite, "test of db_backend_meta_data", test_class_db_backend_meta_data)
-        || !CU_add_test(pSuite, "test of db_backend_meta_data_list", test_class_db_backend_meta_data_list)
-        || !CU_add_test(pSuite, "test of db_clause", test_class_db_clause)
-        || !CU_add_test(pSuite, "test of db_clause_list", test_class_db_clause_list)
-        || !CU_add_test(pSuite, "test of db_configuration", test_class_db_configuration)
-        || !CU_add_test(pSuite, "test of db_configuration_list", test_class_db_configuration_list)
-        || !CU_add_test(pSuite, "test of db_connection", test_class_db_connection)
-        || !CU_add_test(pSuite, "test of db_join", test_class_db_join)
-        || !CU_add_test(pSuite, "test of db_join_list", test_class_db_join_list)
-        || !CU_add_test(pSuite, "test of db_object_field", test_class_db_object_field)
-        || !CU_add_test(pSuite, "test of db_object_field_list", test_class_db_object_field_list)
-        || !CU_add_test(pSuite, "test of db_object", test_class_db_object)
-        || !CU_add_test(pSuite, "test of db_value_set", test_class_db_value_set)
-        || !CU_add_test(pSuite, "test of db_result", test_class_db_result)
-        || !CU_add_test(pSuite, "test of db_result_list", test_class_db_result_list)
-        || !CU_add_test(pSuite, "test of db_value", test_class_db_value)
-        || !CU_add_test(pSuite, "test of db_*_free", test_class_end))
+    if (!CU_add_test(pSuite, "test of libdbo_backend_handle", test_class_libdbo_backend_handle)
+        || !CU_add_test(pSuite, "test of libdbo_backend", test_class_libdbo_backend)
+        || !CU_add_test(pSuite, "test of libdbo_backend_meta_data", test_class_libdbo_backend_meta_data)
+        || !CU_add_test(pSuite, "test of libdbo_backend_meta_data_list", test_class_libdbo_backend_meta_data_list)
+        || !CU_add_test(pSuite, "test of libdbo_clause", test_class_libdbo_clause)
+        || !CU_add_test(pSuite, "test of libdbo_clause_list", test_class_libdbo_clause_list)
+        || !CU_add_test(pSuite, "test of libdbo_configuration", test_class_libdbo_configuration)
+        || !CU_add_test(pSuite, "test of libdbo_configuration_list", test_class_libdbo_configuration_list)
+        || !CU_add_test(pSuite, "test of libdbo_connection", test_class_libdbo_connection)
+        || !CU_add_test(pSuite, "test of libdbo_join", test_class_libdbo_join)
+        || !CU_add_test(pSuite, "test of libdbo_join_list", test_class_libdbo_join_list)
+        || !CU_add_test(pSuite, "test of libdbo_object_field", test_class_libdbo_object_field)
+        || !CU_add_test(pSuite, "test of libdbo_object_field_list", test_class_libdbo_object_field_list)
+        || !CU_add_test(pSuite, "test of libdbo_object", test_class_libdbo_object)
+        || !CU_add_test(pSuite, "test of libdbo_value_set", test_class_libdbo_value_set)
+        || !CU_add_test(pSuite, "test of libdbo_result", test_class_libdbo_result)
+        || !CU_add_test(pSuite, "test of libdbo_result_list", test_class_libdbo_result_list)
+        || !CU_add_test(pSuite, "test of libdbo_value", test_class_libdbo_value)
+        || !CU_add_test(pSuite, "test of libdbo_*_free", test_class_end))
     {
         CU_cleanup_registry();
         return CU_get_error();
@@ -268,7 +268,7 @@ int main(void) {
         return CU_get_error();
     }
 
-    if (!CU_add_test(pSuite, "test of db_backend_factory_shutdown", test_db_backend_factory_shutdown)) {
+    if (!CU_add_test(pSuite, "test of libdbo_backend_factory_shutdown", test_libdbo_backend_factory_shutdown)) {
         CU_cleanup_registry();
         return CU_get_error();
     }
@@ -279,7 +279,7 @@ int main(void) {
         return CU_get_error();
     }
 
-    if (!CU_add_test(pSuite, "test of db_mm usage with external malloc/free", test_db_mm_extern)) {
+    if (!CU_add_test(pSuite, "test of libdbo_mm usage with external malloc/free", test_libdbo_mm_extern)) {
         CU_cleanup_registry();
         return CU_get_error();
     }

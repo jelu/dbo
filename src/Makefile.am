@@ -25,22 +25,22 @@
 MAINTAINERCLEANFILES = $(srcdir)/Makefile.in
 
 lib_LTLIBRARIES = libdbo.la
-libdbo_la_SOURCES = db_mm.c db_mm.h \
-	db_backend.c db_backend.h \
-	db_clause.c db_clause.h \
-	db_configuration.c db_configuration.h \
-	db_connection.c db_connection.h \
-	db_object.c db_object.h \
-	db_result.c db_result.h \
-	db_type.h \
-	db_value.c db_value.h \
-	db_join.c db_join.h \
-	db_error.h
+libdbo_la_SOURCES = libdbo_mm.c libdbo_mm.h \
+	libdbo_backend.c libdbo_backend.h \
+	libdbo_clause.c libdbo_clause.h \
+	libdbo_configuration.c libdbo_configuration.h \
+	libdbo_connection.c libdbo_connection.h \
+	libdbo_object.c libdbo_object.h \
+	libdbo_result.c libdbo_result.h \
+	libdbo_type.h \
+	libdbo_value.c libdbo_value.h \
+	libdbo_join.c libdbo_join.h \
+	libdbo_error.h
 if HAVE_SQLITE3
-libdbo_la_SOURCES += db_backend_sqlite.c db_backend_sqlite.h
+libdbo_la_SOURCES += libdbo_backend_sqlite.c libdbo_backend_sqlite.h
 endif
 if HAVE_MYSQL
-libdbo_la_SOURCES += db_backend_mysql.c db_backend_mysql.h
+libdbo_la_SOURCES += libdbo_backend_mysql.c libdbo_backend_mysql.h
 endif
 libdbo_la_CFLAGS = \
 	@SQLITE3_CFLAGS@ \

@@ -33,26 +33,26 @@
  * All rights reserved.
  */
 
-#include "db_configuration.h"
-#include "db_error.h"
+#include "libdbo_configuration.h"
+#include "libdbo_error.h"
 
-#include "db_mm.h"
+#include "libdbo_mm.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 /* DB CONFIGURATION */
 
-static db_mm_t __configuration_alloc = DB_MM_T_STATIC_NEW(sizeof(db_configuration_t));
+static libdbo_mm_t __configuration_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_configuration_t));
 
-db_configuration_t* db_configuration_new(void) {
-    db_configuration_t* configuration =
-        (db_configuration_t*)db_mm_new0(&__configuration_alloc);
+libdbo_configuration_t* libdbo_configuration_new(void) {
+    libdbo_configuration_t* configuration =
+        (libdbo_configuration_t*)libdbo_mm_new0(&__configuration_alloc);
 
     return configuration;
 }
 
-void db_configuration_free(db_configuration_t* configuration) {
+void libdbo_configuration_free(libdbo_configuration_t* configuration) {
     if (configuration) {
         if (configuration->name) {
             free(configuration->name);
@@ -60,11 +60,11 @@ void db_configuration_free(db_configuration_t* configuration) {
         if (configuration->value) {
             free(configuration->value);
         }
-        db_mm_delete(&__configuration_alloc, configuration);
+        libdbo_mm_delete(&__configuration_alloc, configuration);
     }
 }
 
-const char* db_configuration_name(const db_configuration_t* configuration) {
+const char* libdbo_configuration_name(const libdbo_configuration_t* configuration) {
     if (!configuration) {
         return NULL;
     }
@@ -72,7 +72,7 @@ const char* db_configuration_name(const db_configuration_t* configuration) {
     return configuration->name;
 }
 
-const char* db_configuration_value(const db_configuration_t* configuration) {
+const char* libdbo_configuration_value(const libdbo_configuration_t* configuration) {
     if (!configuration) {
         return NULL;
     }
@@ -80,7 +80,7 @@ const char* db_configuration_value(const db_configuration_t* configuration) {
     return configuration->value;
 }
 
-int db_configuration_set_name(db_configuration_t* configuration, const char* name) {
+int libdbo_configuration_set_name(libdbo_configuration_t* configuration, const char* name) {
     char* new_name;
 
     if (!configuration) {
@@ -101,7 +101,7 @@ int db_configuration_set_name(db_configuration_t* configuration, const char* nam
     return DB_OK;
 }
 
-int db_configuration_set_value(db_configuration_t* configuration, const char* value) {
+int libdbo_configuration_set_value(libdbo_configuration_t* configuration, const char* value) {
     char* new_value;
 
     if (!configuration) {
@@ -122,7 +122,7 @@ int db_configuration_set_value(db_configuration_t* configuration, const char* va
     return DB_OK;
 }
 
-int db_configuration_not_empty(const db_configuration_t* configuration) {
+int libdbo_configuration_not_empty(const libdbo_configuration_t* configuration) {
     if (!configuration) {
         return DB_ERROR_UNKNOWN;
     }
@@ -137,39 +137,39 @@ int db_configuration_not_empty(const db_configuration_t* configuration) {
 
 /* DB CONFIGURATION LIST */
 
-static db_mm_t __configuration_list_alloc = DB_MM_T_STATIC_NEW(sizeof(db_configuration_list_t));
+static libdbo_mm_t __configuration_list_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_configuration_list_t));
 
-db_configuration_list_t* db_configuration_list_new(void) {
-    db_configuration_list_t* configuration_list =
-        (db_configuration_list_t*)db_mm_new0(&__configuration_list_alloc);
+libdbo_configuration_list_t* libdbo_configuration_list_new(void) {
+    libdbo_configuration_list_t* configuration_list =
+        (libdbo_configuration_list_t*)libdbo_mm_new0(&__configuration_list_alloc);
 
     return configuration_list;
 }
 
-void db_configuration_list_free(db_configuration_list_t* configuration_list) {
+void libdbo_configuration_list_free(libdbo_configuration_list_t* configuration_list) {
     if (configuration_list) {
         if (configuration_list->begin) {
-            db_configuration_t* this = configuration_list->begin;
-            db_configuration_t* next = NULL;
+            libdbo_configuration_t* this = configuration_list->begin;
+            libdbo_configuration_t* next = NULL;
 
             while (this) {
                 next = this->next;
-                db_configuration_free(this);
+                libdbo_configuration_free(this);
                 this = next;
             }
         }
-        db_mm_delete(&__configuration_list_alloc, configuration_list);
+        libdbo_mm_delete(&__configuration_list_alloc, configuration_list);
     }
 }
 
-int db_configuration_list_add(db_configuration_list_t* configuration_list, db_configuration_t* configuration) {
+int libdbo_configuration_list_add(libdbo_configuration_list_t* configuration_list, libdbo_configuration_t* configuration) {
     if (!configuration_list) {
         return DB_ERROR_UNKNOWN;
     }
     if (!configuration) {
         return DB_ERROR_UNKNOWN;
     }
-    if (db_configuration_not_empty(configuration)) {
+    if (libdbo_configuration_not_empty(configuration)) {
         return DB_ERROR_UNKNOWN;
     }
     if (configuration->next) {
@@ -191,8 +191,8 @@ int db_configuration_list_add(db_configuration_list_t* configuration_list, db_co
     return DB_OK;
 }
 
-const db_configuration_t* db_configuration_list_find(const db_configuration_list_t* configuration_list, const char* name) {
-    db_configuration_t* configuration;
+const libdbo_configuration_t* libdbo_configuration_list_find(const libdbo_configuration_list_t* configuration_list, const char* name) {
+    libdbo_configuration_t* configuration;
 
     if (!configuration_list) {
         return NULL;
@@ -203,7 +203,7 @@ const db_configuration_t* db_configuration_list_find(const db_configuration_list
 
     configuration = configuration_list->begin;
     while (configuration) {
-        if (db_configuration_not_empty(configuration)) {
+        if (libdbo_configuration_not_empty(configuration)) {
             return NULL;
         }
         if (!strcmp(configuration->name, name)) {

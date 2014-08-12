@@ -33,148 +33,148 @@
  * All rights reserved.
  */
 
-/** \file db_configuration.h */
-/** \defgroup db_configuration db_configuration
+/** \file libdbo_configuration.h */
+/** \defgroup libdbo_configuration libdbo_configuration
  * Database Configuration.
  * These are the functions and container for handling a database configuration
  * value.
  */
-/** \defgroup db_configuration_list db_configuration_list
+/** \defgroup libdbo_configuration_list libdbo_configuration_list
  * Database Configuration List.
  * These are the functions and container for handling database configurations.
  */
 
-#ifndef libdbo_db_configuration_h
-#define libdbo_db_configuration_h
+#ifndef libdbo_configuration_h
+#define libdbo_configuration_h
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct db_configuration;
-struct db_configuration_list;
+struct libdbo_configuration;
+struct libdbo_configuration_list;
 #endif
 
-/** \addtogroup db_configuration */
+/** \addtogroup libdbo_configuration */
 /** \{ */
 /**
  * A database configuration represented by a key and value.
  */
-typedef struct db_configuration db_configuration_t;
+typedef struct libdbo_configuration libdbo_configuration_t;
 /** \} */
-/** \addtogroup db_configuration_list */
+/** \addtogroup libdbo_configuration_list */
 /** \{ */
 /**
  * A list of database configurations.
  */
-typedef struct db_configuration_list db_configuration_list_t;
+typedef struct libdbo_configuration_list libdbo_configuration_list_t;
 /** \} */
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct db_configuration {
-    db_configuration_t* next;
+struct libdbo_configuration {
+    libdbo_configuration_t* next;
     char* name;
     char* value;
 };
 #endif
 
-/** \addtogroup db_configuration */
+/** \addtogroup libdbo_configuration */
 /** \{ */
 
 /**
  * Create a new database configuration.
- * \return a db_configuration_t pointer or NULL on error.
+ * \return a libdbo_configuration_t pointer or NULL on error.
  */
-db_configuration_t* db_configuration_new(void);
+libdbo_configuration_t* libdbo_configuration_new(void);
 
 /**
  * Delete a database configuration.
- * \param[in] configuration a db_configuration_t pointer.
+ * \param[in] configuration a libdbo_configuration_t pointer.
  */
-void db_configuration_free(db_configuration_t* configuration);
+void libdbo_configuration_free(libdbo_configuration_t* configuration);
 
 /**
  * Get the name of a database configuration.
- * \param[in] configuration a db_configuration_t pointer.
+ * \param[in] configuration a libdbo_configuration_t pointer.
  * \return a character pointer or NULL on error or if no database configuration
  * name has been set.
  */
-const char* db_configuration_name(const db_configuration_t* configuration);
+const char* libdbo_configuration_name(const libdbo_configuration_t* configuration);
 
 /**
  * Get the value of a database configuration.
- * \param[in] configuration a db_configuration_t pointer.
+ * \param[in] configuration a libdbo_configuration_t pointer.
  * \return a character pointer or NULL on error or if no database configuration
  * value has been set.
  */
-const char* db_configuration_value(const db_configuration_t* configuration);
+const char* libdbo_configuration_value(const libdbo_configuration_t* configuration);
 
 /**
  * Set the name of a database configuration.
- * \param[in] configuration a db_configuration_t pointer.
+ * \param[in] configuration a libdbo_configuration_t pointer.
  * \param[in] name a character pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-int db_configuration_set_name(db_configuration_t* configuration, const char* name);
+int libdbo_configuration_set_name(libdbo_configuration_t* configuration, const char* name);
 
 /**
  * Set the value of a database configuration.
- * \param[in] configuration a db_configuration_t pointer.
+ * \param[in] configuration a libdbo_configuration_t pointer.
  * \param[in] value a character pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-int db_configuration_set_value(db_configuration_t* configuration, const char* value);
+int libdbo_configuration_set_value(libdbo_configuration_t* configuration, const char* value);
 
 /**
  * Check if the database configuration is not empty.
- * \param[in] configuration a db_configuration_t pointer.
+ * \param[in] configuration a libdbo_configuration_t pointer.
  * \return DB_ERROR_* if empty, otherwise DB_OK.
  */
-int db_configuration_not_empty(const db_configuration_t* configuration);
+int libdbo_configuration_not_empty(const libdbo_configuration_t* configuration);
 
 /** \} */
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct db_configuration_list {
-    db_configuration_t* begin;
-    db_configuration_t* end;
+struct libdbo_configuration_list {
+    libdbo_configuration_t* begin;
+    libdbo_configuration_t* end;
 };
 #endif
 
-/** \addtogroup db_configuration_list */
+/** \addtogroup libdbo_configuration_list */
 /** \{ */
 
 /**
  * Create a new database configuration list.
- * \return a db_configuration_list_t pointer or NULL on error.
+ * \return a libdbo_configuration_list_t pointer or NULL on error.
  */
-db_configuration_list_t* db_configuration_list_new(void);
+libdbo_configuration_list_t* libdbo_configuration_list_new(void);
 
 /**
  * Delete a database configuration list and all database configurations in the
  * list.
- * \param[in] configuration_list a db_configuration_list_t pointer.
+ * \param[in] configuration_list a libdbo_configuration_list_t pointer.
  */
-void db_configuration_list_free(db_configuration_list_t* configuration_list);
+void libdbo_configuration_list_free(libdbo_configuration_list_t* configuration_list);
 
 /**
  * Add a database configuration to a database configuration list, this takes
  * over the ownership of the database configuration.
- * \param[in] configuration_list a db_configuration_list_t pointer.
- * \param[in] configuration a db_configuration_t pointer.
+ * \param[in] configuration_list a libdbo_configuration_list_t pointer.
+ * \param[in] configuration a libdbo_configuration_t pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-int db_configuration_list_add(db_configuration_list_t* configuration_list, db_configuration_t* configuration);
+int libdbo_configuration_list_add(libdbo_configuration_list_t* configuration_list, libdbo_configuration_t* configuration);
 
 /**
  * Find a database configuration by name within a database configuration list.
- * \param[in] configuration_list a db_configuration_list_t pointer.
+ * \param[in] configuration_list a libdbo_configuration_list_t pointer.
  * \param[in] name a character pointer.
- * \return a db_configuration_t pointer or NULL on error or if the database
+ * \return a libdbo_configuration_t pointer or NULL on error or if the database
  * configuration does not exist.
  */
-const db_configuration_t* db_configuration_list_find(const db_configuration_list_t* configuration_list, const char* name);
+const libdbo_configuration_t* libdbo_configuration_list_find(const libdbo_configuration_list_t* configuration_list, const char* name);
 
 /** \} */
 

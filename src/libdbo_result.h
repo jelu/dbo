@@ -33,247 +33,247 @@
  * All rights reserved.
  */
 
-/** \file db_result.h */
-/** \defgroup db_result db_result
+/** \file libdbo_result.h */
+/** \defgroup libdbo_result libdbo_result
  * Database Result.
  * These are the functions and container for handling a database result.
  */
-/** \defgroup db_result_list db_result_list
+/** \defgroup libdbo_result_list libdbo_result_list
  * Database Result List.
  * These are the functions and container for handling database results.
  */
 
-#ifndef libdbo_db_result_h
-#define libdbo_db_result_h
+#ifndef libdbo_result_h
+#define libdbo_result_h
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct db_result;
-struct db_result_list;
+struct libdbo_result;
+struct libdbo_result_list;
 #endif
 
-/** \addtogroup db_result */
+/** \addtogroup libdbo_result */
 /** \{ */
 /**
  * A container for a database result, the data in the result is represented by
- * a fixed size db_value_set_t.
+ * a fixed size libdbo_value_set_t.
  */
-typedef struct db_result db_result_t;
+typedef struct libdbo_result libdbo_result_t;
 /** \} */
 
-/** \addtogroup db_result_list */
+/** \addtogroup libdbo_result_list */
 /** \{ */
 /**
  * A list of database results.
  */
-typedef struct db_result_list db_result_list_t;
+typedef struct libdbo_result_list libdbo_result_list_t;
 /** \} */
 
-/** \addtogroup db_result */
+/** \addtogroup libdbo_result */
 /** \{ */
 /**
- * Function pointer for walking a db_result_list.
- * Function pointer for walking a db_result_list. The backend handle specific
+ * Function pointer for walking a libdbo_result_list.
+ * Function pointer for walking a libdbo_result_list. The backend handle specific
  * data is supplied in `data` and setting `finish` to non-zero tells the backend
- * that we are finished with the db_result_list.
+ * that we are finished with the libdbo_result_list.
  * \param[in] data a void pointer for the backend specific data.
  * \param[in] finish an integer that if non-zero will tell the backend that we
  * are finished with the result list.
- * \return A pointer to the next db_result_t or NULL on error.
+ * \return A pointer to the next libdbo_result_t or NULL on error.
  */
-typedef db_result_t* (*db_result_list_next_t)(void* data, int finish);
+typedef libdbo_result_t* (*libdbo_result_list_next_t)(void* data, int finish);
 /** \} */
 
 #ifdef __cplusplus
 }
 #endif
 
-#include "db_value.h"
-#include "db_backend.h"
+#include "libdbo_value.h"
+#include "libdbo_backend.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct db_result {
-    db_result_t* next;
-    db_value_set_t* value_set;
-    db_backend_meta_data_list_t* backend_meta_data_list;
+struct libdbo_result {
+    libdbo_result_t* next;
+    libdbo_value_set_t* value_set;
+    libdbo_backend_meta_data_list_t* backend_meta_data_list;
 };
 #endif
 
-/** \addtogroup db_result */
+/** \addtogroup libdbo_result */
 /** \{ */
 
 /**
  * Create a new database result.
- * \return a db_result_t pointer or NULL on error.
+ * \return a libdbo_result_t pointer or NULL on error.
  */
-db_result_t* db_result_new(void);
+libdbo_result_t* libdbo_result_new(void);
 
 /**
  * Create a new database result that is a copy of another.
- * \param[in] from_result a db_result_t pointer.
- * \return a db_result_t pointer or NULL on error.
+ * \param[in] from_result a libdbo_result_t pointer.
+ * \return a libdbo_result_t pointer or NULL on error.
  */
-db_result_t* db_result_new_copy(const db_result_t* from_result);
+libdbo_result_t* libdbo_result_new_copy(const libdbo_result_t* from_result);
 
 /**
  * Delete a database result and the backend meta data list if set.
- * \param[in] result a db_result_t pointer.
+ * \param[in] result a libdbo_result_t pointer.
  */
-void db_result_free(db_result_t* result);
+void libdbo_result_free(libdbo_result_t* result);
 
 /**
  * Copy the content of another database result.
- * \param[in] result a db_result_t pointer.
- * \param[in] from_result a db_result_t pointer.
+ * \param[in] result a libdbo_result_t pointer.
+ * \param[in] from_result a libdbo_result_t pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-int db_result_copy(db_result_t* result, const db_result_t* from_result);
+int libdbo_result_copy(libdbo_result_t* result, const libdbo_result_t* from_result);
 
 /**
  * Get the value set of a database result.
- * \param[in] result a db_result_t pointer.
- * \return a db_value_set_t pointer or NULL on error or if no value set has
+ * \param[in] result a libdbo_result_t pointer.
+ * \return a libdbo_value_set_t pointer or NULL on error or if no value set has
  * been set.
  */
-const db_value_set_t* db_result_value_set(const db_result_t* result);
+const libdbo_value_set_t* libdbo_result_value_set(const libdbo_result_t* result);
 
 /**
  * Get the backend meta data list of a database result.
- * \param[in] result a db_result_t pointer.
- * \return a db_backend_meta_data_list_t pointer or NULL on error or if no
+ * \param[in] result a libdbo_result_t pointer.
+ * \return a libdbo_backend_meta_data_list_t pointer or NULL on error or if no
  * backend meta data list has been set.
  */
-const db_backend_meta_data_list_t* db_result_backend_meta_data_list(const db_result_t* result);
+const libdbo_backend_meta_data_list_t* libdbo_result_backend_meta_data_list(const libdbo_result_t* result);
 
 /**
  * Set the value set of a database result.
- * \param[in] result a db_result_t pointer.
- * \param[in] value_set a db_value_set_t pointer.
+ * \param[in] result a libdbo_result_t pointer.
+ * \param[in] value_set a libdbo_value_set_t pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-int db_result_set_value_set(db_result_t* result, db_value_set_t* value_set);
+int libdbo_result_set_value_set(libdbo_result_t* result, libdbo_value_set_t* value_set);
 
 /**
  * Set the backend meta data list of a database result, this takes over the
  * ownership of the backend meta data list.
- * \param[in] result a db_result_t pointer.
- * \param[in] backend_meta_data_list a db_backend_meta_data_list_t pointer.
+ * \param[in] result a libdbo_result_t pointer.
+ * \param[in] backend_meta_data_list a libdbo_backend_meta_data_list_t pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-int db_result_set_backend_meta_data_list(db_result_t* result, db_backend_meta_data_list_t* backend_meta_data_list);
+int libdbo_result_set_backend_meta_data_list(libdbo_result_t* result, libdbo_backend_meta_data_list_t* backend_meta_data_list);
 
 /**
  * Check if a database result is not empty.
- * \param[in] result a db_result_t pointer.
+ * \param[in] result a libdbo_result_t pointer.
  * \return DB_ERROR_* if empty, otherwise DB_OK.
  */
-int db_result_not_empty(const db_result_t* result);
+int libdbo_result_not_empty(const libdbo_result_t* result);
 
 /** \} */
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct db_result_list {
-    db_result_t* begin;
-    db_result_t* end;
-    db_result_t* current;
-    db_result_list_next_t next_function;
+struct libdbo_result_list {
+    libdbo_result_t* begin;
+    libdbo_result_t* end;
+    libdbo_result_t* current;
+    libdbo_result_list_next_t next_function;
     void* next_data;
     size_t size;
     int begun;
 };
 #endif
 
-/** \addtogroup db_result_list */
+/** \addtogroup libdbo_result_list */
 /** \{ */
 
 /**
  * Create a new database result list.
- * \return a db_result_list_t pointer or NULL on error.
+ * \return a libdbo_result_list_t pointer or NULL on error.
  */
-db_result_list_t* db_result_list_new(void);
+libdbo_result_list_t* libdbo_result_list_new(void);
 
 /**
  * Create a new database result list that is a copy of another.
- * \param[in] from_result_list a db_result_list_t pointer.
- * \return a db_result_list_t pointer or NULL on error.
+ * \param[in] from_result_list a libdbo_result_list_t pointer.
+ * \return a libdbo_result_list_t pointer or NULL on error.
  */
-db_result_list_t* db_result_list_new_copy(const db_result_list_t* from_result_list);
+libdbo_result_list_t* libdbo_result_list_new_copy(const libdbo_result_list_t* from_result_list);
 
 /**
  * Delete a database result list and all database results within the list.
- * \param[in] result_list a db_result_list_t pointer.
+ * \param[in] result_list a libdbo_result_list_t pointer.
  */
-void db_result_list_free(db_result_list_t* result_list);
+void libdbo_result_list_free(libdbo_result_list_t* result_list);
 
 /**
  * Copy the content of another database result list.
- * \param[in] result_list a db_result_list_t pointer.
- * \param[in] from_result_list a db_result_list_t pointer.
+ * \param[in] result_list a libdbo_result_list_t pointer.
+ * \param[in] from_result_list a libdbo_result_list_t pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-int db_result_list_copy(db_result_list_t* result_list, const db_result_list_t* from_result_list);
+int libdbo_result_list_copy(libdbo_result_list_t* result_list, const libdbo_result_list_t* from_result_list);
 
 /**
  * Set the function pointer for fetching the next database result for a database
  * result list. The backend handle specific data is supplied in `next_data`
  * along with the total size of the result list in `size`.
- * \param[in] result_list a db_result_list_t pointer.
- * \param[in] next_function a db_result_list_next_t function pointer.
+ * \param[in] result_list a libdbo_result_list_t pointer.
+ * \param[in] next_function a libdbo_result_list_next_t function pointer.
  * \param[in] next_data a void pointer.
  * \param[in] size a size_t.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-int db_result_list_set_next(db_result_list_t* result_list, db_result_list_next_t next_function, void* next_data, size_t size);
+int libdbo_result_list_set_next(libdbo_result_list_t* result_list, libdbo_result_list_next_t next_function, void* next_data, size_t size);
 
 /**
  * Add a database result to a database result list, this will takes over the
  * ownership of the database result.
- * \param[in] result_list a db_result_list_t pointer.
- * \param[in] result a db_result_t pointer.
+ * \param[in] result_list a libdbo_result_list_t pointer.
+ * \param[in] result a libdbo_result_t pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-int db_result_list_add(db_result_list_t* result_list, db_result_t* result);
+int libdbo_result_list_add(libdbo_result_list_t* result_list, libdbo_result_t* result);
 
 /**
  * Return the first database result in a database result list and reset the
  * position of the list.
- * \param[in] result_list a db_result_list_t pointer.
- * \return a db_result_t pointer or NULL on error or if the list is empty.
+ * \param[in] result_list a libdbo_result_list_t pointer.
+ * \return a libdbo_result_t pointer or NULL on error or if the list is empty.
  */
-const db_result_t* db_result_list_begin(db_result_list_t* result_list);
+const libdbo_result_t* libdbo_result_list_begin(libdbo_result_list_t* result_list);
 
 /**
  * Return the next database result in a database result list.
- * \param[in] result_list a db_result_list_t pointer.
- * \return a db_result_t pointer or NULL on error or if the end of the list has
+ * \param[in] result_list a libdbo_result_list_t pointer.
+ * \return a libdbo_result_t pointer or NULL on error or if the end of the list has
  * been reached.
  */
-const db_result_t* db_result_list_next(db_result_list_t* result_list);
+const libdbo_result_t* libdbo_result_list_next(libdbo_result_list_t* result_list);
 
 /**
  * Return the size of the database result list.
- * \param[in] result_list a db_result_list_t pointer.
+ * \param[in] result_list a libdbo_result_list_t pointer.
  * \return a size_t with the size of the database result list or zero on error
  * , if the database result list is empty or if the backend does not support
  * returning the size.
  */
-size_t db_result_list_size(const db_result_list_t* result_list);
+size_t libdbo_result_list_size(const libdbo_result_list_t* result_list);
 
 /**
  * Make sure that all objects in this database result list is loaded into memory
- * so that db_result_list_begin() can be used to iterate over the list multiple
+ * so that libdbo_result_list_begin() can be used to iterate over the list multiple
  * times.
- * \param[in] result_list a db_result_list_t pointer.
+ * \param[in] result_list a libdbo_result_list_t pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-int db_result_list_fetch_all(db_result_list_t* result_list);
+int libdbo_result_list_fetch_all(libdbo_result_list_t* result_list);
 
 /** \} */
 

@@ -38,24 +38,24 @@
 
 int init_suite_classes(void);
 int clean_suite_classes(void);
-void test_class_db_backend_handle(void);
-void test_class_db_backend(void);
-void test_class_db_backend_meta_data_list(void);
-void test_class_db_backend_meta_data(void);
-void test_class_db_clause(void);
-void test_class_db_clause_list(void);
-void test_class_db_configuration(void);
-void test_class_db_configuration_list(void);
-void test_class_db_connection(void);
-void test_class_db_join(void);
-void test_class_db_join_list(void);
-void test_class_db_object_field(void);
-void test_class_db_object_field_list(void);
-void test_class_db_object(void);
-void test_class_db_value_set(void);
-void test_class_db_result(void);
-void test_class_db_result_list(void);
-void test_class_db_value(void);
+void test_class_libdbo_backend_handle(void);
+void test_class_libdbo_backend(void);
+void test_class_libdbo_backend_meta_data_list(void);
+void test_class_libdbo_backend_meta_data(void);
+void test_class_libdbo_clause(void);
+void test_class_libdbo_clause_list(void);
+void test_class_libdbo_configuration(void);
+void test_class_libdbo_configuration_list(void);
+void test_class_libdbo_connection(void);
+void test_class_libdbo_join(void);
+void test_class_libdbo_join_list(void);
+void test_class_libdbo_object_field(void);
+void test_class_libdbo_object_field_list(void);
+void test_class_libdbo_object(void);
+void test_class_libdbo_value_set(void);
+void test_class_libdbo_result(void);
+void test_class_libdbo_result_list(void);
+void test_class_libdbo_value(void);
 void test_class_end(void);
 
 int init_suite_initialization(void);
@@ -89,8 +89,8 @@ void test_database_operations_update_objects_revisions(void);
 
 int init_suite_mm(void);
 int clean_suite_mm(void);
-void test_db_mm_init(void);
-void test_db_mm(void);
-void test_db_mm_extern(void);
+void test_libdbo_mm_init(void);
+void test_libdbo_mm(void);
+void test_libdbo_mm_extern(void);
 
 #endif

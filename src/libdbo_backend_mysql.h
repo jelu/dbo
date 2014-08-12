@@ -25,7 +25,7 @@
  *
  */
 /*
- * Based on enforcer-ng/src/db/db_backend_sqlite.h header file from the
+ * Based on enforcer-ng/src/db/db_backend_mysql.h header file from the
  * OpenDNSSEC project.
  *
  * Copyright (c) 2014 .SE (The Internet Infrastructure Foundation).
@@ -33,39 +33,43 @@
  * All rights reserved.
  */
 
-/** \file db_backend_sqlite.h */
-/** \defgroup db_backend_sqlite db_backend_sqlite
- * Database Backend SQLite.
- * These are the functions for creating a SQLite backend handle.
+/** \file libdbo_backend_mysql.h */
+/** \defgroup libdbo_backend_mysql libdbo_backend_mysql
+ * Database Backend MySQL.
+ * These are the functions for creating a MySQL backend handle.
  */
 
-#ifndef libdbo_db_backend_sqlite_h
-#define libdbo_db_backend_sqlite_h
+#ifndef libdbo_backend_mysql_h
+#define libdbo_backend_mysql_h
 
-#include "db_backend.h"
+#include "libdbo_backend.h"
 
-/** \addtogroup db_backend_sqlite */
+/** \addtogroup libdbo_backend_mysql */
 /** \{ */
 
 /**
- * Default timeout in seconds waiting for the internal SQLite lock to be
- * released.
+ * Default connection timeout for MySQL.
  */
-#define DB_BACKEND_SQLITE_DEFAULT_TIMEOUT 30
+#define DB_BACKEND_MYSQL_DEFAULT_TIMEOUT 30
 /**
- * Default usleep() timeout between checks of the internal SQLite lock.
+ * Minimal allocation size when fetching varchar, text or blobs.
  */
-#define DB_BACKEND_SQLITE_DEFAULT_USLEEP 200000
+#define DB_BACKEND_MYSQL_STRING_MIN_SIZE 64
+/**
+ * Maximum allocation size when fetching varchar, text or blobs. If the value in
+ * the database is larger then this then the fetch will fail.
+ */
+#define DB_BACKEND_MYSQL_STRING_MAX_SIZE 4096
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * Create a new database backend handle for SQLite.
- * \return a db_backend_handle_t pointer or NULL on error.
+ * Create a new database backend handle for MySQL.
+ * \return a libdbo_backend_handle_t pointer or NULL on error.
  */
-db_backend_handle_t* db_backend_sqlite_new_handle(void);
+libdbo_backend_handle_t* libdbo_backend_mysql_new_handle(void);
 
 /** \} */
 

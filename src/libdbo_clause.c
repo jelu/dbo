@@ -33,34 +33,34 @@
  * All rights reserved.
  */
 
-#include "db_clause.h"
-#include "db_error.h"
+#include "libdbo_clause.h"
+#include "libdbo_error.h"
 
-#include "db_mm.h"
+#include "libdbo_mm.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 /* DB CLAUSE */
 
-static db_mm_t __clause_alloc = DB_MM_T_STATIC_NEW(sizeof(db_clause_t));
+static libdbo_mm_t __clause_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_clause_t));
 
 /* TODO: add more check for type and what value/list is set, maybe add type to new */
 
-db_clause_t* db_clause_new(void) {
-    db_clause_t* clause =
-        (db_clause_t*)db_mm_new0(&__clause_alloc);
+libdbo_clause_t* libdbo_clause_new(void) {
+    libdbo_clause_t* clause =
+        (libdbo_clause_t*)libdbo_mm_new0(&__clause_alloc);
 
     if (clause) {
         clause->type = DB_CLAUSE_UNKNOWN;
         clause->clause_operator = DB_CLAUSE_OPERATOR_AND;
-        db_value_reset(&(clause->value));
+        libdbo_value_reset(&(clause->value));
     }
 
     return clause;
 }
 
-void db_clause_free(db_clause_t* clause) {
+void libdbo_clause_free(libdbo_clause_t* clause) {
     if (clause) {
         if (clause->table) {
             free(clause->table);
@@ -68,15 +68,15 @@ void db_clause_free(db_clause_t* clause) {
         if (clause->field) {
             free(clause->field);
         }
-        db_value_reset(&(clause->value));
+        libdbo_value_reset(&(clause->value));
         if (clause->clause_list) {
-            db_clause_list_free(clause->clause_list);
+            libdbo_clause_list_free(clause->clause_list);
         }
-        db_mm_delete(&__clause_alloc, clause);
+        libdbo_mm_delete(&__clause_alloc, clause);
     }
 }
 
-const char* db_clause_table(const db_clause_t* clause) {
+const char* libdbo_clause_table(const libdbo_clause_t* clause) {
     if (!clause) {
         return NULL;
     }
@@ -84,7 +84,7 @@ const char* db_clause_table(const db_clause_t* clause) {
     return clause->table;
 }
 
-const char* db_clause_field(const db_clause_t* clause) {
+const char* libdbo_clause_field(const libdbo_clause_t* clause) {
     if (!clause) {
         return NULL;
     }
@@ -92,7 +92,7 @@ const char* db_clause_field(const db_clause_t* clause) {
     return clause->field;
 }
 
-db_clause_type_t db_clause_type(const db_clause_t* clause) {
+libdbo_clause_type_t libdbo_clause_type(const libdbo_clause_t* clause) {
     if (!clause) {
         return DB_CLAUSE_UNKNOWN;
     }
@@ -100,7 +100,7 @@ db_clause_type_t db_clause_type(const db_clause_t* clause) {
     return clause->type;
 }
 
-const db_value_t* db_clause_value(const db_clause_t* clause) {
+const libdbo_value_t* libdbo_clause_value(const libdbo_clause_t* clause) {
     if (!clause) {
         return NULL;
     }
@@ -108,7 +108,7 @@ const db_value_t* db_clause_value(const db_clause_t* clause) {
     return &(clause->value);
 }
 
-db_clause_operator_t db_clause_operator(const db_clause_t* clause) {
+libdbo_clause_operator_t libdbo_clause_operator(const libdbo_clause_t* clause) {
     if (!clause) {
         return DB_CLAUSE_OPERATOR_UNKNOWN;
     }
@@ -116,7 +116,7 @@ db_clause_operator_t db_clause_operator(const db_clause_t* clause) {
     return clause->clause_operator;
 }
 
-const db_clause_list_t* db_clause_list(const db_clause_t* clause) {
+const libdbo_clause_list_t* libdbo_clause_list(const libdbo_clause_t* clause) {
     if (!clause) {
         return NULL;
     }
@@ -124,7 +124,7 @@ const db_clause_list_t* db_clause_list(const db_clause_t* clause) {
     return clause->clause_list;
 }
 
-int db_clause_set_table(db_clause_t* clause, const char* table) {
+int libdbo_clause_set_table(libdbo_clause_t* clause, const char* table) {
     char* new_table;
 
     if (!clause) {
@@ -145,7 +145,7 @@ int db_clause_set_table(db_clause_t* clause, const char* table) {
     return DB_OK;
 }
 
-int db_clause_set_field(db_clause_t* clause, const char* field) {
+int libdbo_clause_set_field(libdbo_clause_t* clause, const char* field) {
     char* new_field;
 
     if (!clause) {
@@ -166,7 +166,7 @@ int db_clause_set_field(db_clause_t* clause, const char* field) {
     return DB_OK;
 }
 
-int db_clause_set_type(db_clause_t* clause, db_clause_type_t type) {
+int libdbo_clause_set_type(libdbo_clause_t* clause, libdbo_clause_type_t type) {
     if (!clause) {
         return DB_ERROR_UNKNOWN;
     }
@@ -178,7 +178,7 @@ int db_clause_set_type(db_clause_t* clause, db_clause_type_t type) {
     return DB_OK;
 }
 
-int db_clause_set_operator(db_clause_t* clause, db_clause_operator_t clause_operator) {
+int libdbo_clause_set_operator(libdbo_clause_t* clause, libdbo_clause_operator_t clause_operator) {
     if (!clause) {
         return DB_ERROR_UNKNOWN;
     }
@@ -190,7 +190,7 @@ int db_clause_set_operator(db_clause_t* clause, db_clause_operator_t clause_oper
     return DB_OK;
 }
 
-int db_clause_set_list(db_clause_t* clause, db_clause_list_t* clause_list) {
+int libdbo_clause_set_list(libdbo_clause_t* clause, libdbo_clause_list_t* clause_list) {
     if (!clause) {
         return DB_ERROR_UNKNOWN;
     }
@@ -203,7 +203,7 @@ int db_clause_set_list(db_clause_t* clause, db_clause_list_t* clause_list) {
     if (clause->clause_list) {
         return DB_ERROR_UNKNOWN;
     }
-    if (db_value_type(&(clause->value)) != DB_TYPE_EMPTY) {
+    if (libdbo_value_type(&(clause->value)) != DB_TYPE_EMPTY) {
         return DB_ERROR_UNKNOWN;
     }
 
@@ -211,7 +211,7 @@ int db_clause_set_list(db_clause_t* clause, db_clause_list_t* clause_list) {
     return DB_OK;
 }
 
-int db_clause_not_empty(const db_clause_t* clause) {
+int libdbo_clause_not_empty(const libdbo_clause_t* clause) {
     if (!clause) {
         return DB_ERROR_UNKNOWN;
     }
@@ -228,7 +228,7 @@ int db_clause_not_empty(const db_clause_t* clause) {
         if (!clause->field) {
             return DB_ERROR_UNKNOWN;
         }
-        if (db_value_type(&(clause->value)) == DB_TYPE_EMPTY) {
+        if (libdbo_value_type(&(clause->value)) == DB_TYPE_EMPTY) {
             return DB_ERROR_UNKNOWN;
         }
     }
@@ -236,7 +236,7 @@ int db_clause_not_empty(const db_clause_t* clause) {
     return DB_OK;
 }
 
-const db_clause_t* db_clause_next(const db_clause_t* clause) {
+const libdbo_clause_t* libdbo_clause_next(const libdbo_clause_t* clause) {
     if (!clause) {
         return NULL;
     }
@@ -244,7 +244,7 @@ const db_clause_t* db_clause_next(const db_clause_t* clause) {
     return clause->next;
 }
 
-db_value_t* db_clause_get_value(db_clause_t* clause) {
+libdbo_value_t* libdbo_clause_get_value(libdbo_clause_t* clause) {
     if (!clause) {
         return NULL;
     }
@@ -257,39 +257,39 @@ db_value_t* db_clause_get_value(db_clause_t* clause) {
 
 /* DB CLAUSE LIST */
 
-static db_mm_t __clause_list_alloc = DB_MM_T_STATIC_NEW(sizeof(db_clause_list_t));
+static libdbo_mm_t __clause_list_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_clause_list_t));
 
-db_clause_list_t* db_clause_list_new(void) {
-    db_clause_list_t* clause_list =
-        (db_clause_list_t*)db_mm_new0(&__clause_list_alloc);
+libdbo_clause_list_t* libdbo_clause_list_new(void) {
+    libdbo_clause_list_t* clause_list =
+        (libdbo_clause_list_t*)libdbo_mm_new0(&__clause_list_alloc);
 
     return clause_list;
 }
 
-void db_clause_list_free(db_clause_list_t* clause_list) {
+void libdbo_clause_list_free(libdbo_clause_list_t* clause_list) {
     if (clause_list) {
         if (clause_list->begin) {
-            db_clause_t* this = clause_list->begin;
-            db_clause_t* next = NULL;
+            libdbo_clause_t* this = clause_list->begin;
+            libdbo_clause_t* next = NULL;
 
             while (this) {
                 next = this->next;
-                db_clause_free(this);
+                libdbo_clause_free(this);
                 this = next;
             }
         }
-        db_mm_delete(&__clause_list_alloc, clause_list);
+        libdbo_mm_delete(&__clause_list_alloc, clause_list);
     }
 }
 
-int db_clause_list_add(db_clause_list_t* clause_list, db_clause_t* clause) {
+int libdbo_clause_list_add(libdbo_clause_list_t* clause_list, libdbo_clause_t* clause) {
     if (!clause_list) {
         return DB_ERROR_UNKNOWN;
     }
     if (!clause) {
         return DB_ERROR_UNKNOWN;
     }
-    if (db_clause_not_empty(clause)) {
+    if (libdbo_clause_not_empty(clause)) {
         return DB_ERROR_UNKNOWN;
     }
     if (clause->next) {
@@ -311,7 +311,7 @@ int db_clause_list_add(db_clause_list_t* clause_list, db_clause_t* clause) {
     return DB_OK;
 }
 
-const db_clause_t* db_clause_list_begin(const db_clause_list_t* clause_list) {
+const libdbo_clause_t* libdbo_clause_list_begin(const libdbo_clause_list_t* clause_list) {
     if (!clause_list) {
         return NULL;
     }

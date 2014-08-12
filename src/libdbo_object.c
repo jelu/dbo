@@ -33,20 +33,20 @@
  * All rights reserved.
  */
 
-#include "db_object.h"
-#include "db_error.h"
+#include "libdbo_object.h"
+#include "libdbo_error.h"
 
-#include "db_mm.h"
+#include "libdbo_mm.h"
 
 #include <stdlib.h>
 
 /* DB OBJECT FIELD */
 
-static db_mm_t __object_field_alloc = DB_MM_T_STATIC_NEW(sizeof(db_object_field_t));
+static libdbo_mm_t __object_field_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_object_field_t));
 
-db_object_field_t* db_object_field_new(void) {
-    db_object_field_t* object_field =
-        (db_object_field_t*)db_mm_new0(&__object_field_alloc);
+libdbo_object_field_t* libdbo_object_field_new(void) {
+    libdbo_object_field_t* object_field =
+        (libdbo_object_field_t*)libdbo_mm_new0(&__object_field_alloc);
 
     if (object_field) {
         object_field->type = DB_TYPE_EMPTY;
@@ -55,30 +55,30 @@ db_object_field_t* db_object_field_new(void) {
     return object_field;
 }
 
-db_object_field_t* db_object_field_new_copy(const db_object_field_t* from_object_field) {
-    db_object_field_t* object_field;
+libdbo_object_field_t* libdbo_object_field_new_copy(const libdbo_object_field_t* from_object_field) {
+    libdbo_object_field_t* object_field;
 
     if (!from_object_field) {
         return NULL;
     }
 
-    if (!(object_field = db_object_field_new())
-        || db_object_field_copy(object_field, from_object_field))
+    if (!(object_field = libdbo_object_field_new())
+        || libdbo_object_field_copy(object_field, from_object_field))
     {
-        db_object_field_free(object_field);
+        libdbo_object_field_free(object_field);
         return NULL;
     }
 
     return object_field;
 }
 
-void db_object_field_free(db_object_field_t* object_field) {
+void libdbo_object_field_free(libdbo_object_field_t* object_field) {
     if (object_field) {
-        db_mm_delete(&__object_field_alloc, object_field);
+        libdbo_mm_delete(&__object_field_alloc, object_field);
     }
 }
 
-int db_object_field_copy(db_object_field_t* object_field, const db_object_field_t* from_object_field) {
+int libdbo_object_field_copy(libdbo_object_field_t* object_field, const libdbo_object_field_t* from_object_field) {
     if (!object_field) {
         return DB_ERROR_UNKNOWN;
     }
@@ -96,7 +96,7 @@ int db_object_field_copy(db_object_field_t* object_field, const db_object_field_
     return DB_OK;
 }
 
-const char* db_object_field_name(const db_object_field_t* object_field) {
+const char* libdbo_object_field_name(const libdbo_object_field_t* object_field) {
     if (!object_field) {
         return NULL;
     }
@@ -104,7 +104,7 @@ const char* db_object_field_name(const db_object_field_t* object_field) {
     return object_field->name;
 }
 
-db_type_t db_object_field_type(const db_object_field_t* object_field) {
+libdbo_type_t libdbo_object_field_type(const libdbo_object_field_t* object_field) {
     if (!object_field) {
         return DB_TYPE_EMPTY;
     }
@@ -112,7 +112,7 @@ db_type_t db_object_field_type(const db_object_field_t* object_field) {
     return object_field->type;
 }
 
-const db_enum_t* db_object_field_enum_set(const db_object_field_t* object_field) {
+const libdbo_enum_t* libdbo_object_field_enum_set(const libdbo_object_field_t* object_field) {
     if (!object_field) {
         return NULL;
     }
@@ -120,7 +120,7 @@ const db_enum_t* db_object_field_enum_set(const db_object_field_t* object_field)
     return object_field->enum_set;
 }
 
-int db_object_field_set_name(db_object_field_t* object_field, const char* name) {
+int libdbo_object_field_set_name(libdbo_object_field_t* object_field, const char* name) {
     if (!object_field) {
         return DB_ERROR_UNKNOWN;
     }
@@ -132,7 +132,7 @@ int db_object_field_set_name(db_object_field_t* object_field, const char* name) 
     return DB_OK;
 }
 
-int db_object_field_set_type(db_object_field_t* object_field, db_type_t type) {
+int libdbo_object_field_set_type(libdbo_object_field_t* object_field, libdbo_type_t type) {
     if (!object_field) {
         return DB_ERROR_UNKNOWN;
     }
@@ -144,7 +144,7 @@ int db_object_field_set_type(db_object_field_t* object_field, db_type_t type) {
     return DB_OK;
 }
 
-int db_object_field_set_enum_set(db_object_field_t* object_field, const db_enum_t* enum_set) {
+int libdbo_object_field_set_enum_set(libdbo_object_field_t* object_field, const libdbo_enum_t* enum_set) {
     if (!object_field) {
         return DB_ERROR_UNKNOWN;
     }
@@ -156,7 +156,7 @@ int db_object_field_set_enum_set(db_object_field_t* object_field, const db_enum_
     return DB_OK;
 }
 
-int db_object_field_not_empty(const db_object_field_t* object_field) {
+int libdbo_object_field_not_empty(const libdbo_object_field_t* object_field) {
     if (!object_field) {
         return DB_ERROR_UNKNOWN;
     }
@@ -172,7 +172,7 @@ int db_object_field_not_empty(const db_object_field_t* object_field) {
     return DB_OK;
 }
 
-const db_object_field_t* db_object_field_next(const db_object_field_t* object_field) {
+const libdbo_object_field_t* libdbo_object_field_next(const libdbo_object_field_t* object_field) {
     if (!object_field) {
         return NULL;
     }
@@ -182,51 +182,51 @@ const db_object_field_t* db_object_field_next(const db_object_field_t* object_fi
 
 /* DB OBJECT FIELD LIST */
 
-static db_mm_t __object_field_list_alloc = DB_MM_T_STATIC_NEW(sizeof(db_object_field_list_t));
+static libdbo_mm_t __object_field_list_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_object_field_list_t));
 
-db_object_field_list_t* db_object_field_list_new(void) {
-    db_object_field_list_t* object_field_list =
-        (db_object_field_list_t*)db_mm_new0(&__object_field_list_alloc);
+libdbo_object_field_list_t* libdbo_object_field_list_new(void) {
+    libdbo_object_field_list_t* object_field_list =
+        (libdbo_object_field_list_t*)libdbo_mm_new0(&__object_field_list_alloc);
 
     return object_field_list;
 }
 
-db_object_field_list_t* db_object_field_list_new_copy(const db_object_field_list_t* from_object_field_list) {
-    db_object_field_list_t* object_field_list;
+libdbo_object_field_list_t* libdbo_object_field_list_new_copy(const libdbo_object_field_list_t* from_object_field_list) {
+    libdbo_object_field_list_t* object_field_list;
 
     if (!from_object_field_list) {
         return NULL;
     }
 
-    if (!(object_field_list = db_object_field_list_new())
-        || db_object_field_list_copy(object_field_list, from_object_field_list))
+    if (!(object_field_list = libdbo_object_field_list_new())
+        || libdbo_object_field_list_copy(object_field_list, from_object_field_list))
     {
-        db_object_field_list_free(object_field_list);
+        libdbo_object_field_list_free(object_field_list);
         return NULL;
     }
 
     return object_field_list;
 }
 
-void db_object_field_list_free(db_object_field_list_t* object_field_list) {
+void libdbo_object_field_list_free(libdbo_object_field_list_t* object_field_list) {
     if (object_field_list) {
         if (object_field_list->begin) {
-            db_object_field_t* this = object_field_list->begin;
-            db_object_field_t* next = NULL;
+            libdbo_object_field_t* this = object_field_list->begin;
+            libdbo_object_field_t* next = NULL;
 
             while (this) {
                 next = this->next;
-                db_object_field_free(this);
+                libdbo_object_field_free(this);
                 this = next;
             }
         }
-        db_mm_delete(&__object_field_list_alloc, object_field_list);
+        libdbo_mm_delete(&__object_field_list_alloc, object_field_list);
     }
 }
 
-int db_object_field_list_copy(db_object_field_list_t* object_field_list, const db_object_field_list_t* from_object_field_list) {
-    db_object_field_t* object_field;
-    db_object_field_t* object_field_copy;
+int libdbo_object_field_list_copy(libdbo_object_field_list_t* object_field_list, const libdbo_object_field_list_t* from_object_field_list) {
+    libdbo_object_field_t* object_field;
+    libdbo_object_field_t* object_field_copy;
 
     if (!object_field_list) {
         return DB_ERROR_UNKNOWN;
@@ -250,8 +250,8 @@ int db_object_field_list_copy(db_object_field_list_t* object_field_list, const d
 
     object_field = from_object_field_list->begin;
     while (object_field) {
-        if (!(object_field_copy = db_object_field_new_copy(object_field))
-            || db_object_field_list_add(object_field_list, object_field_copy))
+        if (!(object_field_copy = libdbo_object_field_new_copy(object_field))
+            || libdbo_object_field_list_add(object_field_list, object_field_copy))
         {
             return DB_ERROR_UNKNOWN;
         }
@@ -262,14 +262,14 @@ int db_object_field_list_copy(db_object_field_list_t* object_field_list, const d
     return DB_OK;
 }
 
-int db_object_field_list_add(db_object_field_list_t* object_field_list, db_object_field_t* object_field) {
+int libdbo_object_field_list_add(libdbo_object_field_list_t* object_field_list, libdbo_object_field_t* object_field) {
     if (!object_field_list) {
         return DB_ERROR_UNKNOWN;
     }
     if (!object_field) {
         return DB_ERROR_UNKNOWN;
     }
-    if (db_object_field_not_empty(object_field)) {
+    if (libdbo_object_field_not_empty(object_field)) {
         return DB_ERROR_UNKNOWN;
     }
     if (object_field->next) {
@@ -292,7 +292,7 @@ int db_object_field_list_add(db_object_field_list_t* object_field_list, db_objec
     return DB_OK;
 }
 
-const db_object_field_t* db_object_field_list_begin(const db_object_field_list_t* object_field_list) {
+const libdbo_object_field_t* libdbo_object_field_list_begin(const libdbo_object_field_list_t* object_field_list) {
     if (!object_field_list) {
         return NULL;
     }
@@ -300,7 +300,7 @@ const db_object_field_t* db_object_field_list_begin(const db_object_field_list_t
     return object_field_list->begin;
 }
 
-size_t db_object_field_list_size(const db_object_field_list_t* object_field_list) {
+size_t libdbo_object_field_list_size(const libdbo_object_field_list_t* object_field_list) {
     if (!object_field_list) {
         return 0;
     }
@@ -310,63 +310,63 @@ size_t db_object_field_list_size(const db_object_field_list_t* object_field_list
 
 /* DB OBJECT */
 
-static db_mm_t __object_alloc = DB_MM_T_STATIC_NEW(sizeof(db_object_t));
+static libdbo_mm_t __object_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_object_t));
 
-db_object_t* db_object_new(void) {
-    db_object_t* object =
-        (db_object_t*)db_mm_new0(&__object_alloc);
+libdbo_object_t* libdbo_object_new(void) {
+    libdbo_object_t* object =
+        (libdbo_object_t*)libdbo_mm_new0(&__object_alloc);
 
     return object;
 }
 
-void db_object_free(db_object_t* object) {
+void libdbo_object_free(libdbo_object_t* object) {
     if (object) {
         if (object->object_field_list) {
-            db_object_field_list_free(object->object_field_list);
+            libdbo_object_field_list_free(object->object_field_list);
         }
         if (object->backend_meta_data_list) {
-            db_backend_meta_data_list_free(object->backend_meta_data_list);
+            libdbo_backend_meta_data_list_free(object->backend_meta_data_list);
         }
-        db_mm_delete(&__object_alloc, object);
+        libdbo_mm_delete(&__object_alloc, object);
     }
 }
 
-const db_connection_t* db_object_connection(const db_object_t* object) {
+const libdbo_connection_t* libdbo_object_connection(const libdbo_object_t* object) {
     if (!object) {
         return NULL;
     }
     return object->connection;
 }
 
-const char* db_object_table(const db_object_t* object) {
+const char* libdbo_object_table(const libdbo_object_t* object) {
     if (!object) {
         return NULL;
     }
     return object->table;
 }
 
-const char* db_object_primary_key_name(const db_object_t* object) {
+const char* libdbo_object_primary_key_name(const libdbo_object_t* object) {
     if (!object) {
         return NULL;
     }
     return object->primary_key_name;
 }
 
-const db_object_field_list_t* db_object_object_field_list(const db_object_t* object) {
+const libdbo_object_field_list_t* libdbo_object_object_field_list(const libdbo_object_t* object) {
     if (!object) {
         return NULL;
     }
     return object->object_field_list;
 }
 
-const db_backend_meta_data_list_t* db_object_backend_meta_data_list(const db_object_t* object) {
+const libdbo_backend_meta_data_list_t* libdbo_object_backend_meta_data_list(const libdbo_object_t* object) {
     if (!object) {
         return NULL;
     }
     return object->backend_meta_data_list;
 }
 
-int db_object_set_connection(db_object_t* object, const db_connection_t* connection) {
+int libdbo_object_set_connection(libdbo_object_t* object, const libdbo_connection_t* connection) {
     if (!object) {
         return DB_ERROR_UNKNOWN;
     }
@@ -381,7 +381,7 @@ int db_object_set_connection(db_object_t* object, const db_connection_t* connect
     return DB_OK;
 }
 
-int db_object_set_table(db_object_t* object, const char* table) {
+int libdbo_object_set_table(libdbo_object_t* object, const char* table) {
     if (!object) {
         return DB_ERROR_UNKNOWN;
     }
@@ -396,7 +396,7 @@ int db_object_set_table(db_object_t* object, const char* table) {
     return DB_OK;
 }
 
-int db_object_set_primary_key_name(db_object_t* object, const char* primary_key_name) {
+int libdbo_object_set_primary_key_name(libdbo_object_t* object, const char* primary_key_name) {
     if (!object) {
         return DB_ERROR_UNKNOWN;
     }
@@ -411,7 +411,7 @@ int db_object_set_primary_key_name(db_object_t* object, const char* primary_key_
     return DB_OK;
 }
 
-int db_object_set_object_field_list(db_object_t* object, db_object_field_list_t* object_field_list) {
+int libdbo_object_set_object_field_list(libdbo_object_t* object, libdbo_object_field_list_t* object_field_list) {
     if (!object) {
         return DB_ERROR_UNKNOWN;
     }
@@ -426,7 +426,7 @@ int db_object_set_object_field_list(db_object_t* object, db_object_field_list_t*
     return DB_OK;
 }
 
-int db_object_set_backend_meta_data_list(db_object_t* object, db_backend_meta_data_list_t* backend_meta_data_list) {
+int libdbo_object_set_backend_meta_data_list(libdbo_object_t* object, libdbo_backend_meta_data_list_t* backend_meta_data_list) {
     if (!object) {
         return DB_ERROR_UNKNOWN;
     }
@@ -435,14 +435,14 @@ int db_object_set_backend_meta_data_list(db_object_t* object, db_backend_meta_da
     }
 
     if (object->backend_meta_data_list) {
-        db_backend_meta_data_list_free(object->backend_meta_data_list);
+        libdbo_backend_meta_data_list_free(object->backend_meta_data_list);
     }
 
     object->backend_meta_data_list = backend_meta_data_list;
     return DB_OK;
 }
 
-int db_object_create(const db_object_t* object, const db_object_field_list_t* object_field_list, const db_value_set_t* value_set) {
+int libdbo_object_create(const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set) {
     if (!object) {
         return DB_ERROR_UNKNOWN;
     }
@@ -460,12 +460,12 @@ int db_object_create(const db_object_t* object, const db_object_field_list_t* ob
     }
 
     if (object_field_list) {
-        return db_connection_create(object->connection, object, object_field_list, value_set);
+        return libdbo_connection_create(object->connection, object, object_field_list, value_set);
     }
-    return db_connection_create(object->connection, object, object->object_field_list, value_set);
+    return libdbo_connection_create(object->connection, object, object->object_field_list, value_set);
 }
 
-db_result_list_t* db_object_read(const db_object_t* object, const db_join_list_t* join_list, const db_clause_list_t* clause_list) {
+libdbo_result_list_t* libdbo_object_read(const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list) {
     if (!object) {
         return NULL;
     }
@@ -479,10 +479,10 @@ db_result_list_t* db_object_read(const db_object_t* object, const db_join_list_t
         return NULL;
     }
 
-    return db_connection_read(object->connection, object, join_list, clause_list);
+    return libdbo_connection_read(object->connection, object, join_list, clause_list);
 }
 
-int db_object_update(const db_object_t* object, const db_object_field_list_t* object_field_list, const db_value_set_t* value_set, const db_clause_list_t* clause_list) {
+int libdbo_object_update(const libdbo_object_t* object, const libdbo_object_field_list_t* object_field_list, const libdbo_value_set_t* value_set, const libdbo_clause_list_t* clause_list) {
     if (!object) {
         return DB_ERROR_UNKNOWN;
     }
@@ -500,12 +500,12 @@ int db_object_update(const db_object_t* object, const db_object_field_list_t* ob
     }
 
     if (object_field_list) {
-        return db_connection_update(object->connection, object, object_field_list, value_set, clause_list);
+        return libdbo_connection_update(object->connection, object, object_field_list, value_set, clause_list);
     }
-    return db_connection_update(object->connection, object, object->object_field_list, value_set, clause_list);
+    return libdbo_connection_update(object->connection, object, object->object_field_list, value_set, clause_list);
 }
 
-int db_object_delete(const db_object_t* object, const db_clause_list_t* clause_list) {
+int libdbo_object_delete(const libdbo_object_t* object, const libdbo_clause_list_t* clause_list) {
     if (!object) {
         return DB_ERROR_UNKNOWN;
     }
@@ -519,10 +519,10 @@ int db_object_delete(const db_object_t* object, const db_clause_list_t* clause_l
         return DB_ERROR_UNKNOWN;
     }
 
-    return db_connection_delete(object->connection, object, clause_list);
+    return libdbo_connection_delete(object->connection, object, clause_list);
 }
 
-int db_object_count(const db_object_t* object, const db_join_list_t* join_list, const db_clause_list_t* clause_list, size_t* count) {
+int libdbo_object_count(const libdbo_object_t* object, const libdbo_join_list_t* join_list, const libdbo_clause_list_t* clause_list, size_t* count) {
     if (!object) {
         return DB_ERROR_UNKNOWN;
     }
@@ -539,5 +539,5 @@ int db_object_count(const db_object_t* object, const db_join_list_t* join_list, 
         return DB_ERROR_UNKNOWN;
     }
 
-    return db_connection_count(object->connection, object, join_list, clause_list, count);
+    return libdbo_connection_count(object->connection, object, join_list, clause_list, count);
 }

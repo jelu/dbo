@@ -1,9 +1,9 @@
 test
 test.db
-db_schema_mysql.c
-db_schema_mysql.h
-db_schema_sqlite.c
-db_schema_sqlite.h
+libdbo_schema_mysql.c
+libdbo_schema_mysql.h
+libdbo_schema_sqlite.c
+libdbo_schema_sqlite.h
 drop.mysql
 groups.c
 groups.h

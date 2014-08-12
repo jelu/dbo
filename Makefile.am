@@ -35,7 +35,7 @@ MAINTAINERCLEANFILES = \
 	$(srcdir)/depcomp $(srcdir)/aclocal.m4 $(srcdir)/compile \
 	$(srcdir)/config.guess $(srcdir)/config.sub
 
-SUBDIRS = doc src tools test
+SUBDIRS = tools src test doc
 
 EXTRA_DIST = $(srcdir)/LICENSE \
 		$(srcdir)/KNOWN_ISSUES \

@@ -32,9 +32,9 @@
  * All rights reserved.
  */
 
-#include "db_mm.h"
+#include "libdbo_mm.h"
 
-#include "db_error.h"
+#include "libdbo_error.h"
 
 #include <strings.h>
 #include <unistd.h>
@@ -45,10 +45,10 @@
 #define __db_mm_size 65536
 
 static size_t __pagesize = __db_mm_size;
-static db_mm_malloc_t __db_mm_malloc;
-static db_mm_free_t __db_mm_free;
+static libdbo_mm_malloc_t __db_mm_malloc;
+static libdbo_mm_free_t __db_mm_free;
 
-void db_mm_init(void) {
+void libdbo_mm_init(void) {
     /* TODO: will long => size_t be a problem somewhere? */
     /* TODO: This isn't working
 #if defined(_SC_PAGESIZE)
@@ -59,7 +59,7 @@ void db_mm_init(void) {
 */
 }
 
-int db_mm_set_malloc(db_mm_malloc_t malloc_function) {
+int libdbo_mm_set_malloc(libdbo_mm_malloc_t malloc_function) {
     if (!malloc_function) {
         return DB_ERROR_UNKNOWN;
     }
@@ -73,7 +73,7 @@ int db_mm_set_malloc(db_mm_malloc_t malloc_function) {
     return DB_OK;
 }
 
-int db_mm_set_free(db_mm_free_t free_function) {
+int libdbo_mm_set_free(libdbo_mm_free_t free_function) {
     if (!free_function) {
         return DB_ERROR_UNKNOWN;
     }
@@ -87,7 +87,7 @@ int db_mm_set_free(db_mm_free_t free_function) {
     return DB_OK;
 }
 
-void* db_mm_new(db_mm_t* alloc) {
+void* libdbo_mm_new(libdbo_mm_t* alloc) {
     void* ptr;
 
     if (!alloc) {
@@ -136,8 +136,8 @@ void* db_mm_new(db_mm_t* alloc) {
     return ptr;
 }
 
-void* db_mm_new0(db_mm_t* alloc) {
-    void* ptr = db_mm_new(alloc);
+void* libdbo_mm_new0(libdbo_mm_t* alloc) {
+    void* ptr = libdbo_mm_new(alloc);
 
     if (ptr) {
         bzero(ptr, alloc->size);
@@ -146,7 +146,7 @@ void* db_mm_new0(db_mm_t* alloc) {
     return ptr;
 }
 
-void db_mm_delete(db_mm_t* alloc, void* ptr) {
+void libdbo_mm_delete(libdbo_mm_t* alloc, void* ptr) {
     if (!alloc) {
         return;
     }
@@ -168,7 +168,7 @@ void db_mm_delete(db_mm_t* alloc, void* ptr) {
     pthread_mutex_unlock(&(alloc->lock));
 }
 
-void db_mm_release(db_mm_t* alloc) {
+void libdbo_mm_release(libdbo_mm_t* alloc) {
     void* block;
 
     if (!alloc) {

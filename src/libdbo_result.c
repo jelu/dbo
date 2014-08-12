@@ -33,32 +33,32 @@
  * All rights reserved.
  */
 
-#include "db_result.h"
-#include "db_error.h"
+#include "libdbo_result.h"
+#include "libdbo_error.h"
 
-#include "db_mm.h"
+#include "libdbo_mm.h"
 
 /* DB RESULT */
 
-static db_mm_t __result_alloc = DB_MM_T_STATIC_NEW(sizeof(db_result_t));
+static libdbo_mm_t __result_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_result_t));
 
-db_result_t* db_result_new(void) {
-    db_result_t* result =
-        (db_result_t*)db_mm_new0(&__result_alloc);
+libdbo_result_t* libdbo_result_new(void) {
+    libdbo_result_t* result =
+        (libdbo_result_t*)libdbo_mm_new0(&__result_alloc);
 
     return result;
 }
 
-db_result_t* db_result_new_copy(const db_result_t* from_result) {
-    db_result_t* result;
+libdbo_result_t* libdbo_result_new_copy(const libdbo_result_t* from_result) {
+    libdbo_result_t* result;
 
     if (!from_result) {
         return NULL;
     }
 
-    if ((result = db_result_new())) {
-        if (db_result_copy(result, from_result)) {
-            db_result_free(result);
+    if ((result = libdbo_result_new())) {
+        if (libdbo_result_copy(result, from_result)) {
+            libdbo_result_free(result);
             return NULL;
         }
     }
@@ -66,21 +66,21 @@ db_result_t* db_result_new_copy(const db_result_t* from_result) {
     return result;
 }
 
-void db_result_free(db_result_t* result) {
+void libdbo_result_free(libdbo_result_t* result) {
     if (result) {
         if (result->value_set) {
-            db_value_set_free(result->value_set);
+            libdbo_value_set_free(result->value_set);
         }
         if (result->backend_meta_data_list) {
-            db_backend_meta_data_list_free(result->backend_meta_data_list);
+            libdbo_backend_meta_data_list_free(result->backend_meta_data_list);
         }
-        db_mm_delete(&__result_alloc, result);
+        libdbo_mm_delete(&__result_alloc, result);
     }
 }
 
-int db_result_copy(db_result_t* result, const db_result_t* from_result) {
-    db_value_set_t* value_set = NULL;
-    db_backend_meta_data_list_t* backend_meta_data_list = NULL;
+int libdbo_result_copy(libdbo_result_t* result, const libdbo_result_t* from_result) {
+    libdbo_value_set_t* value_set = NULL;
+    libdbo_backend_meta_data_list_t* backend_meta_data_list = NULL;
 
     if (!result) {
         return DB_ERROR_UNKNOWN;
@@ -90,31 +90,31 @@ int db_result_copy(db_result_t* result, const db_result_t* from_result) {
     }
 
     if (from_result->value_set
-        && !(value_set = db_value_set_new_copy(from_result->value_set)))
+        && !(value_set = libdbo_value_set_new_copy(from_result->value_set)))
     {
         return DB_ERROR_UNKNOWN;
     }
 
     if (from_result->backend_meta_data_list
-        && !(backend_meta_data_list = db_backend_meta_data_list_new_copy(from_result->backend_meta_data_list)))
+        && !(backend_meta_data_list = libdbo_backend_meta_data_list_new_copy(from_result->backend_meta_data_list)))
     {
-        db_value_set_free(value_set);
+        libdbo_value_set_free(value_set);
         return DB_ERROR_UNKNOWN;
     }
 
     if (result->value_set) {
-        db_value_set_free(result->value_set);
+        libdbo_value_set_free(result->value_set);
     }
     result->value_set = value_set;
     if (result->backend_meta_data_list) {
-        db_backend_meta_data_list_free(result->backend_meta_data_list);
+        libdbo_backend_meta_data_list_free(result->backend_meta_data_list);
     }
     result->backend_meta_data_list = backend_meta_data_list;
 
     return DB_OK;
 }
 
-const db_value_set_t* db_result_value_set(const db_result_t* result) {
+const libdbo_value_set_t* libdbo_result_value_set(const libdbo_result_t* result) {
     if (!result) {
         return NULL;
     }
@@ -122,7 +122,7 @@ const db_value_set_t* db_result_value_set(const db_result_t* result) {
     return result->value_set;
 }
 
-const db_backend_meta_data_list_t* db_result_backend_meta_data_list(const db_result_t* result) {
+const libdbo_backend_meta_data_list_t* libdbo_result_backend_meta_data_list(const libdbo_result_t* result) {
     if (!result) {
         return NULL;
     }
@@ -130,7 +130,7 @@ const db_backend_meta_data_list_t* db_result_backend_meta_data_list(const db_res
     return result->backend_meta_data_list;
 }
 
-int db_result_set_value_set(db_result_t* result, db_value_set_t* value_set) {
+int libdbo_result_set_value_set(libdbo_result_t* result, libdbo_value_set_t* value_set) {
     if (!result) {
         return DB_ERROR_UNKNOWN;
     }
@@ -145,7 +145,7 @@ int db_result_set_value_set(db_result_t* result, db_value_set_t* value_set) {
     return DB_OK;
 }
 
-int db_result_set_backend_meta_data_list(db_result_t* result, db_backend_meta_data_list_t* backend_meta_data_list) {
+int libdbo_result_set_backend_meta_data_list(libdbo_result_t* result, libdbo_backend_meta_data_list_t* backend_meta_data_list) {
     if (!result) {
         return DB_ERROR_UNKNOWN;
     }
@@ -160,7 +160,7 @@ int db_result_set_backend_meta_data_list(db_result_t* result, db_backend_meta_da
     return DB_OK;
 }
 
-int db_result_not_empty(const db_result_t* result) {
+int libdbo_result_not_empty(const libdbo_result_t* result) {
     if (!result) {
         return DB_ERROR_UNKNOWN;
     }
@@ -172,26 +172,26 @@ int db_result_not_empty(const db_result_t* result) {
 
 /* DB RESULT LIST */
 
-static db_mm_t __result_list_alloc = DB_MM_T_STATIC_NEW(sizeof(db_result_list_t));
+static libdbo_mm_t __result_list_alloc = DB_MM_T_STATIC_NEW(sizeof(libdbo_result_list_t));
 
-db_result_list_t* db_result_list_new(void) {
-    db_result_list_t* result_list =
-        (db_result_list_t*)db_mm_new0(&__result_list_alloc);
+libdbo_result_list_t* libdbo_result_list_new(void) {
+    libdbo_result_list_t* result_list =
+        (libdbo_result_list_t*)libdbo_mm_new0(&__result_list_alloc);
 
     return result_list;
 }
 
-db_result_list_t* db_result_list_new_copy(const db_result_list_t* from_result_list) {
-    db_result_list_t* result_list;
+libdbo_result_list_t* libdbo_result_list_new_copy(const libdbo_result_list_t* from_result_list) {
+    libdbo_result_list_t* result_list;
 
     if (!from_result_list) {
         return NULL;
     }
 
-    result_list = (db_result_list_t*)db_mm_new0(&__result_list_alloc);
+    result_list = (libdbo_result_list_t*)libdbo_mm_new0(&__result_list_alloc);
     if (result_list) {
-        if (db_result_list_copy(result_list, from_result_list)) {
-            db_result_list_free(result_list);
+        if (libdbo_result_list_copy(result_list, from_result_list)) {
+            libdbo_result_list_free(result_list);
             return NULL;
         }
     }
@@ -199,31 +199,31 @@ db_result_list_t* db_result_list_new_copy(const db_result_list_t* from_result_li
     return result_list;
 }
 
-void db_result_list_free(db_result_list_t* result_list) {
+void libdbo_result_list_free(libdbo_result_list_t* result_list) {
     if (result_list) {
         if (result_list->begin) {
-            db_result_t* this = result_list->begin;
-            db_result_t* next = NULL;
+            libdbo_result_t* this = result_list->begin;
+            libdbo_result_t* next = NULL;
 
             while (this) {
                 next = this->next;
-                db_result_free(this);
+                libdbo_result_free(this);
                 this = next;
             }
         }
         if (result_list->next_function) {
             (void)result_list->next_function(result_list->next_data, 1);
             if (result_list->current) {
-                db_result_free(result_list->current);
+                libdbo_result_free(result_list->current);
             }
         }
-        db_mm_delete(&__result_list_alloc, result_list);
+        libdbo_mm_delete(&__result_list_alloc, result_list);
     }
 }
 
-int db_result_list_copy(db_result_list_t* result_list, const db_result_list_t* from_result_list) {
-    db_result_t* result;
-    db_result_t* result_copy;
+int libdbo_result_list_copy(libdbo_result_list_t* result_list, const libdbo_result_list_t* from_result_list) {
+    libdbo_result_t* result;
+    libdbo_result_t* result_copy;
 
     if (!result_list) {
         return DB_ERROR_UNKNOWN;
@@ -256,8 +256,8 @@ int db_result_list_copy(db_result_list_t* result_list, const db_result_list_t* f
 
     result = from_result_list->begin;
     while (result) {
-        if (!(result_copy = db_result_new_copy(result))
-            || db_result_list_add(result_list, result_copy))
+        if (!(result_copy = libdbo_result_new_copy(result))
+            || libdbo_result_list_add(result_list, result_copy))
         {
             return DB_ERROR_UNKNOWN;
         }
@@ -272,7 +272,7 @@ int db_result_list_copy(db_result_list_t* result_list, const db_result_list_t* f
     return DB_OK;
 }
 
-int db_result_list_set_next(db_result_list_t* result_list, db_result_list_next_t next_function, void* next_data, size_t size) {
+int libdbo_result_list_set_next(libdbo_result_list_t* result_list, libdbo_result_list_next_t next_function, void* next_data, size_t size) {
     if (!result_list) {
         return DB_ERROR_UNKNOWN;
     }
@@ -295,14 +295,14 @@ int db_result_list_set_next(db_result_list_t* result_list, db_result_list_next_t
     return 0;
 }
 
-int db_result_list_add(db_result_list_t* result_list, db_result_t* result) {
+int libdbo_result_list_add(libdbo_result_list_t* result_list, libdbo_result_t* result) {
     if (!result_list) {
         return DB_ERROR_UNKNOWN;
     }
     if (!result) {
         return DB_ERROR_UNKNOWN;
     }
-    if (db_result_not_empty(result)) {
+    if (libdbo_result_not_empty(result)) {
         return DB_ERROR_UNKNOWN;
     }
     if (result->next) {
@@ -328,7 +328,7 @@ int db_result_list_add(db_result_list_t* result_list, db_result_t* result) {
     return DB_OK;
 }
 
-const db_result_t* db_result_list_begin(db_result_list_t* result_list) {
+const libdbo_result_t* libdbo_result_list_begin(libdbo_result_list_t* result_list) {
     if (!result_list) {
         return NULL;
     }
@@ -348,14 +348,14 @@ const db_result_t* db_result_list_begin(db_result_list_t* result_list) {
     return result_list->current;
 }
 
-const db_result_t* db_result_list_next(db_result_list_t* result_list) {
+const libdbo_result_t* libdbo_result_list_next(libdbo_result_list_t* result_list) {
     if (!result_list) {
         return NULL;
     }
 
     if (result_list->next_function) {
         if (result_list->current) {
-            db_result_free(result_list->current);
+            libdbo_result_free(result_list->current);
         }
         result_list->current = result_list->next_function(result_list->next_data, 0);
         return result_list->current;
@@ -371,7 +371,7 @@ const db_result_t* db_result_list_next(db_result_list_t* result_list) {
     return result_list->current;
 }
 
-size_t db_result_list_size(const db_result_list_t* result_list) {
+size_t libdbo_result_list_size(const libdbo_result_list_t* result_list) {
     if (!result_list) {
         return 0;
     }
@@ -379,9 +379,9 @@ size_t db_result_list_size(const db_result_list_t* result_list) {
     return result_list->size;
 }
 
-int db_result_list_fetch_all(db_result_list_t* result_list) {
-    db_result_t* result;
-    db_result_list_next_t next_function;
+int libdbo_result_list_fetch_all(libdbo_result_list_t* result_list) {
+    libdbo_result_t* result;
+    libdbo_result_list_next_t next_function;
 
     if (!result_list) {
         return DB_ERROR_UNKNOWN;
@@ -397,10 +397,10 @@ int db_result_list_fetch_all(db_result_list_t* result_list) {
         result_list->size = 0;
 
         while ((result = next_function(result_list->next_data, 0))) {
-            if (db_result_list_add(result_list, result)) {
+            if (libdbo_result_list_add(result_list, result)) {
                 next_function(result_list->next_data, 1);
                 result_list->next_data = NULL;
-                db_result_free(result);
+                libdbo_result_free(result);
                 return DB_ERROR_UNKNOWN;
             }
         }

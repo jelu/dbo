@@ -32,16 +32,16 @@
  * All rights reserved.
  */
 
-/** \file db_mm.h */
-/** \defgroup db_mm db_mm
+/** \file libdbo_mm.h */
+/** \defgroup libdbo_mm libdbo_mm
  * Database Memory Management.
  * These functions handles the internal memory of the database layer. It can be
- * replaced with external memory management via the functions db_mm_set_malloc()
- * and db_mm_set_free().
+ * replaced with external memory management via the functions libdbo_mm_set_malloc()
+ * and libdbo_mm_set_free().
  */
 
-#ifndef libdbo_db_mm_h
-#define libdbo_db_mm_h
+#ifndef libdbo_mm_h
+#define libdbo_mm_h
 
 #include <stdlib.h>
 #include <pthread.h>
@@ -50,98 +50,98 @@
 extern "C" {
 #endif
 
-/** \addtogroup db_mm */
+/** \addtogroup libdbo_mm */
 /** \{ */
 
 /**
- * A db_mm_t static allocation for a memory pool.
+ * A libdbo_mm_t static allocation for a memory pool.
  */
 #define DB_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, PTHREAD_MUTEX_INITIALIZER }
 
 /**
  * A memory pool handle.
  */
-typedef struct db_mm db_mm_t;
+typedef struct libdbo_mm libdbo_mm_t;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct db_mm
+struct libdbo_mm
 {
     void *block;
-	void *next;
-	size_t size;
-	pthread_mutex_t lock;
+    void *next;
+    size_t size;
+    pthread_mutex_t lock;
 };
 #endif
 
 /**
- * Function pointer for allocating memory, used with db_mm_set_malloc() and
- * db_mm_set_free() to disable the database layer memory management.
+ * Function pointer for allocating memory, used with libdbo_mm_set_malloc() and
+ * libdbo_mm_set_free() to disable the database layer memory management.
  * \param[in] size a size_t with the size being allocated.
  * \return a pointer to the memory allocated or NULL on error.
  */
-typedef void* (*db_mm_malloc_t)(size_t size);
+typedef void* (*libdbo_mm_malloc_t)(size_t size);
 
 /**
- * Function pointer for freeing memory, used with db_mm_set_malloc() and
- * db_mm_set_free() to disable the database layer memory management.
+ * Function pointer for freeing memory, used with libdbo_mm_set_malloc() and
+ * libdbo_mm_set_free() to disable the database layer memory management.
  * \param[in] ptr a pointer to the memory being freed.
  */
-typedef void (*db_mm_free_t)(void* ptr);
+typedef void (*libdbo_mm_free_t)(void* ptr);
 
 /**
  * Initiate the database layer memory management.
  */
-void db_mm_init(void);
+void libdbo_mm_init(void);
 
 /**
  * Set a custom malloc function for the database layer. Both malloc and free
  * function pointers needs to be set in other for them to be called instead of
  * the database layer memory management code.
- * \param[in] malloc_function a db_mm_malloc_t function pointer.
+ * \param[in] malloc_function a libdbo_mm_malloc_t function pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-int db_mm_set_malloc(db_mm_malloc_t malloc_function);
+int libdbo_mm_set_malloc(libdbo_mm_malloc_t malloc_function);
 
 /**
  * Set a custom free function for the database layer. Both malloc and free
  * function pointers needs to be set in other for them to be called instead of
  * the database layer memory management code.
- * \param[in] free_function a db_mm_free_t function pointer.
+ * \param[in] free_function a libdbo_mm_free_t function pointer.
  * \return DB_ERROR_* on failure, otherwise DB_OK.
  */
-int db_mm_set_free(db_mm_free_t free_function);
+int libdbo_mm_set_free(libdbo_mm_free_t free_function);
 
 /**
  * Allocate a new object from the managed pool.
- * \param[in] alloc a db_mm_t pointer.
+ * \param[in] alloc a libdbo_mm_t pointer.
  * \return A pointer to the new object or NULL on error.
  */
-void* db_mm_new(db_mm_t* alloc);
+void* libdbo_mm_new(libdbo_mm_t* alloc);
 
 /**
  * Allocate a new object from the managed pool, this also zeros the memory
  * before returning it.
- * \param[in] alloc a db_mm_t pointer.
+ * \param[in] alloc a libdbo_mm_t pointer.
  * \return A pointer to the new object or NULL on error.
  */
-void* db_mm_new0(db_mm_t* alloc);
+void* libdbo_mm_new0(libdbo_mm_t* alloc);
 
 /**
  * Free an object in a managed pool, returning it to the pool and making it
  * available for others to allocate.
- * \param[in] alloc a db_mm_t pointer.
+ * \param[in] alloc a libdbo_mm_t pointer.
  * \param[in] ptr a pointer to the object that is being freed.
  */
-void db_mm_delete(db_mm_t* alloc, void* ptr);
+void libdbo_mm_delete(libdbo_mm_t* alloc, void* ptr);
 
 /**
  * Release all free memory in a managed pool, all memory in the pool MUST have
- * been delete with db_mm_delete() before calling this function. Any access to
+ * been delete with libdbo_mm_delete() before calling this function. Any access to
  * the memory areas previusly given will result in segfaults and/or memory
  * corruption.
- * \param[in] alloc a db_mm_t pointer.
+ * \param[in] alloc a libdbo_mm_t pointer.
  */
-void db_mm_release(db_mm_t* alloc);
+void libdbo_mm_release(libdbo_mm_t* alloc);
 
 /** \} */
 

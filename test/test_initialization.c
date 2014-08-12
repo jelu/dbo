@@ -35,14 +35,14 @@
 
 #include "config.h"
 
-#include "db_configuration.h"
-#include "db_connection.h"
+#include "libdbo_configuration.h"
+#include "libdbo_connection.h"
 
 #include "CUnit/Basic.h"
 
-static db_configuration_list_t* configuration_list = NULL;
-static db_configuration_t* configuration = NULL;
-static db_connection_t* connection = NULL;
+static libdbo_configuration_list_t* configuration_list = NULL;
+static libdbo_configuration_t* configuration = NULL;
+static libdbo_connection_t* connection = NULL;
 
 int init_suite_initialization(void) {
     if (configuration_list) {
@@ -58,35 +58,35 @@ int init_suite_initialization(void) {
 }
 
 int clean_suite_initialization(void) {
-    db_connection_free(connection);
+    libdbo_connection_free(connection);
     connection = NULL;
-    db_configuration_free(configuration);
+    libdbo_configuration_free(configuration);
     configuration = NULL;
-    db_configuration_list_free(configuration_list);
+    libdbo_configuration_list_free(configuration_list);
     configuration_list = NULL;
     return 0;
 }
 
 void test_initialization_configuration_sqlite3(void) {
-    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration_list = db_configuration_list_new()));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration_list = libdbo_configuration_list_new()));
 
 #if defined(HAVE_SQLITE3)
-    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
-    CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "backend"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "sqlite"));
-    CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = libdbo_configuration_new()));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_name(configuration, "backend"));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_value(configuration, "sqlite"));
+    CU_ASSERT_FATAL(!libdbo_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
-    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
-    CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "file"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "test.db"));
-    CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = libdbo_configuration_new()));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_name(configuration, "file"));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_value(configuration, "test.db"));
+    CU_ASSERT_FATAL(!libdbo_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 #endif
 }
 
 void test_initialization_configuration_couchdb(void) {
-    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration_list = db_configuration_list_new()));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration_list = libdbo_configuration_list_new()));
 
 #if defined(HAVE_COUCHDB)
     CU_ASSERT_FATAL(0);
@@ -94,52 +94,52 @@ void test_initialization_configuration_couchdb(void) {
 }
 
 void test_initialization_configuration_mysql(void) {
-    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration_list = db_configuration_list_new()));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration_list = libdbo_configuration_list_new()));
 
 #if defined(HAVE_MYSQL)
-    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
-    CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "backend"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, "mysql"));
-    CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = libdbo_configuration_new()));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_name(configuration, "backend"));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_value(configuration, "mysql"));
+    CU_ASSERT_FATAL(!libdbo_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
-    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
-    CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "host"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, TEST_MYSQL_HOST));
-    CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = libdbo_configuration_new()));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_name(configuration, "host"));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_value(configuration, TEST_MYSQL_HOST));
+    CU_ASSERT_FATAL(!libdbo_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
-    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
-    CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "port"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, TEST_MYSQL_PORT_TXT));
-    CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = libdbo_configuration_new()));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_name(configuration, "port"));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_value(configuration, TEST_MYSQL_PORT_TXT));
+    CU_ASSERT_FATAL(!libdbo_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
-    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
-    CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "user"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, TEST_MYSQL_USER));
-    CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = libdbo_configuration_new()));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_name(configuration, "user"));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_value(configuration, TEST_MYSQL_USER));
+    CU_ASSERT_FATAL(!libdbo_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
-    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
-    CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "pass"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, TEST_MYSQL_PASS));
-    CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = libdbo_configuration_new()));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_name(configuration, "pass"));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_value(configuration, TEST_MYSQL_PASS));
+    CU_ASSERT_FATAL(!libdbo_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 
-    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = db_configuration_new()));
-    CU_ASSERT_FATAL(!db_configuration_set_name(configuration, "db"));
-    CU_ASSERT_FATAL(!db_configuration_set_value(configuration, TEST_MYSQL_DB));
-    CU_ASSERT_FATAL(!db_configuration_list_add(configuration_list, configuration));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((configuration = libdbo_configuration_new()));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_name(configuration, "db"));
+    CU_ASSERT_FATAL(!libdbo_configuration_set_value(configuration, TEST_MYSQL_DB));
+    CU_ASSERT_FATAL(!libdbo_configuration_list_add(configuration_list, configuration));
     configuration = NULL;
 #endif
 }
 
 void test_initialization_connection(void) {
-    CU_ASSERT_PTR_NOT_NULL_FATAL((connection = db_connection_new()));
-    CU_ASSERT_FATAL(!db_connection_set_configuration_list(connection, configuration_list));
-    CU_ASSERT_FATAL(!db_connection_setup(connection));
-    CU_ASSERT_FATAL(!db_connection_connect(connection));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((connection = libdbo_connection_new()));
+    CU_ASSERT_FATAL(!libdbo_connection_set_configuration_list(connection, configuration_list));
+    CU_ASSERT_FATAL(!libdbo_connection_setup(connection));
+    CU_ASSERT_FATAL(!libdbo_connection_connect(connection));
 
-    CU_ASSERT_FATAL(!db_connection_disconnect(connection));
+    CU_ASSERT_FATAL(!libdbo_connection_disconnect(connection));
 }
