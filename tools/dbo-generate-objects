@@ -25,11 +25,11 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 use common::sense;
-use JSON::XS;
+use JSON;
 use utf8;
 use Carp;
 
-my $JSON = JSON::XS->new;
+my $JSON = JSON->new;
 
 open(FILE, $ARGV[0]) or die;
 my $file;
