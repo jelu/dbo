@@ -46,7 +46,8 @@ nobase_include_HEADERS = libdbo/mm.h \
 	libdbo/type.h \
 	libdbo/value.h \
 	libdbo/join.h \
-	libdbo/error.h
+	libdbo/error.h \
+	libdbo/libdbo.h
 if HAVE_SQLITE3
 libdbo_la_SOURCES += libdbo_backend_sqlite.c libdbo/backend/sqlite.h
 nobase_include_HEADERS += libdbo/backend/sqlite.h
