@@ -58,6 +58,28 @@ void test_class_libdbo_result_list(void);
 void test_class_libdbo_value(void);
 void test_class_end(void);
 
+int init_suite_classes_short_names(void);
+int clean_suite_classes_short_names(void);
+void test_class_short_names_db_backend_handle(void);
+void test_class_short_names_db_backend(void);
+void test_class_short_names_db_backend_meta_data_list(void);
+void test_class_short_names_db_backend_meta_data(void);
+void test_class_short_names_db_clause(void);
+void test_class_short_names_db_clause_list(void);
+void test_class_short_names_db_configuration(void);
+void test_class_short_names_db_configuration_list(void);
+void test_class_short_names_db_connection(void);
+void test_class_short_names_db_join(void);
+void test_class_short_names_db_join_list(void);
+void test_class_short_names_db_object_field(void);
+void test_class_short_names_db_object_field_list(void);
+void test_class_short_names_db_object(void);
+void test_class_short_names_db_value_set(void);
+void test_class_short_names_db_result(void);
+void test_class_short_names_db_result_list(void);
+void test_class_short_names_db_value(void);
+void test_class_short_names_end(void);
+
 int init_suite_initialization(void);
 int clean_suite_initialization(void);
 void test_initialization_configuration_sqlite3(void);

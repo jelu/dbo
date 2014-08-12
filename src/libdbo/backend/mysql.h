@@ -77,4 +77,13 @@ libdbo_backend_handle_t* libdbo_backend_mysql_new_handle(void);
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define DB_BACKEND_MYSQL_DEFAULT_TIMEOUT 30
+#define DB_BACKEND_MYSQL_STRING_MIN_SIZE 64
+#define DB_BACKEND_MYSQL_STRING_MAX_SIZE 4096
+#define db_backend_mysql_new_handle(...) libdbo_backend_mysql_new_handle(__VA_ARGS__)
+#endif
+#endif
+
 #endif

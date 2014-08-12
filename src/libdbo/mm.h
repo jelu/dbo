@@ -149,4 +149,20 @@ void libdbo_mm_release(libdbo_mm_t* alloc);
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define DB_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, PTHREAD_MUTEX_INITIALIZER }
+#define db_mm_t libdbo_mm_t
+#define db_mm_malloc_t libdbo_mm_malloc_t
+#define db_mm_free_t libdbo_mm_free_t
+#define db_mm_init(...) libdbo_mm_init(__VA_ARGS__)
+#define db_mm_set_malloc(...) libdbo_mm_set_malloc(__VA_ARGS__)
+#define db_mm_set_free(...) libdbo_mm_set_free(__VA_ARGS__)
+#define db_mm_new(...) libdbo_mm_new(__VA_ARGS__)
+#define db_mm_new0(...) libdbo_mm_new0(__VA_ARGS__)
+#define db_mm_delete(...) libdbo_mm_delete(__VA_ARGS__)
+#define db_mm_release(...) libdbo_mm_release(__VA_ARGS__)
+#endif
+#endif
+
 #endif

@@ -73,4 +73,10 @@ struct libdbo_enum {
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define db_enum_t libdbo_enum_t
+#endif
+#endif
+
 #endif

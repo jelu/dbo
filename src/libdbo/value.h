@@ -419,4 +419,50 @@ libdbo_value_t* libdbo_value_set_get(libdbo_value_set_t* value_set, size_t at);
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define db_value_t libdbo_value_t
+#define db_value_set_t libdbo_value_set_t
+#define DB_VALUE_EMPTY { DB_TYPE_EMPTY, 0, NULL, 0, 0, 0, 0, 0, NULL }
+#define db_value_new(...) libdbo_value_new(__VA_ARGS__)
+#define db_value_new_copy(...) libdbo_value_new_copy(__VA_ARGS__)
+#define db_value_free(...) libdbo_value_free(__VA_ARGS__)
+#define db_value_reset(...) libdbo_value_reset(__VA_ARGS__)
+#define db_value_copy(...) libdbo_value_copy(__VA_ARGS__)
+#define db_value_cmp(...) libdbo_value_cmp(__VA_ARGS__)
+#define db_value_type(...) libdbo_value_type(__VA_ARGS__)
+#define db_value_int32(...) libdbo_value_int32(__VA_ARGS__)
+#define db_value_uint32(...) libdbo_value_uint32(__VA_ARGS__)
+#define db_value_int64(...) libdbo_value_int64(__VA_ARGS__)
+#define db_value_uint64(...) libdbo_value_uint64(__VA_ARGS__)
+#define db_value_text(...) libdbo_value_text(__VA_ARGS__)
+#define db_value_enum_value(...) libdbo_value_enum_value(__VA_ARGS__)
+#define db_value_enum_text(...) libdbo_value_enum_text(__VA_ARGS__)
+#define db_value_not_empty(...) libdbo_value_not_empty(__VA_ARGS__)
+#define db_value_to_int32(...) libdbo_value_to_int32(__VA_ARGS__)
+#define db_value_to_uint32(...) libdbo_value_to_uint32(__VA_ARGS__)
+#define db_value_to_int64(...) libdbo_value_to_int64(__VA_ARGS__)
+#define db_value_to_uint64(...) libdbo_value_to_uint64(__VA_ARGS__)
+#define db_value_to_text(...) libdbo_value_to_text(__VA_ARGS__)
+#define db_value_to_enum_value(...) libdbo_value_to_enum_value(__VA_ARGS__)
+#define db_value_to_enum_text(...) libdbo_value_to_enum_text(__VA_ARGS__)
+#define db_value_from_int32(...) libdbo_value_from_int32(__VA_ARGS__)
+#define db_value_from_uint32(...) libdbo_value_from_uint32(__VA_ARGS__)
+#define db_value_from_int64(...) libdbo_value_from_int64(__VA_ARGS__)
+#define db_value_from_uint64(...) libdbo_value_from_uint64(__VA_ARGS__)
+#define db_value_from_text(...) libdbo_value_from_text(__VA_ARGS__)
+#define db_value_from_text2(...) libdbo_value_from_text2(__VA_ARGS__)
+#define db_value_from_enum_value(...) libdbo_value_from_enum_value(__VA_ARGS__)
+#define db_value_from_enum_text(...) libdbo_value_from_enum_text(__VA_ARGS__)
+#define db_value_primary_key(...) libdbo_value_primary_key(__VA_ARGS__)
+#define db_value_set_primary_key(...) libdbo_value_set_primary_key(__VA_ARGS__)
+#define db_value_set_new(...) libdbo_value_set_new(__VA_ARGS__)
+#define db_value_set_new_copy(...) libdbo_value_set_new_copy(__VA_ARGS__)
+#define db_value_set_free(...) libdbo_value_set_free(__VA_ARGS__)
+#define db_value_set_size(...) libdbo_value_set_size(__VA_ARGS__)
+#define db_value_set_at(...) libdbo_value_set_at(__VA_ARGS__)
+#define db_value_set_get(...) libdbo_value_set_get(__VA_ARGS__)
+#endif
+#endif
+
 #endif

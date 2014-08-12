@@ -73,4 +73,12 @@ libdbo_backend_handle_t* libdbo_backend_sqlite_new_handle(void);
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define DB_BACKEND_SQLITE_DEFAULT_TIMEOUT 30
+#define DB_BACKEND_SQLITE_DEFAULT_USLEEP 200000
+#define db_backend_sqlite_new_handle(...) libdbo_backend_sqlite_new_handle(__VA_ARGS__)
+#endif
+#endif
+
 #endif

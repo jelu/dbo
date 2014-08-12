@@ -836,4 +836,92 @@ const libdbo_backend_meta_data_t* libdbo_backend_meta_data_list_find(const libdb
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define db_backend_handle_t libdbo_backend_handle_t
+#define db_backend_t libdbo_backend_t
+#define db_backend_meta_data_t libdbo_backend_meta_data_t
+#define db_backend_meta_data_list_t libdbo_backend_meta_data_list_t
+#define db_backend_handle_initialize_t libdbo_backend_handle_initialize_t
+#define db_backend_handle_shutdown_t libdbo_backend_handle_shutdown_t
+#define db_backend_handle_connect_t libdbo_backend_handle_connect_t
+#define db_backend_handle_disconnect_t libdbo_backend_handle_disconnect_t
+#define db_backend_handle_create_t libdbo_backend_handle_create_t
+#define db_backend_handle_read_t libdbo_backend_handle_read_t
+#define db_backend_handle_update_t libdbo_backend_handle_update_t
+#define db_backend_handle_delete_t libdbo_backend_handle_delete_t
+#define db_backend_handle_count_t libdbo_backend_handle_count_t
+#define db_backend_handle_free_t libdbo_backend_handle_free_t
+#define db_backend_handle_transaction_begin_t libdbo_backend_handle_transaction_begin_t
+#define db_backend_handle_transaction_commit_t libdbo_backend_handle_transaction_commit_t
+#define db_backend_handle_transaction_rollback_t libdbo_backend_handle_transaction_rollback_t
+#define db_backend_handle_new(...) libdbo_backend_handle_new(__VA_ARGS__)
+#define db_backend_handle_free(...) libdbo_backend_handle_free(__VA_ARGS__)
+#define db_backend_handle_initialize(...) libdbo_backend_handle_initialize(__VA_ARGS__)
+#define db_backend_handle_shutdown(...) libdbo_backend_handle_shutdown(__VA_ARGS__)
+#define db_backend_handle_connect(...) libdbo_backend_handle_connect(__VA_ARGS__)
+#define db_backend_handle_disconnect(...) libdbo_backend_handle_disconnect(__VA_ARGS__)
+#define db_backend_handle_create(...) libdbo_backend_handle_create(__VA_ARGS__)
+#define db_backend_handle_read(...) libdbo_backend_handle_read(__VA_ARGS__)
+#define db_backend_handle_update(...) libdbo_backend_handle_update(__VA_ARGS__)
+#define db_backend_handle_delete(...) libdbo_backend_handle_delete(__VA_ARGS__)
+#define db_backend_handle_count(...) libdbo_backend_handle_count(__VA_ARGS__)
+#define db_backend_handle_transaction_begin(...) libdbo_backend_handle_transaction_begin(__VA_ARGS__)
+#define db_backend_handle_transaction_commit(...) libdbo_backend_handle_transaction_commit(__VA_ARGS__)
+#define db_backend_handle_transaction_rollback(...) libdbo_backend_handle_transaction_rollback(__VA_ARGS__)
+#define db_backend_handle_data(...) libdbo_backend_handle_data(__VA_ARGS__)
+#define db_backend_handle_set_initialize(...) libdbo_backend_handle_set_initialize(__VA_ARGS__)
+#define db_backend_handle_set_shutdown(...) libdbo_backend_handle_set_shutdown(__VA_ARGS__)
+#define db_backend_handle_set_connect(...) libdbo_backend_handle_set_connect(__VA_ARGS__)
+#define db_backend_handle_set_disconnect(...) libdbo_backend_handle_set_disconnect(__VA_ARGS__)
+#define db_backend_handle_set_create(...) libdbo_backend_handle_set_create(__VA_ARGS__)
+#define db_backend_handle_set_read(...) libdbo_backend_handle_set_read(__VA_ARGS__)
+#define db_backend_handle_set_update(...) libdbo_backend_handle_set_update(__VA_ARGS__)
+#define db_backend_handle_set_delete(...) libdbo_backend_handle_set_delete(__VA_ARGS__)
+#define db_backend_handle_set_count(...) libdbo_backend_handle_set_count(__VA_ARGS__)
+#define db_backend_handle_set_free(...) libdbo_backend_handle_set_free(__VA_ARGS__)
+#define db_backend_handle_set_transaction_begin(...) libdbo_backend_handle_set_transaction_begin(__VA_ARGS__)
+#define db_backend_handle_set_transaction_commit(...) libdbo_backend_handle_set_transaction_commit(__VA_ARGS__)
+#define db_backend_handle_set_transaction_rollback(...) libdbo_backend_handle_set_transaction_rollback(__VA_ARGS__)
+#define db_backend_handle_set_data(...) libdbo_backend_handle_set_data(__VA_ARGS__)
+#define db_backend_handle_not_empty(...) libdbo_backend_handle_not_empty(__VA_ARGS__)
+#define db_backend_new(...) libdbo_backend_new(__VA_ARGS__)
+#define db_backend_free(...) libdbo_backend_free(__VA_ARGS__)
+#define db_backend_name(...) libdbo_backend_name(__VA_ARGS__)
+#define db_backend_handle(...) libdbo_backend_handle(__VA_ARGS__)
+#define db_backend_set_name(...) libdbo_backend_set_name(__VA_ARGS__)
+#define db_backend_set_handle(...) libdbo_backend_set_handle(__VA_ARGS__)
+#define db_backend_not_empty(...) libdbo_backend_not_empty(__VA_ARGS__)
+#define db_backend_initialize(...) libdbo_backend_initialize(__VA_ARGS__)
+#define db_backend_shutdown(...) libdbo_backend_shutdown(__VA_ARGS__)
+#define db_backend_connect(...) libdbo_backend_connect(__VA_ARGS__)
+#define db_backend_disconnect(...) libdbo_backend_disconnect(__VA_ARGS__)
+#define db_backend_create(...) libdbo_backend_create(__VA_ARGS__)
+#define db_backend_read(...) libdbo_backend_read(__VA_ARGS__)
+#define db_backend_update(...) libdbo_backend_update(__VA_ARGS__)
+#define db_backend_delete(...) libdbo_backend_delete(__VA_ARGS__)
+#define db_backend_count(...) libdbo_backend_count(__VA_ARGS__)
+#define db_backend_transaction_begin(...) libdbo_backend_transaction_begin(__VA_ARGS__)
+#define db_backend_transaction_commit(...) libdbo_backend_transaction_commit(__VA_ARGS__)
+#define db_backend_transaction_rollback(...) libdbo_backend_transaction_rollback(__VA_ARGS__)
+#define db_backend_factory_get_backend(...) libdbo_backend_factory_get_backend(__VA_ARGS__)
+#define db_backend_factory_shutdown(...) libdbo_backend_factory_shutdown(__VA_ARGS__)
+#define db_backend_meta_data_new(...) libdbo_backend_meta_data_new(__VA_ARGS__)
+#define db_backend_meta_data_new_copy(...) libdbo_backend_meta_data_new_copy(__VA_ARGS__)
+#define db_backend_meta_data_free(...) libdbo_backend_meta_data_free(__VA_ARGS__)
+#define db_backend_meta_data_copy(...) libdbo_backend_meta_data_copy(__VA_ARGS__)
+#define db_backend_meta_data_name(...) libdbo_backend_meta_data_name(__VA_ARGS__)
+#define db_backend_meta_data_value(...) libdbo_backend_meta_data_value(__VA_ARGS__)
+#define db_backend_meta_data_set_name(...) libdbo_backend_meta_data_set_name(__VA_ARGS__)
+#define db_backend_meta_data_set_value(...) libdbo_backend_meta_data_set_value(__VA_ARGS__)
+#define db_backend_meta_data_not_empty(...) libdbo_backend_meta_data_not_empty(__VA_ARGS__)
+#define db_backend_meta_data_list_new(...) libdbo_backend_meta_data_list_new(__VA_ARGS__)
+#define db_backend_meta_data_list_new_copy(...) libdbo_backend_meta_data_list_new_copy(__VA_ARGS__)
+#define db_backend_meta_data_list_free(...) libdbo_backend_meta_data_list_free(__VA_ARGS__)
+#define db_backend_meta_data_list_copy(...) libdbo_backend_meta_data_list_copy(__VA_ARGS__)
+#define db_backend_meta_data_list_add(...) libdbo_backend_meta_data_list_add(__VA_ARGS__)
+#define db_backend_meta_data_list_find(...) libdbo_backend_meta_data_list_find(__VA_ARGS__)
+#endif
+#endif
+
 #endif

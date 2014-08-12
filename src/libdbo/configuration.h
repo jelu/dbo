@@ -182,4 +182,22 @@ const libdbo_configuration_t* libdbo_configuration_list_find(const libdbo_config
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define db_configuration_t libdbo_configuration_t
+#define db_configuration_list_t libdbo_configuration_list_t
+#define db_configuration_new(...) libdbo_configuration_new(__VA_ARGS__)
+#define db_configuration_free(...) libdbo_configuration_free(__VA_ARGS__)
+#define db_configuration_name(...) libdbo_configuration_name(__VA_ARGS__)
+#define db_configuration_value(...) libdbo_configuration_value(__VA_ARGS__)
+#define db_configuration_set_name(...) libdbo_configuration_set_name(__VA_ARGS__)
+#define db_configuration_set_value(...) libdbo_configuration_set_value(__VA_ARGS__)
+#define db_configuration_not_empty(...) libdbo_configuration_not_empty(__VA_ARGS__)
+#define db_configuration_list_new(...) libdbo_configuration_list_new(__VA_ARGS__)
+#define db_configuration_list_free(...) libdbo_configuration_list_free(__VA_ARGS__)
+#define db_configuration_list_add(...) libdbo_configuration_list_add(__VA_ARGS__)
+#define db_configuration_list_find(...) libdbo_configuration_list_find(__VA_ARGS__)
+#endif
+#endif
+
 #endif

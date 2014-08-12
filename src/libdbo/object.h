@@ -429,4 +429,48 @@ int libdbo_object_count(const libdbo_object_t* object, const libdbo_join_list_t*
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define db_object_t libdbo_object_t
+#define db_object_field_t libdbo_object_field_t
+#define db_object_field_list_t libdbo_object_field_list_t
+#define db_object_field_new(...) libdbo_object_field_new(__VA_ARGS__)
+#define db_object_field_new_copy(...) libdbo_object_field_new_copy(__VA_ARGS__)
+#define db_object_field_free(...) libdbo_object_field_free(__VA_ARGS__)
+#define db_object_field_copy(...) libdbo_object_field_copy(__VA_ARGS__)
+#define db_object_field_name(...) libdbo_object_field_name(__VA_ARGS__)
+#define db_object_field_type(...) libdbo_object_field_type(__VA_ARGS__)
+#define db_object_field_enum_set(...) libdbo_object_field_enum_set(__VA_ARGS__)
+#define db_object_field_set_name(...) libdbo_object_field_set_name(__VA_ARGS__)
+#define db_object_field_set_type(...) libdbo_object_field_set_type(__VA_ARGS__)
+#define db_object_field_set_enum_set(...) libdbo_object_field_set_enum_set(__VA_ARGS__)
+#define db_object_field_not_empty(...) libdbo_object_field_not_empty(__VA_ARGS__)
+#define db_object_field_next(...) libdbo_object_field_next(__VA_ARGS__)
+#define db_object_field_list_new(...) libdbo_object_field_list_new(__VA_ARGS__)
+#define db_object_field_list_new_copy(...) libdbo_object_field_list_new_copy(__VA_ARGS__)
+#define db_object_field_list_free(...) libdbo_object_field_list_free(__VA_ARGS__)
+#define db_object_field_list_copy(...) libdbo_object_field_list_copy(__VA_ARGS__)
+#define db_object_field_list_add(...) libdbo_object_field_list_add(__VA_ARGS__)
+#define db_object_field_list_begin(...) libdbo_object_field_list_begin(__VA_ARGS__)
+#define db_object_field_list_size(...) libdbo_object_field_list_size(__VA_ARGS__)
+#define db_object_new(...) libdbo_object_new(__VA_ARGS__)
+#define db_object_free(...) libdbo_object_free(__VA_ARGS__)
+#define db_object_connection(...) libdbo_object_connection(__VA_ARGS__)
+#define db_object_table(...) libdbo_object_table(__VA_ARGS__)
+#define db_object_primary_key_name(...) libdbo_object_primary_key_name(__VA_ARGS__)
+#define db_object_object_field_list(...) libdbo_object_object_field_list(__VA_ARGS__)
+#define db_object_backend_meta_data_list(...) libdbo_object_backend_meta_data_list(__VA_ARGS__)
+#define db_object_set_connection(...) libdbo_object_set_connection(__VA_ARGS__)
+#define db_object_set_table(...) libdbo_object_set_table(__VA_ARGS__)
+#define db_object_set_primary_key_name(...) libdbo_object_set_primary_key_name(__VA_ARGS__)
+#define db_object_set_object_field_list(...) libdbo_object_set_object_field_list(__VA_ARGS__)
+#define db_object_set_backend_meta_data_list(...) libdbo_object_set_backend_meta_data_list(__VA_ARGS__)
+#define db_object_create(...) libdbo_object_create(__VA_ARGS__)
+#define db_object_read(...) libdbo_object_read(__VA_ARGS__)
+#define db_object_update(...) libdbo_object_update(__VA_ARGS__)
+#define db_object_delete(...) libdbo_object_delete(__VA_ARGS__)
+#define db_object_count(...) libdbo_object_count(__VA_ARGS__)
+#endif
+#endif
+
 #endif

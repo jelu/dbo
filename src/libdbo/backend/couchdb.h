@@ -63,4 +63,10 @@ libdbo_backend_handle_t* libdbo_backend_couchdb_new_handle(void);
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define db_backend_couchdb_new_handle(...) libdbo_backend_couchdb_new_handle(__VA_ARGS__)
+#endif
+#endif
+
 #endif

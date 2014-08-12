@@ -69,6 +69,7 @@ test_SOURCES = \
 	test.c test.h \
 	test_mm.c \
 	test_classes.c \
+	test_classes_short_names.c \
 	test_initialization.c \
 	test_database_operations.c
 test_LDADD = $(top_builddir)/src/libdbo.la

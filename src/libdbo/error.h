@@ -56,4 +56,11 @@
 
 /** \} */
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define DB_OK 0
+#define DB_ERROR_UNKNOWN 1
+#endif
+#endif
+
 #endif

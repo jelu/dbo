@@ -231,4 +231,27 @@ const libdbo_join_t* libdbo_join_list_begin(const libdbo_join_list_t* join_list)
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define db_join_t libdbo_join_t
+#define db_join_list_t libdbo_join_list_t
+#define db_join_new(...) libdbo_join_new(__VA_ARGS__)
+#define db_join_free(...) libdbo_join_free(__VA_ARGS__)
+#define db_join_from_table(...) libdbo_join_from_table(__VA_ARGS__)
+#define db_join_from_field(...) libdbo_join_from_field(__VA_ARGS__)
+#define db_join_to_table(...) libdbo_join_to_table(__VA_ARGS__)
+#define db_join_to_field(...) libdbo_join_to_field(__VA_ARGS__)
+#define db_join_set_from_table(...) libdbo_join_set_from_table(__VA_ARGS__)
+#define db_join_set_from_field(...) libdbo_join_set_from_field(__VA_ARGS__)
+#define db_join_set_to_table(...) libdbo_join_set_to_table(__VA_ARGS__)
+#define db_join_set_to_field(...) libdbo_join_set_to_field(__VA_ARGS__)
+#define db_join_not_empty(...) libdbo_join_not_empty(__VA_ARGS__)
+#define db_join_next(...) libdbo_join_next(__VA_ARGS__)
+#define db_join_list_new(...) libdbo_join_list_new(__VA_ARGS__)
+#define db_join_list_free(...) libdbo_join_list_free(__VA_ARGS__)
+#define db_join_list_add(...) libdbo_join_list_add(__VA_ARGS__)
+#define db_join_list_begin(...) libdbo_join_list_begin(__VA_ARGS__)
+#endif
+#endif
+
 #endif

@@ -361,4 +361,44 @@ const libdbo_clause_t* libdbo_clause_list_begin(const libdbo_clause_list_t* clau
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define DB_CLAUSE_UNKNOWN LIBDBO_CLAUSE_UNKNOWN
+#define DB_CLAUSE_EQUAL LIBDBO_CLAUSE_EQUAL
+#define DB_CLAUSE_NOT_EQUAL LIBDBO_CLAUSE_NOT_EQUAL
+#define DB_CLAUSE_LESS_THEN LIBDBO_CLAUSE_LESS_THEN
+#define DB_CLAUSE_LESS_OR_EQUAL LIBDBO_CLAUSE_LESS_OR_EQUAL
+#define DB_CLAUSE_GREATER_OR_EQUAL LIBDBO_CLAUSE_GREATER_OR_EQUAL
+#define DB_CLAUSE_GREATER_THEN LIBDBO_CLAUSE_GREATER_THEN
+#define DB_CLAUSE_IS_NULL LIBDBO_CLAUSE_IS_NULL
+#define DB_CLAUSE_IS_NOT_NULL LIBDBO_CLAUSE_IS_NOT_NULL
+#define DB_CLAUSE_NESTED LIBDBO_CLAUSE_NESTED
+#define DB_CLAUSE_OPERATOR_UNKNOWN LIBDBO_CLAUSE_OPERATOR_UNKNOWN
+#define DB_CLAUSE_OPERATOR_AND LIBDBO_CLAUSE_OPERATOR_AND
+#define DB_CLAUSE_OPERATOR_OR LIBDBO_CLAUSE_OPERATOR_OR
+#define db_clause_t libdbo_clause_t
+#define db_clause_list_t libdbo_clause_list_t
+#define db_clause_new(...) libdbo_clause_new(__VA_ARGS__)
+#define db_clause_free(...) libdbo_clause_free(__VA_ARGS__)
+#define db_clause_table(...) libdbo_clause_table(__VA_ARGS__)
+#define db_clause_field(...) libdbo_clause_field(__VA_ARGS__)
+#define db_clause_type(...) libdbo_clause_type(__VA_ARGS__)
+#define db_clause_value(...) libdbo_clause_value(__VA_ARGS__)
+#define db_clause_operator(...) libdbo_clause_operator(__VA_ARGS__)
+#define db_clause_list(...) libdbo_clause_list(__VA_ARGS__)
+#define db_clause_set_table(...) libdbo_clause_set_table(__VA_ARGS__)
+#define db_clause_set_field(...) libdbo_clause_set_field(__VA_ARGS__)
+#define db_clause_set_type(...) libdbo_clause_set_type(__VA_ARGS__)
+#define db_clause_set_operator(...) libdbo_clause_set_operator(__VA_ARGS__)
+#define db_clause_set_list(...) libdbo_clause_set_list(__VA_ARGS__)
+#define db_clause_not_empty(...) libdbo_clause_not_empty(__VA_ARGS__)
+#define db_clause_next(...) libdbo_clause_next(__VA_ARGS__)
+#define db_clause_get_value(...) libdbo_clause_get_value(__VA_ARGS__)
+#define db_clause_list_new(...) libdbo_clause_list_new(__VA_ARGS__)
+#define db_clause_list_free(...) libdbo_clause_list_free(__VA_ARGS__)
+#define db_clause_list_add(...) libdbo_clause_list_add(__VA_ARGS__)
+#define db_clause_list_begin(...) libdbo_clause_list_begin(__VA_ARGS__)
+#endif
+#endif
+
 #endif

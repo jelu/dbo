@@ -206,4 +206,24 @@ int libdbo_connection_transaction_rollback(const libdbo_connection_t* connection
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define db_connection_t libdbo_connection_t
+#define db_connection_new(...) libdbo_connection_new(__VA_ARGS__)
+#define db_connection_free(...) libdbo_connection_free(__VA_ARGS__)
+#define db_connection_set_configuration_list(...) libdbo_connection_set_configuration_list(__VA_ARGS__)
+#define db_connection_setup(...) libdbo_connection_setup(__VA_ARGS__)
+#define db_connection_connect(...) libdbo_connection_connect(__VA_ARGS__)
+#define db_connection_disconnect(...) libdbo_connection_disconnect(__VA_ARGS__)
+#define db_connection_create(...) libdbo_connection_create(__VA_ARGS__)
+#define db_connection_read(...) libdbo_connection_read(__VA_ARGS__)
+#define db_connection_update(...) libdbo_connection_update(__VA_ARGS__)
+#define db_connection_delete(...) libdbo_connection_delete(__VA_ARGS__)
+#define db_connection_count(...) libdbo_connection_count(__VA_ARGS__)
+#define db_connection_transaction_begin(...) libdbo_connection_transaction_begin(__VA_ARGS__)
+#define db_connection_transaction_commit(...) libdbo_connection_transaction_commit(__VA_ARGS__)
+#define db_connection_transaction_rollback(...) libdbo_connection_transaction_rollback(__VA_ARGS__)
+#endif
+#endif
+
 #endif

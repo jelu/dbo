@@ -33,14 +33,7 @@
  * All rights reserved.
  */
 
-#include <libdbo/backend.h>
-#include <libdbo/clause.h>
-#include <libdbo/configuration.h>
-#include <libdbo/connection.h>
-#include <libdbo/join.h>
-#include <libdbo/object.h>
-#include <libdbo/result.h>
-#include <libdbo/value.h>
+#include <libdbo/libdbo.h>
 
 #include "CUnit/Basic.h"
 

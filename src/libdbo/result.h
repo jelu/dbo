@@ -281,4 +281,31 @@ int libdbo_result_list_fetch_all(libdbo_result_list_t* result_list);
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define db_result_t libdbo_result_t
+#define db_result_list_t libdbo_result_list_t
+#define db_result_list_next_t libdbo_result_list_next_t
+#define db_result_new(...) libdbo_result_new(__VA_ARGS__)
+#define db_result_new_copy(...) libdbo_result_new_copy(__VA_ARGS__)
+#define db_result_free(...) libdbo_result_free(__VA_ARGS__)
+#define db_result_copy(...) libdbo_result_copy(__VA_ARGS__)
+#define db_result_value_set(...) libdbo_result_value_set(__VA_ARGS__)
+#define db_result_backend_meta_data_list(...) libdbo_result_backend_meta_data_list(__VA_ARGS__)
+#define db_result_set_value_set(...) libdbo_result_set_value_set(__VA_ARGS__)
+#define db_result_set_backend_meta_data_list(...) libdbo_result_set_backend_meta_data_list(__VA_ARGS__)
+#define db_result_not_empty(...) libdbo_result_not_empty(__VA_ARGS__)
+#define db_result_list_new(...) libdbo_result_list_new(__VA_ARGS__)
+#define db_result_list_new_copy(...) libdbo_result_list_new_copy(__VA_ARGS__)
+#define db_result_list_free(...) libdbo_result_list_free(__VA_ARGS__)
+#define db_result_list_copy(...) libdbo_result_list_copy(__VA_ARGS__)
+#define db_result_list_set_next(...) libdbo_result_list_set_next(__VA_ARGS__)
+#define db_result_list_add(...) libdbo_result_list_add(__VA_ARGS__)
+#define db_result_list_begin(...) libdbo_result_list_begin(__VA_ARGS__)
+#define db_result_list_next(...) libdbo_result_list_next(__VA_ARGS__)
+#define db_result_list_size(...) libdbo_result_list_size(__VA_ARGS__)
+#define db_result_list_fetch_all(...) libdbo_result_list_fetch_all(__VA_ARGS__)
+#endif
+#endif
+
 #endif

@@ -124,4 +124,23 @@ typedef enum {
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define db_type_int32_t libdbo_type_int32_t
+#define db_type_uint32_t libdbo_type_uint32_t
+#define db_type_int64_t libdbo_type_int64_t
+#define db_type_uint64_t libdbo_type_uint64_t
+#define DB_TYPE_EMPTY LIBDBO_TYPE_EMPTY
+#define DB_TYPE_PRIMARY_KEY LIBDBO_TYPE_PRIMARY_KEY
+#define DB_TYPE_INT32 LIBDBO_TYPE_INT32
+#define DB_TYPE_UINT32 LIBDBO_TYPE_UINT32
+#define DB_TYPE_INT64 LIBDBO_TYPE_INT64
+#define DB_TYPE_UINT64 LIBDBO_TYPE_UINT64
+#define DB_TYPE_TEXT LIBDBO_TYPE_TEXT
+#define DB_TYPE_ENUM LIBDBO_TYPE_ENUM
+#define DB_TYPE_ANY LIBDBO_TYPE_ANY
+#define DB_TYPE_REVISION LIBDBO_TYPE_REVISION
+#endif
+#endif
+
 #endif
