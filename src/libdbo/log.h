@@ -88,4 +88,20 @@ int libdbo_log_set_handler(libdbo_log_handler_t log_handler);
 }
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef LIBDBO_SHORT_NAMES
+#define DB_LOG_DEBUG LIBDBO_LOG_DEBUG
+#define DB_LOG_INFO LIBDBO_LOG_INFO
+#define DB_LOG_NOTICE LIBDBO_LOG_NOTICE
+#define DB_LOG_WARNING LIBDBO_LOG_WARNING
+#define DB_LOG_ERROR LIBDBO_LOG_ERROR
+#define DB_LOG_CRITICAL LIBDBO_LOG_CRITICAL
+#define DB_LOG_ALERT LIBDBO_LOG_ALERT
+#define DB_LOG_FATAL LIBDBO_LOG_FATAL
+#define db_log_handler_t libdbo_log_handler_t
+#define db_log(...) libdbo_log(__VA_ARGS__)
+#define db_log_set_handler(...) libdbo_log_set_handler(__VA_ARGS__)
+#endif
+#endif
+
 #endif
