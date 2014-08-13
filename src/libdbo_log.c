@@ -25,22 +25,70 @@
  *
  */
 
-/** \file libdbo/libdbo.h */
+#include "libdbo/log.h"
 
-#include <libdbo/backend.h>
-#include <libdbo/clause.h>
-#include <libdbo/configuration.h>
-#include <libdbo/connection.h>
-#include <libdbo/enum.h>
-#include <libdbo/error.h>
-#include <libdbo/join.h>
-#include <libdbo/mm.h>
-#include <libdbo/object.h>
-#include <libdbo/result.h>
-#include <libdbo/type.h>
-#include <libdbo/value.h>
-#include <libdbo/log.h>
+#include "libdbo/error.h"
 
-#include <libdbo/backend/couchdb.h>
-#include <libdbo/backend/mysql.h>
-#include <libdbo/backend/sqlite.h>
+#include <stdio.h>
+
+static void __default_log_handler(libdbo_log_priority_t priority, const char* format, va_list ap) {
+    switch (priority) {
+    case LIBDBO_LOG_DEBUG:
+        printf("DEBUG: ");
+        break;
+
+    case LIBDBO_LOG_INFO:
+        printf("INFO: ");
+        break;
+
+    case LIBDBO_LOG_NOTICE:
+        printf("NOTICE: ");
+        break;
+
+    case LIBDBO_LOG_WARNING:
+        printf("WARNING: ");
+        break;
+
+    case LIBDBO_LOG_ERROR:
+        printf("ERROR: ");
+        break;
+
+    case LIBDBO_LOG_CRITICAL:
+        printf("CRITICAL: ");
+        break;
+
+    case LIBDBO_LOG_ALERT:
+        printf("ALERT: ");
+        break;
+
+    case LIBDBO_LOG_FATAL:
+        printf("FATAL: ");
+        break;
+
+    default:
+        return;
+    }
+
+    vprintf(format, ap);
+    printf("\n");
+}
+
+static libdbo_log_handler_t __log_handler = &__default_log_handler;
+
+void libdbo_log(libdbo_log_priority_t priority, const char* format, ...) {
+    va_list ap;
+
+    va_start(ap, format);
+    __log_handler(priority, format, ap);
+    va_end(ap);
+}
+
+int libdbo_log_set_handler(libdbo_log_handler_t log_handler) {
+    if (!log_handler) {
+        return LIBDBO_ERROR_UNKNOWN;
+    }
+
+    __log_handler = log_handler;
+
+    return LIBDBO_OK;
+}

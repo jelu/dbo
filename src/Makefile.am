@@ -35,7 +35,8 @@ libdbo_la_SOURCES = libdbo_mm.c libdbo/mm.h \
 	libdbo/type.h \
 	libdbo_value.c libdbo/value.h \
 	libdbo_join.c libdbo/join.h \
-	libdbo/error.h
+	libdbo/error.h \
+	libdbo_log.c libdbo/log.h
 nobase_include_HEADERS = libdbo/mm.h \
 	libdbo/backend.h \
 	libdbo/clause.h \
@@ -47,7 +48,8 @@ nobase_include_HEADERS = libdbo/mm.h \
 	libdbo/value.h \
 	libdbo/join.h \
 	libdbo/error.h \
-	libdbo/libdbo.h
+	libdbo/libdbo.h \
+	libdbo/log.h
 if HAVE_SQLITE3
 libdbo_la_SOURCES += libdbo_backend_sqlite.c libdbo/backend/sqlite.h
 nobase_include_HEADERS += libdbo/backend/sqlite.h

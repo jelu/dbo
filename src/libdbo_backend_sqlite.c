@@ -37,6 +37,7 @@
 
 #include "libdbo/error.h"
 #include "libdbo/mm.h"
+#include "libdbo/log.h"
 
 #include <stdlib.h>
 #include <sqlite3.h>
@@ -104,10 +105,7 @@ static int __db_backend_sqlite_busy_handler(void *data, int retry) {
         return 0;
     }
 
-    /*ods_log_deeebug("libdbo_backend_sqlite_busy_handler: Database busy, waiting...");*/
-
     if (pthread_mutex_lock(&__sqlite_mutex)) {
-        /*ods_log_error("libdbo_backend_sqlite_busy_handler: Mutex error");*/
         return 0;
     }
     if (clock_gettime(CLOCK_REALTIME, &busy_ts)) {
@@ -124,7 +122,6 @@ static int __db_backend_sqlite_busy_handler(void *data, int retry) {
     rc = pthread_cond_timedwait(&__sqlite_cond, &__sqlite_mutex, &busy_ts);
     if (rc == ETIMEDOUT) {
         if (time(NULL) < (backend_sqlite->time + backend_sqlite->timeout)) {
-            /*ods_log_deeebug("libdbo_backend_sqlite_busy_handler: Woke up, checking database...");*/
             pthread_mutex_unlock(&__sqlite_mutex);
             return 1;
         }
@@ -132,12 +129,10 @@ static int __db_backend_sqlite_busy_handler(void *data, int retry) {
         return 0;
     }
     else if (rc) {
-        /*ods_log_error("libdbo_backend_sqlite_busy_handler: pthread_cond_timedwait() error %d", rc);*/
         pthread_mutex_unlock(&__sqlite_mutex);
         return 0;
     }
 
-    /*ods_log_deeebug("libdbo_backend_sqlite_busy_handler: Woke up, checking database...");*/
     pthread_mutex_unlock(&__sqlite_mutex);
     return 1;
 }
@@ -164,7 +159,6 @@ static inline int __db_backend_sqlite_prepare(libdbo_backend_sqlite_t* backend_s
         return LIBDBO_ERROR_UNKNOWN;
     }
 
-    /*ods_log_debug("%s", sql);*/
     backend_sqlite->time = time(NULL);
     ret = sqlite3_prepare_v2(backend_sqlite->db,
         sql,
@@ -172,8 +166,8 @@ static inline int __db_backend_sqlite_prepare(libdbo_backend_sqlite_t* backend_s
         statement,
         NULL);
     if (ret != SQLITE_OK) {
-        /*ods_log_info("DB prepare SQL %s", sql);
-        ods_log_info("DB prepare Err %d", ret);*/
+        libdbo_log(LIBDBO_LOG_ERROR, "SQLite prepare statement error %d: %s (SQL: %s)",
+            ret, sqlite3_errmsg(backend_sqlite->db), sql);
         if (*statement) {
             sqlite3_finalize(*statement);
         }
@@ -188,10 +182,6 @@ static inline int __db_backend_sqlite_prepare(libdbo_backend_sqlite_t* backend_s
  * SQLite step function.
  */
 static inline int __db_backend_sqlite_step(libdbo_backend_sqlite_t* backend_sqlite, sqlite3_stmt* statement) {
-    /*
-    struct timespec busy_ts;
-    int rc, ret, been_busy = 0;
-    */
     int ret;
 
     if (!backend_sqlite) {
@@ -203,41 +193,6 @@ static inline int __db_backend_sqlite_step(libdbo_backend_sqlite_t* backend_sqli
 
     backend_sqlite->time = time(NULL);
     ret = sqlite3_step(statement);
-    /*
-    if (ret == SQLITE_BUSY) {
-        ods_log_deeebug("libdbo_backend_sqlite_step: Database busy, waiting...");
-    }
-    while (ret == SQLITE_BUSY) {
-        if (pthread_mutex_lock(&__sqlite_mutex)) {
-            ods_log_error("libdbo_backend_sqlite_step: Mutex error");
-            return ret;
-        }
-        if (clock_gettime(CLOCK_REALTIME, &busy_ts)) {
-            pthread_mutex_unlock(&__sqlite_mutex);
-            return ret;
-        }
-
-        busy_ts.tv_sec += backend_sqlite->timeout;
-
-        rc = pthread_cond_timedwait(&__sqlite_cond, &__sqlite_mutex, &busy_ts);
-        if (rc == ETIMEDOUT) {
-            pthread_mutex_unlock(&__sqlite_mutex);
-            return ret;
-        }
-        else if (rc) {
-            ods_log_error("libdbo_backend_sqlite_step: pthread_cond_timedwait() error %d", rc);
-            pthread_mutex_unlock(&__sqlite_mutex);
-            return ret;
-        }
-
-        ods_log_deeebug("libdbo_backend_sqlite_step: Woke up, checking database...");
-        ret = sqlite3_step(statement);
-        pthread_mutex_unlock(&__sqlite_mutex);
-    }
-    if (been_busy) {
-        ods_log_deeebug("libdbo_backend_sqlite_step: Got lock or failed/timed out");
-    }
-    */
 
     return ret;
 }
@@ -341,7 +296,6 @@ static int libdbo_backend_sqlite_connect(void* data, const libdbo_configuration_
     }
 
     if ((ret = sqlite3_busy_handler(backend_sqlite->db, __db_backend_sqlite_busy_handler, backend_sqlite)) != SQLITE_OK) {
-        /*ods_log_error("libdbo_backend_sqlite: sqlite3_busy_handler() error %d", ret);*/
         sqlite3_close(backend_sqlite->db);
         backend_sqlite->db = NULL;
         return LIBDBO_ERROR_UNKNOWN;

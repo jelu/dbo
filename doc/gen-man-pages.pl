@@ -72,7 +72,7 @@ sub only_detail_text {
 }
 
 sub header {
-    my ($name, $title) = @_;
+    my ($name, $title, $section) = @_;
 
     print OUTPUT '.\\" Copyright (c) 2014 Jerry Lundström <lundstrom.jerry@gmail.com>
 .\\" All rights reserved.
@@ -97,7 +97,7 @@ sub header {
 .\\" IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 .\\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-.TH ', uc($name), ' 3 ', strftime('%Y-%m-%d', localtime) ,' "dbo" "dbo API Manual"
+.TH ', uc($name), ' ', $section, ' ', strftime('%Y-%m-%d', localtime) ,' "dbo" "dbo API Manual"
 .SH NAME
 ', $name ,' \\- ', $title ,'
 ';
@@ -521,7 +521,7 @@ sub functions {
             my @see_also;
 
             open(OUTPUT, '>:encoding(UTF-8)', 'man/man3/'.$name->textContent.'.3') || die;
-            header($name->textContent, $brief);
+            header($name->textContent, $brief, 3);
             synoptsis(\@sections);
 
             print OUTPUT '.SH DESCRIPTION
@@ -619,7 +619,7 @@ sub functions {
             my @see_also;
 
             open(OUTPUT, '>:encoding(UTF-8)', 'man/man3/'.$name->textContent.'.3') || die;
-            header($name->textContent, $brief);
+            header($name->textContent, $brief, 3);
             synoptsis(\@sections);
 
             print OUTPUT '.SH DESCRIPTION
@@ -741,8 +741,8 @@ sub process_dom {
             $detail = trim($cbrief->textContent);
         }
 
-        open(OUTPUT, '>:encoding(UTF-8)', 'man/man3/'.$cname->textContent.'.3') || die;
-        header($ctitle->textContent, $brief);
+        open(OUTPUT, '>:encoding(UTF-8)', 'man/man7/'.$cname->textContent.'.7') || die;
+        header($ctitle->textContent, $brief, 7);
         synoptsis(\@sections);
         description($detail, \@sections);
         see_also($cdetail, \@sections);

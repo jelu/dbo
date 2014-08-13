@@ -37,6 +37,7 @@
 
 #include "libdbo/error.h"
 #include "libdbo/mm.h"
+#include "libdbo/log.h"
 
 #include <mysql/mysql.h>
 #include <stdlib.h>
@@ -172,14 +173,13 @@ static inline int __db_backend_mysql_prepare(libdbo_backend_mysql_t* backend_mys
     /*
      * Prepare the statement.
      */
-    /*ods_log_debug("%s", sql);*/
     if (!(*statement = libdbo_mm_new0(&__mysql_statement_alloc))
         || !((*statement)->statement = mysql_stmt_init(backend_mysql->db))
         || mysql_stmt_prepare((*statement)->statement, sql, size))
     {
         if ((*statement)->statement) {
-            /*ods_log_info("DB prepare SQL %s", sql);
-            ods_log_info("DB prepare Err %d: %s", mysql_stmt_errno((*statement)->statement), mysql_stmt_error((*statement)->statement));*/
+            libdbo_log(LIBDBO_LOG_ERROR, "MySQL prepare statement error %d: %s (SQL: %s)",
+                mysql_stmt_errno((*statement)->statement), mysql_stmt_error((*statement)->statement), sql);
         }
         __db_backend_mysql_finish(*statement);
         *statement = NULL;
@@ -531,7 +531,8 @@ static inline int __db_backend_mysql_fetch(libdbo_backend_mysql_statement_t* sta
         if (statement->mysql_bind_output
             && mysql_stmt_bind_result(statement->statement, statement->mysql_bind_output))
         {
-            /*ods_log_info("DB bind result Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
+            libdbo_log(LIBDBO_LOG_ERROR, "MySQL statement bind error %d: %s",
+                mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));
             return LIBDBO_ERROR_UNKNOWN;
         }
         statement->bound = 1;
@@ -542,7 +543,8 @@ static inline int __db_backend_mysql_fetch(libdbo_backend_mysql_statement_t* sta
      */
     ret = mysql_stmt_fetch(statement->statement);
     if (ret == 1) {
-        /*ods_log_info("DB fetch Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
+        libdbo_log(LIBDBO_LOG_ERROR, "MySQL statement fetch error %d: %s",
+            mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));
         return LIBDBO_ERROR_UNKNOWN;
     }
     else if (ret == MYSQL_DATA_TRUNCATED) {
@@ -563,14 +565,12 @@ static inline int __db_backend_mysql_fetch(libdbo_backend_mysql_statement_t* sta
                 if (statement->mysql_bind_output[i].buffer_type != MYSQL_TYPE_STRING
                     || bind->length <= statement->mysql_bind_output[i].buffer_length)
                 {
-                    /*ods_log_info("DB fetch Err data truncated");*/
                     return LIBDBO_ERROR_UNKNOWN;
                 }
 
                 free(statement->mysql_bind_output[i].buffer);
                 statement->mysql_bind_output[i].buffer = NULL;
                 if (!(statement->mysql_bind_output[i].buffer = calloc(1, bind->length))) {
-                    /*ods_log_info("DB fetch Err data truncated");*/
                     return LIBDBO_ERROR_UNKNOWN;
                 }
                 statement->mysql_bind_output[i].buffer_length = bind->length;
@@ -578,7 +578,6 @@ static inline int __db_backend_mysql_fetch(libdbo_backend_mysql_statement_t* sta
                 if (mysql_stmt_fetch_column(statement->statement, &(statement->mysql_bind_output[i]), i, 0)
                     || bind->error)
                 {
-                    /*ods_log_info("DB fetch Err data truncated");*/
                     return LIBDBO_ERROR_UNKNOWN;
                 }
             }
@@ -592,7 +591,8 @@ static inline int __db_backend_mysql_fetch(libdbo_backend_mysql_statement_t* sta
         return LIBDBO_ERROR_UNKNOWN;
     }
     else if (ret) {
-        /*ods_log_info("DB fetch UNKNOWN %d Err %d: %s", ret, mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
+        libdbo_log(LIBDBO_LOG_ERROR, "MySQL fetch UNKNOWN %d error %d: %s",
+            ret, mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));
         return LIBDBO_ERROR_UNKNOWN;
     }
 
@@ -618,7 +618,8 @@ static inline int __db_backend_mysql_execute(libdbo_backend_mysql_statement_t* s
     if (statement->mysql_bind_input
         && mysql_stmt_bind_param(statement->statement, statement->mysql_bind_input))
     {
-        /*ods_log_info("DB bind param Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
+        libdbo_log(LIBDBO_LOG_ERROR, "MySQL execute statement bind error %d: %s",
+            mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));
         return LIBDBO_ERROR_UNKNOWN;
     }
 
@@ -626,7 +627,8 @@ static inline int __db_backend_mysql_execute(libdbo_backend_mysql_statement_t* s
      * Execute the statement.
      */
     if (mysql_stmt_execute(statement->statement)) {
-        /*ods_log_info("DB execute Err %d: %s", mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));*/
+        libdbo_log(LIBDBO_LOG_ERROR, "MySQL execute statement error %d: %s",
+            mysql_stmt_errno(statement->statement), mysql_stmt_error(statement->statement));
         return LIBDBO_ERROR_UNKNOWN;
     }
 
@@ -720,7 +722,8 @@ static int libdbo_backend_mysql_connect(void* data, const libdbo_configuration_l
         || mysql_autocommit(backend_mysql->db, 1))
     {
         if (backend_mysql->db) {
-            /*ods_log_error("libdbo_backend_mysql: connect failed %d: %s", mysql_errno(backend_mysql->db), mysql_error(backend_mysql->db));*/
+            libdbo_log(LIBDBO_LOG_ERROR, "MySQL connection error %d: %s",
+                mysql_errno(backend_mysql->db), mysql_error(backend_mysql->db));
             mysql_close(backend_mysql->db);
             backend_mysql->db = NULL;
         }
