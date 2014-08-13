@@ -439,7 +439,7 @@ sub description {
 
     foreach my $function (@functions) {
         print OUTPUT '.TP
-.B ', $function->{name}, '
+.B ', $function->{name}, '()
 ', ($function->{brief} ? $function->{brief} : $function->{detail}), '
 ';
     }
@@ -449,6 +449,7 @@ sub see_also {
     my ($cdetail, $sections) = @_;
 
     my @functions;
+    my @groups;
     foreach my $section (@$sections) {
         foreach my $member (@{$section->{members}}) {
             my ($kind) = $member->attributes->getNamedItem('kind');
@@ -465,6 +466,14 @@ sub see_also {
                 my ($sectkind) = $child->attributes->getNamedItem('kind');
 
                 if ($sectkind->value eq 'see') {
+                    my ($ref) = $child->findnodes('para/ref');
+                    if ($ref) {
+                        my ($refkind) = $ref->attributes->getNamedItem('kindref');
+                        if ($refkind && $refkind->value eq 'compound') {
+                            push(@groups, $child->textContent);
+                            next;
+                        }
+                    }
                     push(@functions, $child->textContent);
                 }
             }
@@ -486,12 +495,16 @@ sub see_also {
         }
     }
 
-    return unless (scalar @functions);
+    return unless (scalar @functions or scalar @groups);
 
     print OUTPUT '.SH SEE ALSO
 ';
     foreach my $function (@functions) {
         print OUTPUT '.BR ', $function, ' (3)
+';
+    }
+    foreach my $group (@groups) {
+        print OUTPUT '.BR ', $group, ' (7)
 ';
     }
 }
