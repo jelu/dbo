@@ -836,13 +836,13 @@ print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $
         next;
     }
 print SOURCE '    if (libdbo_sqlite) {
-        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 2));
     }
     if (libdbo_couchdb) {
-        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 2));
     }
     if (libdbo_mysql) {
-        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 1));
+        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 2));
     }
 ';
 }
@@ -919,13 +919,13 @@ print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $
         next;
     }
 print SOURCE '    if (libdbo_sqlite) {
-        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 2));
     }
     if (libdbo_couchdb) {
-        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 2));
     }
     if (libdbo_mysql) {
-        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 1));
+        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 2));
     }
 ';
 }
@@ -1019,13 +1019,13 @@ print SOURCE '    CU_ASSERT(!libdbo_value_from_text(&', $field->{name}, ', "', $
         next;
     }
 print SOURCE '    if (libdbo_sqlite) {
-        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 2));
     }
     if (libdbo_couchdb) {
-        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 1));
+        CU_ASSERT(!libdbo_value_from_int32(&', $field->{name}, ', 2));
     }
     if (libdbo_mysql) {
-        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 1));
+        CU_ASSERT(!libdbo_value_from_uint64(&', $field->{name}, ', 2));
     }
 ';
 }
