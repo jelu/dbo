@@ -108,6 +108,7 @@ void test_database_operations_delete_object2_2(void);
 void test_database_operations_create_object3_2(void);
 void test_database_operations_delete_object3_2(void);
 void test_database_operations_update_objects_revisions(void);
+void test_database_operations_associated_fetch(void);
 
 int init_suite_mm(void);
 int clean_suite_mm(void);

@@ -39,6 +39,10 @@
 #include <libdbo/connection.h>
 #include <libdbo/object.h>
 
+#include "users_rev.h"
+#include "groups_rev.h"
+#include "user_group_link_rev.h"
+
 #include "CUnit/Basic.h"
 #include <string.h>
 
@@ -1456,4 +1460,68 @@ void test_database_operations_delete_object3_2(void) {
     test2_free(test2);
     test2 = NULL;
     CU_PASS("test2_free");
+}
+
+void test_database_operations_associated_fetch(void) {
+    users_rev_t* user;
+    groups_rev_t* group;
+    user_group_link_rev_t* user_group;
+    user_group_link_rev_list_t* user_group_list;
+
+    users_rev_list_t* user_list;
+    const users_rev_t* user2;
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((group = groups_rev_new(connection)));
+    CU_ASSERT(!groups_rev_set_name(group, "group 1"));
+    CU_ASSERT_FATAL(!groups_rev_create(group));
+    groups_rev_free(group);
+    CU_PASS("groups_rev_free");
+    CU_ASSERT_PTR_NOT_NULL_FATAL((group = groups_rev_new_get_by_name(connection, "group 1")));
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((user = users_rev_new(connection)));
+    CU_ASSERT(!users_rev_set_name(user, "user 1"));
+    CU_ASSERT(!users_rev_set_group_id(user, groups_rev_id(group)));
+    CU_ASSERT_FATAL(!users_rev_create(user));
+    users_rev_free(user);
+    CU_PASS("users_rev_free");
+    CU_ASSERT_PTR_NOT_NULL_FATAL((user = users_rev_new_get_by_name(connection, "user 1")));
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((user_group = user_group_link_rev_new(connection)));
+    CU_ASSERT(!user_group_link_rev_set_user_id(user_group, users_rev_id(user)));
+    CU_ASSERT(!user_group_link_rev_set_group_id(user_group, groups_rev_id(group)));
+    CU_ASSERT_FATAL(!user_group_link_rev_create(user_group));
+    user_group_link_rev_free(user_group);
+    CU_PASS("user_group_link_rev_free");
+    CU_ASSERT_PTR_NOT_NULL_FATAL((user_group_list = user_group_link_rev_list_new_get_by_user_id(connection, users_rev_id(user))));
+    CU_ASSERT_PTR_NOT_NULL_FATAL((user_group = user_group_link_rev_list_get_begin(user_group_list)));
+    user_group_link_rev_list_free(user_group_list);
+    CU_PASS("user_group_link_rev_list_free");
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((user_list = users_rev_list_new(connection)));
+    CU_ASSERT(!users_rev_list_associated_fetch(user_list));
+    CU_ASSERT(!users_rev_list_get_by_group_id(user_list, groups_rev_id(group)));
+    CU_ASSERT_PTR_NOT_NULL((user2 = users_rev_list_begin(user_list)));
+    while (user2) {
+        CU_ASSERT_PTR_NOT_NULL(users_rev_group(user2));
+
+        user2 = users_rev_list_next(user_list);
+    }
+    users_rev_list_free(user_list);
+    CU_PASS("users_rev_list_free");
+
+    /* TODO: test groups association */
+
+    /* TODO: test user_group_link association */
+
+    CU_ASSERT(!user_group_link_rev_delete(user_group));
+    user_group_link_rev_free(user_group);
+    CU_PASS("user_group_link_rev_free");
+
+    CU_ASSERT(!users_rev_delete(user));
+    users_rev_free(user);
+    CU_PASS("users_rev_free");
+
+    CU_ASSERT(!groups_rev_delete(group));
+    groups_rev_free(group);
+    CU_PASS("groups_rev_free");
 }
