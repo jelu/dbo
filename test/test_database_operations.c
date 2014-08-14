@@ -1467,9 +1467,13 @@ void test_database_operations_associated_fetch(void) {
     groups_rev_t* group;
     user_group_link_rev_t* user_group;
     user_group_link_rev_list_t* user_group_list;
-
     users_rev_list_t* user_list;
     const users_rev_t* user2;
+    users_rev_t* user3;
+    groups_rev_list_t* group_list;
+    groups_rev_t* group2;
+    int cmp;
+    const user_group_link_rev_t* user_group2;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((group = groups_rev_new(connection)));
     CU_ASSERT(!groups_rev_set_name(group, "group 1"));
@@ -1485,6 +1489,7 @@ void test_database_operations_associated_fetch(void) {
     users_rev_free(user);
     CU_PASS("users_rev_free");
     CU_ASSERT_PTR_NOT_NULL_FATAL((user = users_rev_new_get_by_name(connection, "user 1")));
+    CU_ASSERT(!users_rev_cache_group(user));
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((user_group = user_group_link_rev_new(connection)));
     CU_ASSERT(!user_group_link_rev_set_user_id(user_group, users_rev_id(user)));
@@ -1500,18 +1505,88 @@ void test_database_operations_associated_fetch(void) {
     CU_ASSERT_PTR_NOT_NULL_FATAL((user_list = users_rev_list_new(connection)));
     CU_ASSERT(!users_rev_list_associated_fetch(user_list));
     CU_ASSERT(!users_rev_list_get_by_group_id(user_list, groups_rev_id(group)));
-    CU_ASSERT_PTR_NOT_NULL((user2 = users_rev_list_begin(user_list)));
-    while (user2) {
-        CU_ASSERT_PTR_NOT_NULL(users_rev_group(user2));
+    CU_ASSERT_PTR_NOT_NULL((user3 = users_rev_list_get_begin(user_list)));
+    while (user3) {
+        CU_ASSERT_PTR_NOT_NULL(users_rev_group(user3));
+        CU_ASSERT(!libdbo_value_cmp(users_rev_id(user), users_rev_id(user3), &cmp));
+        CU_ASSERT(!cmp);
+        CU_ASSERT(!libdbo_value_cmp(groups_rev_id(users_rev_group(user)), groups_rev_id(users_rev_group(user3)), &cmp))
+        CU_ASSERT(!cmp);
 
-        user2 = users_rev_list_next(user_list);
+        CU_ASSERT_PTR_NOT_NULL_FATAL((user_group_list = users_rev_user_group_link_rev_list(user3)));
+        CU_ASSERT_PTR_NOT_NULL((user_group2 = user_group_link_rev_list_begin(user_group_list)));
+        while (user_group2) {
+            CU_ASSERT(!libdbo_value_cmp(users_rev_id(user), user_group_link_rev_user_id(user_group2), &cmp));
+            CU_ASSERT(!cmp);
+            CU_ASSERT(!libdbo_value_cmp(groups_rev_id(group), user_group_link_rev_group_id(user_group2), &cmp));
+            CU_ASSERT(!cmp);
+
+            user_group2 = user_group_link_rev_list_next(user_group_list);
+        }
+
+        users_rev_free(user3);
+        CU_PASS("users_rev_free");
+        user3 = users_rev_list_get_next(user_list);
     }
     users_rev_list_free(user_list);
     CU_PASS("users_rev_list_free");
 
-    /* TODO: test groups association */
+    CU_ASSERT_PTR_NOT_NULL_FATAL((group_list = groups_rev_list_new(connection)));
+    CU_ASSERT(!groups_rev_list_associated_fetch(group_list));
+    CU_ASSERT(!groups_rev_list_get(group_list));
+    CU_ASSERT_PTR_NOT_NULL((group2 = groups_rev_list_get_begin(group_list)));
+    while (group2) {
+        CU_ASSERT(!libdbo_value_cmp(groups_rev_id(group), groups_rev_id(group2), &cmp));
+        CU_ASSERT(!cmp);
 
-    /* TODO: test user_group_link association */
+        CU_ASSERT_PTR_NOT_NULL_FATAL((user_list = groups_rev_users_rev_list(group2)));
+        CU_ASSERT_PTR_NOT_NULL((user2 = users_rev_list_begin(user_list)));
+        while (user2) {
+            CU_ASSERT(!libdbo_value_cmp(groups_rev_id(group2), users_rev_group_id(user2), &cmp));
+            CU_ASSERT(!cmp);
+            CU_ASSERT(!libdbo_value_cmp(users_rev_id(user), users_rev_id(user2), &cmp));
+            CU_ASSERT(!cmp);
+            user2 = users_rev_list_next(user_list);
+        }
+
+        CU_ASSERT_PTR_NOT_NULL_FATAL((user_group_list = groups_rev_user_group_link_rev_list(group2)));
+        CU_ASSERT_PTR_NOT_NULL((user_group2 = user_group_link_rev_list_begin(user_group_list)));
+        while (user_group2) {
+            CU_ASSERT(!libdbo_value_cmp(users_rev_id(user), user_group_link_rev_user_id(user_group2), &cmp));
+            CU_ASSERT(!cmp);
+            CU_ASSERT(!libdbo_value_cmp(groups_rev_id(group), user_group_link_rev_group_id(user_group2), &cmp));
+            CU_ASSERT(!cmp);
+
+            user_group2 = user_group_link_rev_list_next(user_group_list);
+        }
+
+        groups_rev_free(group2);
+        CU_PASS("groups_rev_free");
+        group2 = groups_rev_list_get_next(group_list);
+    }
+    groups_rev_list_free(group_list);
+    CU_PASS("groups_rev_list_free");
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((user_group_list = user_group_link_rev_list_new(connection)));
+    CU_ASSERT(!user_group_link_rev_list_associated_fetch(user_group_list));
+    CU_ASSERT(!user_group_link_rev_list_get(user_group_list));
+    CU_ASSERT_PTR_NOT_NULL((user_group2 = user_group_link_rev_list_begin(user_group_list)));
+    while (user_group2) {
+        CU_ASSERT_PTR_NOT_NULL(user_group_link_rev_user(user_group2));
+        CU_ASSERT_PTR_NOT_NULL(user_group_link_rev_group(user_group2));
+        CU_ASSERT(!libdbo_value_cmp(users_rev_id(user), user_group_link_rev_user_id(user_group2), &cmp));
+        CU_ASSERT(!cmp);
+        CU_ASSERT(!libdbo_value_cmp(groups_rev_id(group), user_group_link_rev_group_id(user_group2), &cmp));
+        CU_ASSERT(!cmp);
+        CU_ASSERT(!libdbo_value_cmp(users_rev_id(user_group_link_rev_user(user_group2)), users_rev_id(user), &cmp))
+        CU_ASSERT(!cmp);
+        CU_ASSERT(!libdbo_value_cmp(groups_rev_id(user_group_link_rev_group(user_group2)), groups_rev_id(group), &cmp))
+        CU_ASSERT(!cmp);
+
+        user_group2 = user_group_link_rev_list_next(user_group_list);
+    }
+    user_group_link_rev_list_free(user_group_list);
+    CU_PASS("user_group_link_rev_list_free");
 
     CU_ASSERT(!user_group_link_rev_delete(user_group));
     user_group_link_rev_free(user_group);
