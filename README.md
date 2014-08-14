@@ -79,7 +79,7 @@ MongoDB    | wip
 
 ## Object/Module Descriptions
 
-All following modules are documented in HTML or man(7).
+All following modules are documented in HTML and man(7).
 
 ### libdbo_configuration
 
@@ -141,8 +141,7 @@ An enum describing all the different database value types.
 
 ## TODO
 
-- Maybe remove clause for update/delete and set object id in libdbo_object_t
+- Maybe remove clause for update/delete and set object id in libdbo_object
 - Re-evaluate db backend meta data.
-- Extend object with db value for id and use that in update/delete if no clause list is given.
-- Create templates for setting objects by foreign key.
 - Generate basic object cache for database objects.
+- Extend object with <object>_set_<foreign object>(<foreign object*>)
