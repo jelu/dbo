@@ -41,22 +41,12 @@
 
 /* TODO: keep list of blocks, add freeing functionality */
 
-/* TODO: use page size * (something or option in struct) */
-#define __db_mm_size 65536
-
-static size_t __pagesize = __db_mm_size;
-static libdbo_mm_malloc_t __db_mm_malloc;
-static libdbo_mm_free_t __db_mm_free;
+static size_t __db_mm_pagesize = 0;
+static libdbo_mm_malloc_t __db_mm_malloc = NULL;
+static libdbo_mm_free_t __db_mm_free = NULL;
 
 void libdbo_mm_init(void) {
     /* TODO: will long => size_t be a problem somewhere? */
-    /* TODO: This isn't working
-#if defined(_SC_PAGESIZE)
-    __pagesize = sysconf(_SC_PAGESIZE);
-#elif defined(_SC_PAGE_SIZE)
-    __pagesize = sysconf(_SC_PAGE_SIZE);
-#endif
-*/
 }
 
 int libdbo_mm_set_malloc(libdbo_mm_malloc_t malloc_function) {
@@ -98,12 +88,6 @@ void* libdbo_mm_new(libdbo_mm_t* alloc) {
         return __db_mm_malloc(alloc->size);
     }
 
-    if (alloc->size < sizeof(void*)) {
-        return NULL;
-    }
-    if (__pagesize < (alloc->size + sizeof(void*))) {
-        return NULL;
-    }
     if (pthread_mutex_lock(&(alloc->lock))) {
         return NULL;
     }
@@ -112,7 +96,26 @@ void* libdbo_mm_new(libdbo_mm_t* alloc) {
         unsigned int i;
         void* block;
 
-        if (!(block = malloc(__pagesize))) {
+        if (alloc->size < sizeof(void*)) {
+            alloc->size = sizeof(void*);
+        }
+        if (!alloc->block_size) {
+            /*
+             * TODO: Add more logic here, if we have very large objects we should
+             * dynamically increase the page size.
+             */
+            alloc->block_size = ((alloc->size / libdbo_mm_pagesize()) + 1) * libdbo_mm_pagesize();
+            if ((alloc->block_size - alloc->size) < sizeof(void*)) {
+                alloc->block_size += libdbo_mm_pagesize();
+            }
+            if (alloc->block_size < (alloc->size + sizeof(void*))) {
+                alloc->block_size = 0;
+                pthread_mutex_unlock(&(alloc->lock));
+                return NULL;
+            }
+        }
+
+        if (!(block = malloc(alloc->block_size))) {
             pthread_mutex_unlock(&(alloc->lock));
             return NULL;
         }
@@ -121,7 +124,7 @@ void* libdbo_mm_new(libdbo_mm_t* alloc) {
         alloc->block = block;
         block = block++;
 
-        for (i=0; i<((__pagesize - sizeof(void*)) / alloc->size); i++) {
+        for (i=0; i<((alloc->block_size - sizeof(void*)) / alloc->size); i++) {
             *(void**)block = alloc->next;
             alloc->next = block;
             block = ((char*)block + alloc->size);
@@ -186,4 +189,19 @@ void libdbo_mm_release(libdbo_mm_t* alloc) {
     }
 
     pthread_mutex_unlock(&(alloc->lock));
+}
+
+size_t libdbo_mm_pagesize(void) {
+    if (!__db_mm_pagesize) {
+        long pagesize;
+
+        if ((pagesize = sysconf(_SC_PAGESIZE)) > 0) {
+            __db_mm_pagesize = (size_t)pagesize;
+        }
+        else {
+            __db_mm_pagesize = LIBDBO_MM_DEFAULT_PAGESIZE;
+        }
+    }
+
+    return __db_mm_pagesize;
 }

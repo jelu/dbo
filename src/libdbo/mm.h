@@ -54,9 +54,14 @@ extern "C" {
 /** \{ */
 
 /**
+ * The default library page size.
+ */
+#define LIBDBO_MM_DEFAULT_PAGESIZE 4096
+
+/**
  * A libdbo_mm_t static allocation for a memory pool.
  */
-#define LIBDBO_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, PTHREAD_MUTEX_INITIALIZER }
+#define LIBDBO_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, 0, PTHREAD_MUTEX_INITIALIZER }
 
 /**
  * A memory pool handle.
@@ -69,6 +74,7 @@ struct libdbo_mm
     void *block;
     void *next;
     size_t size;
+    size_t block_size;
     pthread_mutex_t lock;
 };
 #endif
@@ -142,6 +148,13 @@ void libdbo_mm_delete(libdbo_mm_t* alloc, void* ptr);
  * \param[in] alloc a libdbo_mm_t pointer.
  */
 void libdbo_mm_release(libdbo_mm_t* alloc);
+
+/**
+ * Return the systems page size or the default library page size defined in
+ * LIBDBO_MM_DEFAULT_PAGESIZE.
+ * \return an integer with the page size.
+ */
+size_t libdbo_mm_pagesize(void);
 
 /** \} */
 
