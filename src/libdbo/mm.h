@@ -86,9 +86,22 @@ extern "C" {
 #define LIBDBO_MM_DEFAULT_PAGESIZE 4096
 
 /**
+ * The default minimum number of objects allocated per block if the object size
+ * * number of objects is larger then the page size.
+ */
+#define LIBDBO_MM_DEFAULT_NUM_OBJECTS 256
+
+/**
  * A libdbo_mm_t static allocation for a memory pool.
  */
-#define LIBDBO_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, 0, PTHREAD_MUTEX_INITIALIZER }
+#define LIBDBO_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, LIBDBO_MM_DEFAULT_NUM_OBJECTS, 0, PTHREAD_MUTEX_INITIALIZER }
+
+/**
+ * A libdbo_mm_t static allocation for a memory pool where you can set the
+ * minimum number of objects to allocate if the object size * number of objects
+ * is larger then the page size.
+ */
+#define LIBDBO_MM_T_STATIC_NEW_NUM_OBJS(object_size, number_of_objects) { NULL, NULL, object_size, number_of_objects, 0, PTHREAD_MUTEX_INITIALIZER }
 
 /**
  * A memory pool handle.
@@ -101,6 +114,7 @@ struct libdbo_mm
     void *block;
     void *next;
     size_t size;
+    size_t num_objects;
     size_t block_size;
     pthread_mutex_t lock;
 };

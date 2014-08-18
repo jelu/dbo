@@ -99,18 +99,26 @@ void* libdbo_mm_new(libdbo_mm_t* alloc) {
             alloc->size = sizeof(void*);
         }
         if (!alloc->block_size) {
-            /*
-             * TODO: Add more logic here, if we have very large objects we should
-             * dynamically increase the page size.
-             */
-            alloc->block_size = ((alloc->size / libdbo_mm_pagesize()) + 1) * libdbo_mm_pagesize();
-            if ((alloc->block_size - alloc->size) < sizeof(void*)) {
-                alloc->block_size += libdbo_mm_pagesize();
+            if (((libdbo_mm_pagesize() - sizeof(void*)) / alloc->size) < alloc->num_objects) {
+                /*
+                 * Calculate the block size so we have enough to allocate the
+                 * minimum number of objects.
+                 *
+                 * We take the object size * minimum number of objects + a void
+                 * pointer for the block chain. Divide it by the page size and
+                 * add one to the result to get the number of pages needed for
+                 * the objects then * that with the page size to get the number
+                 * of bytes per block.
+                 */
+                alloc->block_size = ((((alloc->size * alloc->num_objects) + sizeof(void*)) / libdbo_mm_pagesize()) + 1)
+                    * libdbo_mm_pagesize();
             }
-            if (alloc->block_size < (alloc->size + sizeof(void*))) {
-                alloc->block_size = 0;
-                pthread_mutex_unlock(&(alloc->lock));
-                return NULL;
+            else {
+                /*
+                 * We can allocate enough objects within one page size so we set
+                 * the block size to a page size.
+                 */
+                alloc->block_size = libdbo_mm_pagesize();
             }
         }
 
