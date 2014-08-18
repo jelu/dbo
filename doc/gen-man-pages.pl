@@ -66,6 +66,30 @@ sub only_detail_text {
             $detail_text .= $text.'
 ';
         }
+
+        foreach my $child ($para->childNodes) {
+            if ($child->nodeName eq 'programlisting') {
+                $detail_text .= '
+.nf
+';
+                foreach my $codeline ($child->findnodes('codeline')) {
+                    foreach my $hl ($codeline->findnodes('highlight')) {
+                        foreach my $hlchild ($hl->childNodes) {
+                            if ($hlchild->nodeName eq 'sp') {
+                                $detail_text .= ' ';
+                            }
+                            else {
+                                $detail_text .= $hlchild->textContent;
+                            }
+                        }
+                    }
+                    $detail_text .= '
+';
+                }
+                $detail_text .= '.fi
+';
+            }
+        }
     }
 
     return $detail_text;

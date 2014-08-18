@@ -38,6 +38,33 @@
  * These functions handles the internal memory of the database layer. It can be
  * replaced with external memory management via the functions libdbo_mm_set_malloc()
  * and libdbo_mm_set_free().
+ *
+ * Example usage:
+ * \code
+struct our_struct {
+    int integer;
+    char* string;
+};
+
+static libdbo_mm_t heap = LIBDBO_MM_T_STATIC_NEW(sizeof(struct our_struct));
+
+int main(void) {
+    struct our_struct* object;
+
+    object = libdbo_mm_new0(&heap);
+    if (!object) {
+        printf("Memory allocation error!\n");
+        return 1;
+    }
+
+    ...
+
+    libdbo_mm_delete(&heap, object);
+
+    libdbo_mm_release(&heap);
+    return 0;
+}
+ * \endcode
  */
 
 #ifndef libdbo_mm_h
