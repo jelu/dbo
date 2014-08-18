@@ -46,7 +46,6 @@ static libdbo_mm_malloc_t __db_mm_malloc = NULL;
 static libdbo_mm_free_t __db_mm_free = NULL;
 
 void libdbo_mm_init(void) {
-    /* TODO: will long => size_t be a problem somewhere? */
 }
 
 int libdbo_mm_set_malloc(libdbo_mm_malloc_t malloc_function) {
@@ -196,6 +195,7 @@ size_t libdbo_mm_pagesize(void) {
         long pagesize;
 
         if ((pagesize = sysconf(_SC_PAGESIZE)) > 0) {
+            /* TODO: will long => size_t be a problem somewhere? */
             __db_mm_pagesize = (size_t)pagesize;
         }
         else {
