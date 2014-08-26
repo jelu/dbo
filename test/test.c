@@ -320,6 +320,36 @@ int main(void) {
         return CU_get_error();
     }
 
+    pSuite = CU_add_suite("Classes (w/o MM)", init_suite_classes, clean_suite_classes);
+    if (!pSuite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    if (!CU_add_test(pSuite, "test of libdbo_backend_handle", test_class_libdbo_backend_handle)
+        || !CU_add_test(pSuite, "test of libdbo_backend", test_class_libdbo_backend)
+        || !CU_add_test(pSuite, "test of libdbo_backend_meta_data", test_class_libdbo_backend_meta_data)
+        || !CU_add_test(pSuite, "test of libdbo_backend_meta_data_list", test_class_libdbo_backend_meta_data_list)
+        || !CU_add_test(pSuite, "test of libdbo_clause", test_class_libdbo_clause)
+        || !CU_add_test(pSuite, "test of libdbo_clause_list", test_class_libdbo_clause_list)
+        || !CU_add_test(pSuite, "test of libdbo_configuration", test_class_libdbo_configuration)
+        || !CU_add_test(pSuite, "test of libdbo_configuration_list", test_class_libdbo_configuration_list)
+        || !CU_add_test(pSuite, "test of libdbo_connection", test_class_libdbo_connection)
+        || !CU_add_test(pSuite, "test of libdbo_join", test_class_libdbo_join)
+        || !CU_add_test(pSuite, "test of libdbo_join_list", test_class_libdbo_join_list)
+        || !CU_add_test(pSuite, "test of libdbo_object_field", test_class_libdbo_object_field)
+        || !CU_add_test(pSuite, "test of libdbo_object_field_list", test_class_libdbo_object_field_list)
+        || !CU_add_test(pSuite, "test of libdbo_object", test_class_libdbo_object)
+        || !CU_add_test(pSuite, "test of libdbo_value_set", test_class_libdbo_value_set)
+        || !CU_add_test(pSuite, "test of libdbo_result", test_class_libdbo_result)
+        || !CU_add_test(pSuite, "test of libdbo_result_list", test_class_libdbo_result_list)
+        || !CU_add_test(pSuite, "test of libdbo_value", test_class_libdbo_value)
+        || !CU_add_test(pSuite, "test of libdbo_*_free", test_class_end))
+    {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
     CU_cleanup_registry();

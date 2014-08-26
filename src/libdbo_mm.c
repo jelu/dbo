@@ -32,18 +32,26 @@
  * All rights reserved.
  */
 
+#include "config.h"
+
 #include "libdbo/mm.h"
 
 #include "libdbo/error.h"
 
 #include <strings.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 /* TODO: keep list of blocks, add freeing functionality */
 
 static size_t __pagesize = 0;
+#if defined(USE_LIBDBO_MM)
 static libdbo_mm_malloc_t __malloc = NULL;
 static libdbo_mm_free_t __free = NULL;
+#else
+static libdbo_mm_malloc_t __malloc = &malloc;
+static libdbo_mm_free_t __free = &free;
+#endif
 
 void libdbo_mm_init(void) {
 }
@@ -182,6 +190,10 @@ void libdbo_mm_release(libdbo_mm_t* alloc) {
     void* block;
 
     if (!alloc) {
+        return;
+    }
+
+    if (__malloc && __free) {
         return;
     }
 

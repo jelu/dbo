@@ -477,6 +477,9 @@ void test_class_libdbo_backend_meta_data_list(void) {
 }
 
 void test_class_libdbo_clause(void) {
+    libdbo_clause_t* local_clause;
+    libdbo_clause_list_t* local_clause_list;
+
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause = libdbo_clause_new()));
 
     CU_ASSERT(!libdbo_clause_set_table(clause, "table"));
@@ -496,16 +499,26 @@ void test_class_libdbo_clause(void) {
     CU_ASSERT_PTR_NOT_NULL(libdbo_clause_value(clause));
     CU_ASSERT_PTR_NULL(libdbo_clause_next(clause));
 
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_clause = libdbo_clause_new()));
+    CU_ASSERT(!libdbo_clause_set_table(local_clause, "table"));
+    CU_ASSERT(!libdbo_clause_set_field(local_clause, "field"));
+    CU_ASSERT(!libdbo_clause_set_type(local_clause, LIBDBO_CLAUSE_NOT_EQUAL));
+    CU_ASSERT(!libdbo_clause_set_operator(local_clause, LIBDBO_CLAUSE_OPERATOR_OR));
+    CU_ASSERT(!libdbo_value_from_int32(libdbo_clause_get_value(local_clause), 1));
+
+    CU_ASSERT_PTR_NOT_NULL_FATAL((local_clause_list = libdbo_clause_list_new()));
+    CU_ASSERT_FATAL(!libdbo_clause_list_add(local_clause_list, local_clause));
+
     CU_ASSERT_PTR_NOT_NULL_FATAL((clause2 = libdbo_clause_new()));
 
     CU_ASSERT(!libdbo_clause_set_type(clause2, LIBDBO_CLAUSE_NESTED));
     CU_ASSERT(!libdbo_clause_set_operator(clause2, LIBDBO_CLAUSE_OPERATOR_OR));
-    CU_ASSERT(!libdbo_clause_set_list(clause2, (libdbo_clause_list_t*)&fake_pointer));
+    CU_ASSERT(!libdbo_clause_set_list(clause2, local_clause_list));
     CU_ASSERT(!libdbo_clause_not_empty(clause2));
 
     CU_ASSERT(libdbo_clause_type(clause2) == LIBDBO_CLAUSE_NESTED);
     CU_ASSERT(libdbo_clause_operator(clause2) == LIBDBO_CLAUSE_OPERATOR_OR);
-    CU_ASSERT(libdbo_clause_list(clause2) == (libdbo_clause_list_t*)&fake_pointer);
+    CU_ASSERT(libdbo_clause_list(clause2) == local_clause_list);
     CU_ASSERT_PTR_NOT_NULL(libdbo_clause_value(clause2));
 }
 
@@ -928,6 +941,7 @@ void test_class_libdbo_result_list(void) {
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((result_list = libdbo_result_list_new()));
 
+    __libdbo_result_list_next_count = 0;
     CU_ASSERT_FATAL(!libdbo_result_list_set_next(result_list, __libdbo_result_list_next, &fake_pointer, 2));
 
     CU_ASSERT(libdbo_result_list_size(result_list) == 2);

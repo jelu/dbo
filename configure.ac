@@ -59,6 +59,28 @@ AX_PTHREAD([
 AX_CUNIT
 
 #
+# Check for not using internal memory management
+#
+AC_MSG_CHECKING([if using internal memory management])
+AC_ARG_WITH([libdbo-mm],
+    AS_HELP_STRING([--with-libdbo-mm=@<:@yes/no@:>@],
+        [use libdbo's internal memory management @<:@default=yes@:>@]
+    ),
+    [
+        if test "$withval" != "no"; then
+            AC_DEFINE([USE_LIBDBO_MM], [1],
+                [Define to 1 if libdbo's internal memory management is used])
+            AC_MSG_RESULT([yes])
+        else
+            AC_MSG_RESULT([no])
+        fi
+    ], [
+        AC_DEFINE([USE_LIBDBO_MM], [1],
+            [Define to 1 if libdbo's internal memory management is used])
+        AC_MSG_RESULT([yes])
+    ])
+
+#
 # Check for SQLite3
 #
 

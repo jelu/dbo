@@ -25,6 +25,8 @@
  *
  */
 
+#include "config.h"
+
 #include <libdbo/mm.h>
 
 #include "CUnit/Basic.h"
@@ -59,8 +61,13 @@ void test_libdbo_mm_extern(void) {
     libdbo_mm_t mm = LIBDBO_MM_T_STATIC_NEW(128);
     void* ptr;
 
+#if defined(USE_LIBDBO_MM)
     CU_ASSERT_FATAL(!libdbo_mm_set_malloc(&malloc));
     CU_ASSERT_FATAL(!libdbo_mm_set_free(&free));
+#else
+    CU_ASSERT_FATAL(libdbo_mm_set_malloc(&malloc));
+    CU_ASSERT_FATAL(libdbo_mm_set_free(&free));
+#endif
     CU_ASSERT_PTR_NOT_NULL_FATAL((ptr = libdbo_mm_new0(&mm)));
     libdbo_mm_delete(&mm, ptr);
     CU_PASS("libdbo_mm_delete");
