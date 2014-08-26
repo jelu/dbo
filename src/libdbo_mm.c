@@ -41,6 +41,9 @@
 #include <strings.h>
 #include <unistd.h>
 #include <stdlib.h>
+#if defined(USE_LIBDBO_MM_CHECKS)
+#include <assert.h>
+#endif
 
 /* TODO: keep list of blocks, add freeing functionality */
 
@@ -106,6 +109,9 @@ void* libdbo_mm_new(libdbo_mm_t* alloc) {
         if (alloc->size < sizeof(void*)) {
             alloc->size = sizeof(void*);
         }
+#if defined(USE_LIBDBO_MM_CHECKS)
+        alloc->size += sizeof(void*);
+#endif
         if (!alloc->block_size) {
             if (((libdbo_mm_pagesize() - sizeof(void*)) / alloc->size) < alloc->num_objects) {
                 /*
@@ -137,16 +143,26 @@ void* libdbo_mm_new(libdbo_mm_t* alloc) {
 
         *(void**)block = alloc->block;
         alloc->block = block;
-        block = block++;
+        block = (char*)block + sizeof(void*);
 
         for (i=0; i<((alloc->block_size - sizeof(void*)) / alloc->size); i++) {
+#if defined(USE_LIBDBO_MM_CHECKS)
+            *(void**)block = (void*)1L;
+            *(void**)((char*)block + sizeof(void*)) = alloc->next;
+#else
             *(void**)block = alloc->next;
+#endif
             alloc->next = block;
             block = ((char*)block + alloc->size);
         }
     }
 
     ptr = alloc->next;
+#if defined(USE_LIBDBO_MM_CHECKS)
+    assert(*(void**)ptr == (void*)1L);
+    *(void**)ptr = NULL;
+    ptr = (char*)ptr + sizeof(void*);
+#endif
     alloc->next = *(void**)ptr;
     *(void**)ptr = NULL;
 
@@ -158,7 +174,11 @@ void* libdbo_mm_new0(libdbo_mm_t* alloc) {
     void* ptr = libdbo_mm_new(alloc);
 
     if (ptr) {
+#if defined(USE_LIBDBO_MM_CHECKS)
+        bzero(ptr, alloc->size - sizeof(void*));
+#else
         bzero(ptr, alloc->size);
+#endif
     }
 
     return ptr;
@@ -181,6 +201,11 @@ void libdbo_mm_delete(libdbo_mm_t* alloc, void* ptr) {
     }
 
     *(void**)ptr = alloc->next;
+#if defined(USE_LIBDBO_MM_CHECKS)
+    ptr = (char*)ptr - sizeof(void*);
+    assert(*(void**)ptr == NULL);
+    *(void**)ptr = (void*)1L;
+#endif
     alloc->next = ptr;
 
     pthread_mutex_unlock(&(alloc->lock));
