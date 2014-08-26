@@ -41,9 +41,9 @@
 
 /* TODO: keep list of blocks, add freeing functionality */
 
-static size_t __db_mm_pagesize = 0;
-static libdbo_mm_malloc_t __db_mm_malloc = NULL;
-static libdbo_mm_free_t __db_mm_free = NULL;
+static size_t __pagesize = 0;
+static libdbo_mm_malloc_t __malloc = NULL;
+static libdbo_mm_free_t __free = NULL;
 
 void libdbo_mm_init(void) {
 }
@@ -53,11 +53,11 @@ int libdbo_mm_set_malloc(libdbo_mm_malloc_t malloc_function) {
         return LIBDBO_ERROR_UNKNOWN;
     }
 
-    if (__db_mm_malloc) {
+    if (__malloc) {
         return LIBDBO_ERROR_UNKNOWN;
     }
 
-    __db_mm_malloc = malloc_function;
+    __malloc = malloc_function;
 
     return LIBDBO_OK;
 }
@@ -67,11 +67,11 @@ int libdbo_mm_set_free(libdbo_mm_free_t free_function) {
         return LIBDBO_ERROR_UNKNOWN;
     }
 
-    if (__db_mm_free) {
+    if (__free) {
         return LIBDBO_ERROR_UNKNOWN;
     }
 
-    __db_mm_free = free_function;
+    __free = free_function;
 
     return LIBDBO_OK;
 }
@@ -83,8 +83,8 @@ void* libdbo_mm_new(libdbo_mm_t* alloc) {
         return NULL;
     }
 
-    if (__db_mm_malloc && __db_mm_free) {
-        return __db_mm_malloc(alloc->size);
+    if (__malloc && __free) {
+        return __malloc(alloc->size);
     }
 
     if (pthread_mutex_lock(&(alloc->lock))) {
@@ -164,8 +164,8 @@ void libdbo_mm_delete(libdbo_mm_t* alloc, void* ptr) {
         return;
     }
 
-    if (__db_mm_malloc && __db_mm_free) {
-        return __db_mm_free(ptr);
+    if (__malloc && __free) {
+        return __free(ptr);
     }
 
     if (pthread_mutex_lock(&(alloc->lock))) {
@@ -199,17 +199,17 @@ void libdbo_mm_release(libdbo_mm_t* alloc) {
 }
 
 size_t libdbo_mm_pagesize(void) {
-    if (!__db_mm_pagesize) {
+    if (!__pagesize) {
         long pagesize;
 
         if ((pagesize = sysconf(_SC_PAGESIZE)) > 0) {
             /* TODO: will long => size_t be a problem somewhere? */
-            __db_mm_pagesize = (size_t)pagesize;
+            __pagesize = (size_t)pagesize;
         }
         else {
-            __db_mm_pagesize = LIBDBO_MM_DEFAULT_PAGESIZE;
+            __pagesize = LIBDBO_MM_DEFAULT_PAGESIZE;
         }
     }
 
-    return __db_mm_pagesize;
+    return __pagesize;
 }
