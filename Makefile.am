@@ -38,7 +38,6 @@ MAINTAINERCLEANFILES = \
 SUBDIRS = tools src test doc
 
 EXTRA_DIST = $(srcdir)/LICENSE \
-	$(srcdir)/KNOWN_ISSUES \
 	$(srcdir)/README.md
 
 doc_DATA = $(srcdir)/README.md \

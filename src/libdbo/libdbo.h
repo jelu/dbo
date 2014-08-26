@@ -40,7 +40,3 @@
 #include <libdbo/type.h>
 #include <libdbo/value.h>
 #include <libdbo/log.h>
-
-#include <libdbo/backend/couchdb.h>
-#include <libdbo/backend/mysql.h>
-#include <libdbo/backend/sqlite.h>

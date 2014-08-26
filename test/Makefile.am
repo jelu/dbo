@@ -53,6 +53,11 @@ BUILT_SOURCES += test_groups.c test_groups.h \
 	test_user_group_link_rev.c test_user_group_link_rev.h \
 	test_users_rev.c test_users_rev.h
 
+EXTRA_DIST = test.json \
+	test.sqlite \
+	test.mysql \
+	test.couchdb
+
 nodist_test_SOURCES = $(BUILT_SOURCES)
 CLEANFILES = $(BUILT_SOURCES) stamp-objects stamp-tests
 

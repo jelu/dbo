@@ -23,3 +23,7 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 MAINTAINERCLEANFILES = $(srcdir)/Makefile.in
+
+EXTRA_DIST = dbo-generate-objects \
+	dbo-generate-schema \
+	dbo-generate-tests

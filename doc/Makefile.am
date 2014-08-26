@@ -301,7 +301,8 @@ man/man7/libdbo_type.7 \
 man/man7/libdbo_value.7 \
 man/man7/libdbo_value_set.7
 
-EXTRA_DIST = doxygen.conf
+EXTRA_DIST = doxygen.conf \
+	gen-man-pages.pl
 
 CLEANFILES = \
 	dbo.tag \

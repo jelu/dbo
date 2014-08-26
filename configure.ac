@@ -24,7 +24,7 @@
 
 AC_PREREQ(2.68)
 
-AC_INIT([dbo], [0.0.1], [https://github.com/jelu/dbo/issues])
+AC_INIT([libdbo], [0.0.1], [https://github.com/jelu/dbo/issues])
 DBO_LIB_VERSION="0:1:0"
 
 AM_INIT_AUTOMAKE
@@ -45,7 +45,7 @@ AC_SUBST(DBO_LIB_VERSION)
 # Check for doxygen
 #
 
-DX_INIT_DOXYGEN([dbo])
+DX_INIT_DOXYGEN([libdbo])
 
 #
 # Check for required/optional libraries

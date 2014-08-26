@@ -25,6 +25,7 @@
 MAINTAINERCLEANFILES = $(srcdir)/Makefile.in
 
 lib_LTLIBRARIES = libdbo.la
+
 libdbo_la_SOURCES = libdbo_mm.c libdbo/mm.h \
 	libdbo_backend.c libdbo/backend.h \
 	libdbo_clause.c libdbo/clause.h \
@@ -36,7 +37,9 @@ libdbo_la_SOURCES = libdbo_mm.c libdbo/mm.h \
 	libdbo_value.c libdbo/value.h \
 	libdbo_join.c libdbo/join.h \
 	libdbo/error.h \
-	libdbo_log.c libdbo/log.h
+	libdbo_log.c libdbo/log.h \
+	libdbo/enum.h
+
 nobase_include_HEADERS = libdbo/mm.h \
 	libdbo/backend.h \
 	libdbo/clause.h \
@@ -49,15 +52,23 @@ nobase_include_HEADERS = libdbo/mm.h \
 	libdbo/join.h \
 	libdbo/error.h \
 	libdbo/libdbo.h \
-	libdbo/log.h
+	libdbo/log.h \
+	libdbo/enum.h
+
+EXTRA_DIST = libdbo_backend_sqlite.c libdbo/backend/sqlite.h \
+	libdbo_backend_mysql.c libdbo/backend/mysql.h \
+	libdbo_backend_couchdb.c libdbo/backend/couchdb.h
+
 if HAVE_SQLITE3
 libdbo_la_SOURCES += libdbo_backend_sqlite.c libdbo/backend/sqlite.h
 nobase_include_HEADERS += libdbo/backend/sqlite.h
 endif
+
 if HAVE_MYSQL
 libdbo_la_SOURCES += libdbo_backend_mysql.c libdbo/backend/mysql.h
 nobase_include_HEADERS += libdbo/backend/mysql.h
 endif
+
 libdbo_la_CFLAGS = \
 	@SQLITE3_CFLAGS@ \
 	@MYSQL_CFLAGS@
