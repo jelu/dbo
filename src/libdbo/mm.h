@@ -206,7 +206,9 @@ size_t libdbo_mm_pagesize(void);
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #ifdef LIBDBO_SHORT_NAMES
 #define DB_MM_DEFAULT_PAGESIZE 4096
-#define DB_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, PTHREAD_MUTEX_INITIALIZER }
+#define DB_MM_DEFAULT_NUM_OBJECTS 256
+#define DB_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, DB_MM_DEFAULT_NUM_OBJECTS, 0, PTHREAD_MUTEX_INITIALIZER }
+#define DB_MM_T_STATIC_NEW_NUM_OBJS(object_size, number_of_objects) { NULL, NULL, object_size, number_of_objects, 0, PTHREAD_MUTEX_INITIALIZER }
 #define db_mm_t libdbo_mm_t
 #define db_mm_malloc_t libdbo_mm_malloc_t
 #define db_mm_free_t libdbo_mm_free_t
