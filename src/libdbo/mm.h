@@ -41,6 +41,9 @@
  *
  * Example usage:
  * \code
+#include <libdbo/libdbo.h>
+#include <stdio.h>
+
 struct our_struct {
     int integer;
     char* string;
