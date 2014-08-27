@@ -37,6 +37,80 @@
 /** \defgroup libdbo_value libdbo_value
  * Database Value.
  * These are the functions and container for handling a database value.
+ *
+ * Example usage of a string value:
+ * \code
+#include <libdbo/libdbo.h>
+#include <stdio.h>
+
+int main(void) {
+    libdbo_value_t* value;
+    int error;
+
+    if (!(value = libdbo_value_new())) {
+        printf("Memory allocation error!\n");
+        return -1;
+    }
+
+    if ((error = libdbo_value_from_text(value, "A string value"))) {
+        printf("libdbo_value_from_text() error %d: %s\n", error, libdbo_errstr(error));
+        libdbo_value_free(value);
+        return -1;
+    }
+
+    printf("value: %s\n", libdbo_value_text(value));
+    libdbo_value_free(value);
+    return 0;
+}
+ * \endcode
+ *
+ * Example usage of an integer value:
+ * \code
+#include <libdbo/libdbo.h>
+#include <stdio.h>
+
+int main(void) {
+    libdbo_value_t* value;
+    int error;
+
+    if (!(value = libdbo_value_new())) {
+        printf("Memory allocation error!\n");
+        return -1;
+    }
+
+    if ((error = libdbo_value_from_int64(value, 1234567890))) {
+        printf("libdbo_value_from_int64() error %d: %s\n", error, libdbo_errstr(error));
+        libdbo_value_free(value);
+        return -1;
+    }
+
+    printf("value: %llu\n", libdbo_value_int64(value));
+    libdbo_value_free(value);
+    return 0;
+}
+ * \endcode
+ *
+ * Example usage of a static string value:
+ * \code
+#include <libdbo/libdbo.h>
+#include <stdio.h>
+
+static libdbo_value_t* value = LIBDBO_VALUE_EMPTY;
+
+int main(void) {
+    int error;
+
+    if ((error = libdbo_value_from_text(value, "A string value"))) {
+        printf("libdbo_value_from_text() error %d: %s\n", error, libdbo_errstr(error));
+        libdbo_value_reset(value);
+        return -1;
+    }
+
+    printf("value: %s\n", libdbo_value_text(value));
+    libdbo_value_reset(value);
+    return 0;
+}
+ * \endcode
  */
 /** \defgroup libdbo_value_set libdbo_value_set
  * Database Value Set.
