@@ -56,6 +56,7 @@ void test_class_libdbo_value_set(void);
 void test_class_libdbo_result(void);
 void test_class_libdbo_result_list(void);
 void test_class_libdbo_value(void);
+void test_class_libdbo_error(void);
 void test_class_end(void);
 
 int init_suite_classes_short_names(void);
@@ -78,6 +79,7 @@ void test_class_short_names_db_value_set(void);
 void test_class_short_names_db_result(void);
 void test_class_short_names_db_result_list(void);
 void test_class_short_names_db_value(void);
+void test_class_short_names_db_error(void);
 void test_class_short_names_end(void);
 
 int init_suite_initialization(void);

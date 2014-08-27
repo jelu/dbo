@@ -1361,6 +1361,11 @@ void test_class_libdbo_value(void) {
     CU_PASS("libdbo_value_free");
 }
 
+void test_class_libdbo_error(void) {
+    CU_ASSERT_PTR_NULL(libdbo_errstr(LIBDBO_OK));
+    CU_ASSERT(!strcmp(libdbo_errstr(LIBDBO_ERROR_UNKNOWN), "Unknown error"));
+}
+
 void test_class_end(void) {
     libdbo_result_free(result);
     result = NULL;

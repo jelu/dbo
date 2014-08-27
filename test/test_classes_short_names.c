@@ -1362,6 +1362,11 @@ void test_class_short_names_db_value(void) {
     CU_PASS("db_value_free");
 }
 
+void test_class_short_names_db_error(void) {
+    CU_ASSERT_PTR_NULL(db_errstr(DB_OK));
+    CU_ASSERT(!strcmp(db_errstr(DB_ERROR_UNKNOWN), "Unknown error"));
+}
+
 void test_class_short_names_end(void) {
     db_result_free(result);
     result = NULL;

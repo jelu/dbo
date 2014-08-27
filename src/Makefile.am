@@ -36,7 +36,7 @@ libdbo_la_SOURCES = libdbo_mm.c libdbo/mm.h \
 	libdbo/type.h \
 	libdbo_value.c libdbo/value.h \
 	libdbo_join.c libdbo/join.h \
-	libdbo/error.h \
+	libdbo_error.c libdbo/error.h \
 	libdbo_log.c libdbo/log.h \
 	libdbo/enum.h
 

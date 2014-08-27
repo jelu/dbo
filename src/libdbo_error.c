@@ -24,52 +24,16 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-/*
- * Based on enforcer-ng/src/db/db_error.h header file from the OpenDNSSEC
- * project.
- *
- * Copyright (c) 2014 .SE (The Internet Infrastructure Foundation).
- * Copyright (c) 2014 OpenDNSSEC AB (svb)
- * All rights reserved.
- */
 
-/** \file libdbo/error.h */
-/** \defgroup libdbo_error libdbo_error
- * Database Error.
- * These are the various errors that the database layer can return.
- */
+#include "libdbo/error.h"
 
-#ifndef libdbo_error_h
-#define libdbo_error_h
+const char* libdbo_errstr(int errno) {
+    switch (errno) {
+    case LIBDBO_OK:
+        return 0;
 
-/** \addtogroup libdbo_object */
-/** \{ */
-
-/**
- * A successful operation.
- */
-#define LIBDBO_OK 0
-/**
- * A failed operation with an unknown error.
- */
-#define LIBDBO_ERROR_UNKNOWN 1
-
-/**
- * Returns a null-terminated string containing the error message for the
- * specified error.
- * \param[in] errno an integer with the specified error.
- * \return a null-terminated string containing the error message.
- */
-const char* libdbo_errstr(int errno);
-
-/** \} */
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-#ifdef LIBDBO_SHORT_NAMES
-#define DB_OK 0
-#define DB_ERROR_UNKNOWN 1
-#define db_errstr(...) libdbo_errstr(__VA_ARGS__)
-#endif
-#endif
-
-#endif
+    case LIBDBO_ERROR_UNKNOWN:
+    default:
+        return "Unknown error";
+    }
+}

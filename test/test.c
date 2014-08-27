@@ -97,6 +97,7 @@ int main(void) {
         || !CU_add_test(pSuite, "test of libdbo_result", test_class_libdbo_result)
         || !CU_add_test(pSuite, "test of libdbo_result_list", test_class_libdbo_result_list)
         || !CU_add_test(pSuite, "test of libdbo_value", test_class_libdbo_value)
+        || !CU_add_test(pSuite, "test of libdbo_error", test_class_libdbo_error)
         || !CU_add_test(pSuite, "test of libdbo_*_free", test_class_end))
     {
         CU_cleanup_registry();
@@ -127,6 +128,7 @@ int main(void) {
         || !CU_add_test(pSuite, "test of db_result", test_class_short_names_db_result)
         || !CU_add_test(pSuite, "test of db_result_list", test_class_short_names_db_result_list)
         || !CU_add_test(pSuite, "test of db_value", test_class_short_names_db_value)
+        || !CU_add_test(pSuite, "test of db_error", test_class_short_names_db_error)
         || !CU_add_test(pSuite, "test of db_*_free", test_class_short_names_end))
     {
         CU_cleanup_registry();
