@@ -42,7 +42,6 @@
  * Example usage:
  * \code
 #include <libdbo/mm.h>
-#include <stdio.h>
 
 typedef struct our_struct our_struct_t;
 struct our_struct {
