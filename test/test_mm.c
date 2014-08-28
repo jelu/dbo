@@ -48,10 +48,31 @@ void test_libdbo_mm_init(void) {
 void test_libdbo_mm(void) {
     libdbo_mm_t mm = LIBDBO_MM_T_STATIC_NEW(128);
     void* ptr;
+    size_t objects, i;
+    void** object;
 
     CU_ASSERT_PTR_NOT_NULL_FATAL((ptr = libdbo_mm_new0(&mm)));
     libdbo_mm_delete(&mm, ptr);
     CU_PASS("libdbo_mm_delete");
+
+    libdbo_mm_release(&mm);
+    CU_PASS("libdbo_mm_release");
+
+    if ((libdbo_mm_pagesize() / 128) < LIBDBO_MM_DEFAULT_NUM_OBJECTS) {
+        objects = LIBDBO_MM_DEFAULT_NUM_OBJECTS * 2;
+    }
+    else {
+        objects = (libdbo_mm_pagesize() / 128) * 2;
+    }
+    CU_ASSERT_PTR_NOT_NULL_FATAL((object = calloc(objects, sizeof(void*))));
+    for (i = 0; i < objects; i++) {
+        CU_ASSERT_PTR_NOT_NULL((object[i] = libdbo_mm_new(&mm)));
+    }
+    for (i = 0; i < objects; i++) {
+        CU_PASS("libdbo_mm_delete");
+        libdbo_mm_delete(&mm, object[i]);
+    }
+    free(object);
 
     libdbo_mm_release(&mm);
     CU_PASS("libdbo_mm_release");

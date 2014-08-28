@@ -154,17 +154,23 @@ void* libdbo_mm_new(libdbo_mm_t* alloc) {
 #endif
             alloc->next = block;
             block = ((char*)block + alloc->size);
+            alloc->total_allocs++;
         }
     }
 
-    ptr = alloc->next;
+    if ((ptr = alloc->next)) {
 #if defined(USE_LIBDBO_MM_CHECKS)
-    assert(*(void**)ptr == (void*)1L);
-    *(void**)ptr = NULL;
-    ptr = (char*)ptr + sizeof(void*);
+        assert(*(void**)ptr == (void*)1L);
+        *(void**)ptr = NULL;
+        ptr = (char*)ptr + sizeof(void*);
 #endif
-    alloc->next = *(void**)ptr;
-    *(void**)ptr = NULL;
+        alloc->next = *(void**)ptr;
+        *(void**)ptr = NULL;
+        alloc->current_allocs++;
+#if defined(USE_LIBDBO_MM_CHECKS)
+        assert(alloc->current_allocs <= alloc->total_allocs);
+#endif
+    }
 
     pthread_mutex_unlock(&(alloc->lock));
     return ptr;
@@ -202,11 +208,33 @@ void libdbo_mm_delete(libdbo_mm_t* alloc, void* ptr) {
 
     *(void**)ptr = alloc->next;
 #if defined(USE_LIBDBO_MM_CHECKS)
+    assert(alloc->current_allocs > 0);
     ptr = (char*)ptr - sizeof(void*);
     assert(*(void**)ptr == NULL);
     *(void**)ptr = (void*)1L;
 #endif
     alloc->next = ptr;
+    alloc->current_allocs--;
+
+    /*
+     * Automatically release all blocks if we have more then one block and there
+     * are no current allocations.
+     */
+    if (!alloc->current_allocs
+        && alloc->block
+        && *(void**)(alloc->block))
+    {
+        void* block;
+
+        while (alloc->block) {
+            block = alloc->block;
+            alloc->block = *(void**)block;
+            free(block);
+        }
+        alloc->total_allocs = 0;
+        alloc->current_allocs = 0;
+        alloc->next = NULL;
+    }
 
     pthread_mutex_unlock(&(alloc->lock));
 }
@@ -231,6 +259,9 @@ void libdbo_mm_release(libdbo_mm_t* alloc) {
         alloc->block = *(void**)block;
         free(block);
     }
+    alloc->total_allocs = 0;
+    alloc->current_allocs = 0;
+    alloc->next = NULL;
 
     pthread_mutex_unlock(&(alloc->lock));
 }

@@ -41,31 +41,38 @@
  *
  * Example usage:
  * \code
-#include <libdbo/libdbo.h>
+#include <libdbo/mm.h>
 #include <stdio.h>
 
+typedef struct our_struct our_struct_t;
 struct our_struct {
     int integer;
     char* string;
 };
 
-static libdbo_mm_t heap = LIBDBO_MM_T_STATIC_NEW(sizeof(struct our_struct));
+static libdbo_mm_t our_struct_heap =
+    LIBDBO_MM_T_STATIC_NEW(sizeof(struct our_struct));
 
-int main(void) {
-    struct our_struct* object;
+our_struct_t* our_struct_new(void) {
+    our_struct_t* object = libdbo_mm_new0(&our_struct_heap);
 
-    object = libdbo_mm_new0(&heap);
-    if (!object) {
-        printf("Memory allocation error!\n");
-        return 1;
+    if (object) {
+        // Set default values that are not zero
     }
 
-    ...
+    return object;
+}
 
-    libdbo_mm_delete(&heap, object);
+void our_struct_free(our_struct_t* object) {
+    if (object) {
+        // Free allocated memory within the struct
 
-    libdbo_mm_release(&heap);
-    return 0;
+        if (string) {
+            free(string);
+        }
+
+        libdbo_mm_delete(&our_struct_heap);
+    }
 }
  * \endcode
  */
@@ -97,14 +104,14 @@ extern "C" {
 /**
  * A libdbo_mm_t static allocation for a memory pool.
  */
-#define LIBDBO_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, LIBDBO_MM_DEFAULT_NUM_OBJECTS, 0, PTHREAD_MUTEX_INITIALIZER }
+#define LIBDBO_MM_T_STATIC_NEW(object_size) { NULL, NULL, object_size, LIBDBO_MM_DEFAULT_NUM_OBJECTS, 0, PTHREAD_MUTEX_INITIALIZER, 0, 0 }
 
 /**
  * A libdbo_mm_t static allocation for a memory pool where you can set the
  * minimum number of objects to allocate if the object size * number of objects
  * is larger then the page size.
  */
-#define LIBDBO_MM_T_STATIC_NEW_NUM_OBJS(object_size, number_of_objects) { NULL, NULL, object_size, number_of_objects, 0, PTHREAD_MUTEX_INITIALIZER }
+#define LIBDBO_MM_T_STATIC_NEW_NUM_OBJS(object_size, number_of_objects) { NULL, NULL, object_size, number_of_objects, 0, PTHREAD_MUTEX_INITIALIZER, 0, 0 }
 
 /**
  * A memory pool handle.
@@ -120,6 +127,8 @@ struct libdbo_mm
     size_t num_objects;
     size_t block_size;
     pthread_mutex_t lock;
+    size_t total_allocs;
+    size_t current_allocs;
 };
 #endif
 
