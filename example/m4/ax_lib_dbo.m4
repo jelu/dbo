@@ -50,8 +50,15 @@ AC_DEFUN([AX_LIB_DBO],
 
     if test "x$WANT_DBO" = "xyes"; then
 
-        ac_dbo_cflags="-I$DBO_PATH/include"
-        ac_dbo_ldflags="-L$DBO_PATH/lib -ldbo"
+        if test "$ac_dbo_path" != ""; then
+            ac_dbo_cflags="-I$ac_dbo_path/include"
+            ac_dbo_ldflags="-L$ac_dbo_path/lib -ldbo"
+            ac_dbo_path="$PATH:$ac_dbo_path/bin:$ac_dbo_path/sbin"
+        else
+            ac_dbo_cflags=""
+            ac_dbo_ldflags=""
+            ac_dbo_path="$PATH"
+        fi
 
         saved_CFLAGS="$CFLAGS"
         saved_LDFLAGS="$LDFLAGS"
@@ -67,6 +74,10 @@ AC_DEFUN([AX_LIB_DBO],
 
         CFLAGS="$saved_CFLAGS"
         LDFLAGS="$saved_LDFLAGS"
+
+        AC_PATH_PROG([DBO_GENERATE_OBJECTS], [dbo-generate-objects], [false], [$ac_dbo_path])
+        AC_PATH_PROG([DBO_GENERATE_SCHEMA], [dbo-generate-schema], [false], [$ac_dbo_path])
+        AC_PATH_PROG([DBO_GENERATE_TESTS], [dbo-generate-tests], [false], [$ac_dbo_path])
 
         if test "$success" = "yes"; then
 
