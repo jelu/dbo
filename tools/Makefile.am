@@ -24,6 +24,6 @@
 
 MAINTAINERCLEANFILES = $(srcdir)/Makefile.in
 
-EXTRA_DIST = dbo-generate-objects \
+dist_bin_SCRIPTS = dbo-generate-objects \
 	dbo-generate-schema \
 	dbo-generate-tests
