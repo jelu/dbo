@@ -1,1 +1,15 @@
-/example
+/contacts
+/person.c
+/person.h
+/person_ext.c
+/person_ext.h
+/folder.c
+/folder.h
+/folder_ext.c
+/folder_ext.h
+/folder_person.c
+/folder_person.h
+/folder_person_ext.c
+/folder_person_ext.h
+/schema.sqlite
+/stamp-objects

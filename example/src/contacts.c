@@ -25,6 +25,20 @@
  *
  */
 
-int main(void) {
+#include "person.h"
+#include "folder.h"
+
+#include <stdio.h>
+#include <string.h>
+
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: example <command> [arguments...]\n"
+            "\n"
+            "Commands:\n"
+            "  list <person|folder>\n"
+            );
+        return -1;
+    }
     return 0;
 }

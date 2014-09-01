@@ -1,0 +1,34 @@
+[
+{
+  "name": "person",
+  "fields": [
+    { "name": "id", "type": "LIBDBO_TYPE_PRIMARY_KEY" },
+    { "name": "name", "type": "LIBDBO_TYPE_TEXT", "unique": 1 },
+    { "name": "birth_year", "type": "LIBDBO_TYPE_UINT32" },
+    { "name": "address", "type": "LIBDBO_TYPE_TEXT" },
+    { "name": "phone", "type": "LIBDBO_TYPE_TEXT" },
+    { "name": "email", "type": "LIBDBO_TYPE_TEXT" }
+  ],
+  "association": [
+    { "name": "id", "foreign": "folder_person", "foreign_name": "person_id" }
+  ]
+},
+{
+  "name": "folder",
+  "fields": [
+    { "name": "id", "type": "LIBDBO_TYPE_PRIMARY_KEY" },
+    { "name": "name", "type": "LIBDBO_TYPE_TEXT", "unique": 1 }
+  ],
+  "association": [
+    { "name": "id", "foreign": "folder_person", "foreign_name": "folder_id" }
+  ]
+},
+{
+  "name": "folder_person",
+  "fields": [
+    { "name": "id", "type": "LIBDBO_TYPE_PRIMARY_KEY" },
+    { "name": "folder_id", "type": "LIBDBO_TYPE_ANY", "foreign": "folder", "foreign_name": "id" },
+    { "name": "person_id", "type": "LIBDBO_TYPE_ANY", "foreign": "person", "foreign_name": "id" }
+  ]
+}
+]

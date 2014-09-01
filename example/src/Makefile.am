@@ -22,10 +22,42 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-MAINTAINERCLEANFILES = $(srcdir)/Makefile.in
+MAINTAINERCLEANFILES = $(srcdir)/Makeperson.in
 
-bin_PROGRAMS = example
+bin_PROGRAMS = contacts
 
-example_SOURCES = example.c
-example_CFLAGS = @DBO_CFLAGS@
-example_LDFLAGS = @DBO_LDFLAGS@
+BUILT_SOURCES = person.c person.h \
+	person_ext.c person_ext.h \
+	folder.c folder.h \
+	folder_ext.c folder_ext.h \
+	folder_person.c folder_person.h \
+	folder_person_ext.c folder_person_ext.h \
+	schema.sqlite
+
+EXTRA_DIST = contacts.json
+
+CLEANFILES = $(BUILT_SOURCES) stamp-objects schema.sqlite
+
+contacts_SOURCES = contacts.c
+nodist_contacts_SOURCES = person.c person.h \
+	person_ext.c person_ext.h \
+	folder.c folder.h \
+	folder_ext.c folder_ext.h \
+	folder_person.c folder_person.h \
+	folder_person_ext.c folder_person_ext.h
+contacts_CFLAGS = @DBO_CFLAGS@
+contacts_LDFLAGS = @DBO_LDFLAGS@
+
+person.c person.h \
+person_ext.c person_ext.h \
+folder.c folder.h \
+folder_ext.c folder_ext.h \
+folder_person.c folder_person.h \
+folder_person_ext.c folder_person_ext.h: stamp-objects
+
+stamp-objects: contacts.json
+	@DBO_GENERATE_OBJECTS@ contacts.json
+	touch stamp-objects
+
+schema.sqlite: contacts.json
+	@DBO_GENERATE_SCHEMA@ --backend sqlite contacts.json
