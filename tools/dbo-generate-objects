@@ -40,10 +40,10 @@ close(FILE);
 
 my %LIBDBO_TYPE_TO_C_TYPE = (
     LIBDBO_TYPE_PRIMARY_KEY => 'should_not_be_used',
-    LIBDBO_TYPE_INT32 => 'int',
-    LIBDBO_TYPE_UINT32 => 'unsigned int',
-    LIBDBO_TYPE_INT64 => 'long long',
-    LIBDBO_TYPE_UINT64 => 'unsigned long long',
+    LIBDBO_TYPE_INT32 => 'libdbo_type_int32_t',
+    LIBDBO_TYPE_UINT32 => 'libdbo_type_uint32_t',
+    LIBDBO_TYPE_INT64 => 'libdbo_type_int64_t',
+    LIBDBO_TYPE_UINT64 => 'libdbo_type_uint64_t',
     LIBDBO_TYPE_TEXT => 'char*'
 );
 
@@ -2429,7 +2429,7 @@ print SOURCE '    const libdbo_clause_t* clause_walk;
 ';
 foreach my $field (@{$object->{fields}}) {
     if ($field->{foreign}) {
-print SOURCE '    const ', $field->{foreign}, '_t* ', $field->{foreign}, '_', $field->{name}, ';
+print SOURCE '    const ', $field->{foreign}, '_t* _', $field->{foreign}, '_', $field->{name}, ';
 ';
     }
 }
@@ -2543,16 +2543,16 @@ print SOURCE '
             return LIBDBO_ERROR_UNKNOWN;
         }
 
-        ', $field->{foreign}, '_', $field->{name}, ' = ', $field->{foreign}, '_list_begin(', $name, '_list->', $field->{name}, '_list);
-        while (', $field->{foreign}, '_', $field->{name}, ') {
-            if (libdbo_value_cmp(', $name, '_', $field->{name}, '(', $name, '_list->object_list[i]), ', $field->{foreign}, '_', $field->{foreign_name}, '(', $field->{foreign}, '_', $field->{name}, '), &cmp)) {
+        _', $field->{foreign}, '_', $field->{name}, ' = ', $field->{foreign}, '_list_begin(', $name, '_list->', $field->{name}, '_list);
+        while (_', $field->{foreign}, '_', $field->{name}, ') {
+            if (libdbo_value_cmp(', $name, '_', $field->{name}, '(', $name, '_list->object_list[i]), ', $field->{foreign}, '_', $field->{foreign_name}, '(_', $field->{foreign}, '_', $field->{name}, '), &cmp)) {
                 return LIBDBO_ERROR_UNKNOWN;
             }
             if (!cmp) {
-                ', $name, '_list->object_list[i]->associated_', $field->{name}, ' = ', $field->{foreign}, '_', $field->{name}, ';
+                ', $name, '_list->object_list[i]->associated_', $field->{name}, ' = _', $field->{foreign}, '_', $field->{name}, ';
             }
 
-            ', $field->{foreign}, '_', $field->{name}, ' = ', $field->{foreign}, '_list_next(', $name, '_list->', $field->{name}, '_list);
+            _', $field->{foreign}, '_', $field->{name}, ' = ', $field->{foreign}, '_list_next(', $name, '_list->', $field->{name}, '_list);
         }
     }
 ';
