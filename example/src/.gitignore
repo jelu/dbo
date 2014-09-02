@@ -11,5 +11,8 @@
 /folder_person.h
 /folder_person_ext.c
 /folder_person_ext.h
-/schema.sqlite
 /stamp-objects
+/stamp-schema
+/schema.sqlite
+/schema.mysql
+/drop.mysql

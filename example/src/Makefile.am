@@ -32,11 +32,18 @@ BUILT_SOURCES = person.c person.h \
 	folder_ext.c folder_ext.h \
 	folder_person.c folder_person.h \
 	folder_person_ext.c folder_person_ext.h \
-	schema.sqlite
+	schema.sqlite \
+	schema.mysql \
+	drop.mysql
 
 EXTRA_DIST = contacts.json
 
-CLEANFILES = $(BUILT_SOURCES) stamp-objects schema.sqlite
+CLEANFILES = $(BUILT_SOURCES) \
+	stamp-objects \
+	stamp-schema \
+	schema.sqlite \
+	schema.mysql \
+	drop.mysql
 
 contacts_SOURCES = contacts.c
 nodist_contacts_SOURCES = person.c person.h \
@@ -59,5 +66,9 @@ stamp-objects: contacts.json
 	@DBO_GENERATE_OBJECTS@ contacts.json
 	touch stamp-objects
 
-schema.sqlite: contacts.json
-	@DBO_GENERATE_SCHEMA@ --backend sqlite contacts.json
+schema.sqlite \
+schema.mysql \
+drop.mysql: stamp-schema
+
+stamp-schema: contacts.json
+	@DBO_GENERATE_SCHEMA@ contacts.json
